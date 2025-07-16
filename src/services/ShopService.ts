@@ -27,5 +27,6 @@ export const createShop = async (data: {
    email: string;
 }) => {
   const res = await axios.post(`${baseURL}/v1/shops`, data);
+  // alert("shop alreadyeists",res.data)
   return res.data;
 };
