@@ -12,7 +12,7 @@ import AssignmentRoundedIcon from "@mui/icons-material/AssignmentRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../../auth/useAuth";
 
 const mainListItems = [
@@ -34,6 +34,9 @@ const secondaryListItems = [
 
 export default function MenuContent() {
   const { role } = useAuth(); // "0" = superadmin, "1" = admin
+  const location = useLocation();
+  const basePath = role === "0" ? "/superadmin-dashboard" : "/admin-dashboard";
+
   const filteredMainItems = mainListItems.filter((item) => {
     if (item.text === "Shops" && role !== "0") return false;
     if (item.text === "Checkout" && role !== "1") return false;
@@ -43,32 +46,39 @@ export default function MenuContent() {
   return (
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: "space-between" }}>
       <List dense>
-        {filteredMainItems.map((item, index) => (
-          <ListItem key={index} disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              component={Link}
-              to={item.path}
-              selected={index === 0}
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {filteredMainItems.map((item, index) => {
+          const fullPath = `${basePath}${item.path}`;
+          return (
+            <ListItem key={index} disablePadding sx={{ display: "block" }}>
+              <ListItemButton
+                component={Link}
+                to={fullPath}
+                selected={location.pathname === fullPath}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
 
       <List dense>
-        {secondaryListItems.map((item, index) => (
-          <ListItem key={index} disablePadding sx={{ display: "block" }}>
-            <ListItemButton
-              component={Link}
-              to={item.path} // assuming secondary items also have path
-            >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {secondaryListItems.map((item, index) => {
+          const fullPath = `${basePath}${item.path}`;
+          return (
+            <ListItem key={index} disablePadding sx={{ display: "block" }}>
+              <ListItemButton
+                component={Link}
+                to={fullPath}
+                selected={location.pathname === fullPath}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
     </Stack>
   );

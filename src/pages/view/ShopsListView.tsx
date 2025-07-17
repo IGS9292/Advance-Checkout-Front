@@ -8,35 +8,57 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
+  MenuItem
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
 import Search from "../dashboard/components/Search";
 import { useDynamicColumns } from "../dashboard/internals/data/gridData";
-import { createShop, deleteShop, updateShop } from "../../services/ShopService";
+import {
+  createShop,
+  deleteShop,
+  updateShop,
+  updateShopStatus
+} from "../../services/ShopService";
+// import { useShopContext } from "../../contexts/ShopContext";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
 const ShopsListView = () => {
+  // const context = useShopContext();
+
+  // if (!context) return null;
+
+  // const { shops, fetchShops } = useShopContext();
   const [rows, setRows] = useState<any[]>([]);
-  // const [columnsMeta, setColumnsMeta] = useState<GridColDef[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
+    shopName: "",
+    shopUrl: "",
+    shopContactNo: "",
+    ordersPerMonth: "",
     email: "",
-    status: "Online",
-    eventCount: ""
+    status: "pending"
   });
   const [editingRow, setEditingRow] = useState<any>(null);
+  // useEffect(() => {
+  //   fetchShops(); // make sure this is called ONCE when component loads
+  // }, []);
+  // useEffect(() => {
+  //   console.log("🔄 Shops from context updated:", shops);
+  //   setRows(shops);
+  // }, [shops]);
 
   const handleEdit = (row: any) => {
     setEditingRow(row);
     setFormData({
-      name: row.name,
+      shopName: row.shopName,
+      shopUrl: row.shopUrl,
+      shopContactNo: row.shopContactNo,
+      ordersPerMonth: row.ordersPerMonth,
       email: row.email,
-      status: row.status,
-      eventCount: row.eventCount
+      status: String(row.status)
     });
     setOpenDialog(true);
   };
@@ -51,10 +73,28 @@ const ShopsListView = () => {
       }
     }
   };
+  const handleApprove = async (id: number) => {
+    try {
+      await updateShopStatus(id, "approved");
+      fetchColumnsAndData(setRows, baseURL);
+    } catch (err) {
+      console.error("Approval failed", err);
+    }
+  };
 
+  const handleReject = async (id: number) => {
+    try {
+      await updateShopStatus(id, "rejected");
+      fetchColumnsAndData(setRows, baseURL);
+    } catch (err) {
+      console.error("Rejection failed", err);
+    }
+  };
   const { columnsMeta: dynamicCols, fetchColumnsAndData } = useDynamicColumns(
     handleEdit,
-    handleDelete
+    handleDelete,
+    handleApprove,
+    handleReject
   );
 
   useEffect(() => {
@@ -68,10 +108,12 @@ const ShopsListView = () => {
     setOpenDialog(false);
     setEditingRow(null);
     setFormData({
-      name: "",
+      shopName: "",
+      shopUrl: "",
+      shopContactNo: "",
+      ordersPerMonth: "",
       email: "",
-      status: "Online",
-      eventCount: ""
+      status: "pending"
     });
   };
 
@@ -82,10 +124,12 @@ const ShopsListView = () => {
 
   const handleSave = async () => {
     const payload = {
-      name: formData.name,
-      status: formData.status,
-      eventCount: Number(formData.eventCount) || 0,
-      email: formData.email
+      shopName: formData.shopName,
+      shopUrl: formData.shopUrl,
+      shopContactNo: formData.shopContactNo,
+      ordersPerMonth: parseInt(formData.ordersPerMonth),
+      email: formData.email,
+      status: formData.status as "pending" | "approved" | "rejected"
     };
     try {
       if (editingRow) {
@@ -93,6 +137,19 @@ const ShopsListView = () => {
       } else {
         await createShop(payload);
       }
+
+      //         const isRequestMode = role === "1"; // true if normal admin (not superadmin)
+      //     if (editingRow) {
+      //         await updateShop(editingRow.id, payload); // editing existing shop
+      //       } else {
+      //         if (isRequestMode) {
+      //           // user requesting a shop (status will default to pending in backend)
+      //           await requestShop(payload);
+      //         } else {
+      //           // superadmin creating a shop directly
+      //           await createShop(payload);
+      //         }
+      //       }
       handleCloseDialog();
       fetchColumnsAndData(setRows, baseURL);
     } catch (err) {
@@ -144,8 +201,8 @@ const ShopsListView = () => {
           <Stack spacing={2} mt={1}>
             <TextField
               label="Shop Name"
-              name="name"
-              value={formData.name}
+              name="shopName"
+              value={formData.shopName}
               onChange={handleChange}
               fullWidth
             />
@@ -155,15 +212,47 @@ const ShopsListView = () => {
               value={formData.email}
               onChange={handleChange}
               fullWidth
-               disabled={Boolean(editingRow)}
+              disabled={Boolean(editingRow)}
             />
             <TextField
-              label="Event Count"
-              name="eventCount"
-              value={formData.eventCount}
+              label="Shop URL"
+              name="shopUrl"
+              value={formData.shopUrl}
               onChange={handleChange}
               fullWidth
             />
+            <TextField
+              label="Contact Number"
+              name="shopContactNo"
+              value={formData.shopContactNo}
+              onChange={(e) => {
+                const input = e.target.value;
+                if (/^\d{0,10}$/.test(input)) {
+                  handleChange(e);
+                }
+              }}
+              fullWidth
+              inputProps={{
+                maxLength: 10,
+                inputMode: "numeric",
+                pattern: "\\d{10}"
+              }}
+            />
+            <TextField
+              select
+              label="Orders per month"
+              name="ordersPerMonth"
+              value={formData.ordersPerMonth}
+              onChange={handleChange}
+              fullWidth
+              required
+            >
+              <MenuItem value="0-50">0 - 500</MenuItem>
+              <MenuItem value="51-200">500 - 2000</MenuItem>
+              <MenuItem value="201-1000">2000 - 10000</MenuItem>
+              <MenuItem value="1000+">10000+</MenuItem>
+            </TextField>
+
             <TextField
               label="Status"
               name="status"

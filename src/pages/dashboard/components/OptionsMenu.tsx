@@ -33,7 +33,7 @@ export default function OptionsMenu() {
   const handleLogout = () => {
     console.log("Logging out...");
     logout();
-    navigate("/login"); // redirect to login after logout
+    navigate("/"); 
   };
   return (
     <React.Fragment>
