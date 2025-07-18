@@ -4,7 +4,7 @@ import { Box, Button, Typography, Stack, Paper } from "@mui/material";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import ResetPasswordDialog from "../components/ResetPasswordDialog";
+// import ResetPasswordDialog from "../components/ResetPasswordDialog";
 import AppTextField from "../shared/components/TextField";
 import AppPasswordField from "../shared/components/Password";
 import { loginUser } from "../services/AuthService";
@@ -159,10 +159,10 @@ const Login: React.FC = () => {
           </Box>
         </Stack>
 
-        <ResetPasswordDialog
+        {/* <ResetPasswordDialog
           open={openResetDialog}
           onClose={() => setOpenResetDialog(false)}
-        />
+        /> */}
       </Paper>
     </Box>
   );

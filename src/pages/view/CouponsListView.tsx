@@ -12,19 +12,21 @@ import {
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
-// import { getCoupons, deleteCoupon } from "../../services/CouponService";
-// import { getCouponColumns } from "../coupons/useCouponColumns";
+import { getCoupons, deleteCoupon } from "../../services/CouponService";
+import { getCouponColumns } from "../coupons/useCouponColumns";
+import SyncIcon from "@mui/icons-material/Sync";
+import type { GridColDef } from "@mui/x-data-grid";
 
 export default function CouponsListView() {
   const [rows, setRows] = useState<any[]>([]);
-  const [columns, setColumns] = useState([]);
+  const [columns, setColumns] = useState<GridColDef[]>([]);
   const [open, setOpen] = useState(false);
   const [editingRow, setEditingRow] = useState<any>(null);
 
   const fetchCoupons = async () => {
     try {
-      //   const { coupons } = await getCoupons(); // expects { coupons: [...] }
-      //   setRows(coupons);
+      const { coupons } = await getCoupons(); // expects { coupons: [...] }
+      setRows(coupons);
     } catch (err) {
       alert("Failed to load coupons");
     }
@@ -37,13 +39,13 @@ export default function CouponsListView() {
 
   const handleDelete = async (row: any) => {
     if (confirm("Delete this coupon?")) {
-      //   await deleteCoupon(row.id);
+      await deleteCoupon(row.id);
       fetchCoupons();
     }
   };
 
   useEffect(() => {
-    // setColumns(getCouponColumns(handleEdit, handleDelete));
+    setColumns(getCouponColumns(handleEdit, handleDelete));
     fetchCoupons();
   }, []);
 
@@ -56,18 +58,20 @@ export default function CouponsListView() {
         mb={2}
       >
         <Typography variant="h6">Coupons</Typography>
-        <Button variant="contained" onClick={() => setOpen(true)}>
-          Add Coupon
-        </Button>
-        {/* <Tooltip title="Sync Data">
-  <Button variant="contained" onClick={() => setOpen(true)}>
-    <SyncIcon />
-  </Button>
-</Tooltip> */}
 
-        {/* <Button variant="contained"startIcon={<SyncIcon />} >
-          sync
-        </Button> */}
+        <Box display="flex" gap={2}>
+          <Button variant="contained" onClick={() => setOpen(true)}>
+            Add Coupon
+          </Button>
+
+          <Button
+            variant="contained"
+            startIcon={<SyncIcon />}
+            onClick={() => console.log("Sync clicked")}
+          >
+            Sync
+          </Button>
+        </Box>
       </Box>
       <CustomizedDataGrid rows={rows} columns={columns} />
 

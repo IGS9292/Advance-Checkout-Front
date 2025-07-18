@@ -26,13 +26,17 @@ import {
 } from "../../services/ShopService";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
-// const mapOrdersToRange = (value: number | string) => {
-//   const num = typeof value === "string" ? parseInt(value) : value;
-//   if (num <= 500) return "0-500";
-//   if (num <= 2000) return "500-2000";
-//   if (num <= 10000) return "2000-10000";
-//   return "10000+";
-// };
+
+const mapOrdersToRange = (value: number | string): string => {
+  const num = typeof value === "string" ? parseInt(value) : value;
+
+  if (num >= 0 && num < 500) return "0-500";
+  if (num >= 500 && num < 2000) return "500-2000";
+  if (num >= 2000 && num < 10000) return "2000-10000";
+  if (num >= 10000) return "10000+";
+
+  return "0-500";
+};
 
 const ShopsListView = () => {
   const [rows, setRows] = useState<any[]>([]);
@@ -50,7 +54,7 @@ const ShopsListView = () => {
       shopName: "",
       shopUrl: "",
       shopContactNo: "",
-      ordersPerMonth: "",
+      ordersPerMonth: "0-500",
       email: "",
       status: "approved"
     }
@@ -61,7 +65,8 @@ const ShopsListView = () => {
     setValue("shopName", row.shopName);
     setValue("shopUrl", row.shopUrl);
     setValue("shopContactNo", row.shopContactNo);
-    setValue("ordersPerMonth", row.ordersPerMonth);
+    // setValue("ordersPerMonth", row.ordersPerMonth);
+    setValue("ordersPerMonth", mapOrdersToRange(row.ordersPerMonth));
     const email = row.users;
     setValue("email", email);
     setValue("status", row.status);
@@ -295,7 +300,12 @@ const ShopsListView = () => {
                   name="status"
                   control={control}
                   rules={{ required: "Required" }}
-                  render={({ field }) => <TextField {...field} />}
+                  render={({ field }) => (
+                    <TextField select {...field}>
+                      <MenuItem value="approved">approved</MenuItem>
+                      <MenuItem value="pending">pending</MenuItem>
+                    </TextField>
+                  )}
                 />
               </FormControl>
             </Stack>
