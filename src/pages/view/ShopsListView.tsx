@@ -228,23 +228,7 @@ const ShopsListView = () => {
                     }}
                     InputLabelProps={{ className: "text-white" }}
                   />
-                  {!editingRow && (
-                    <Button
-                      variant="contained"
-                      size="small"
-                      onClick={handleSendVerification}
-                      disabled={!formData.user || isVerified || loading}
-                      className="whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white px-3 font-semibold"
-                    >
-                      {isVerified ? (
-                        "Verified"
-                      ) : loading ? (
-                        <CircularProgress size={20} sx={{ color: "black" }} />
-                      ) : (
-                        "Verify Email"
-                      )}
-                    </Button>
-                  )}
+                
                 </Box>
 
                 {verifySuccess && (
