@@ -61,7 +61,7 @@ export const useDynamicColumns = (
             return {
               ...col,
               headerName: "Sr No.",
-              width: 90,
+              width: 40,
               sortable: false,
               align: "center",
               headerAlign: "center"
@@ -113,12 +113,20 @@ export const useDynamicColumns = (
         filterable: false,
         align: "center",
         headerAlign: "center",
-        width: 180,
+        width: 140,
         renderCell: (params) => {
           const isPending = params.row.status === "pending";
 
           return (
-            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: isPending ? 1 : 0.5,
+                justifyContent: "center"
+                // width: isPending ? 180 : 120
+              }}
+            >
               <Tooltip title="Edit">
                 <Box
                   component="span"
@@ -128,6 +136,7 @@ export const useDynamicColumns = (
                   <EditOutlinedIcon fontSize="small" />
                 </Box>
               </Tooltip>
+
               <Tooltip title="Delete">
                 <Box
                   component="span"
@@ -137,6 +146,7 @@ export const useDynamicColumns = (
                   <DeleteOutlineIcon fontSize="small" />
                 </Box>
               </Tooltip>
+
               {isPending && (
                 <>
                   <Tooltip title="Approve">

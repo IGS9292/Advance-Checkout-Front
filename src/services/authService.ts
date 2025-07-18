@@ -22,9 +22,9 @@ export const loginUser = async ({
 export const signupUser = async ({
   email,
   password,
-  shopName,
-  // user_type
-}: {
+  shopName
+}: // user_type
+{
   email: string;
   password: string;
   shopName: string | null;
@@ -33,7 +33,7 @@ export const signupUser = async ({
   const res = await axios.post(`${baseURL}/auth/signup`, {
     email,
     password,
-    shopName,
+    shopName
     // user_type
   });
   return res.data;
@@ -45,7 +45,7 @@ export const sendVerificationLink = async (email: string) => {
 };
 
 export const requestPasswordReset = async (email: string) => {
-  const res = await axios.post(`${baseURL}/auth/request-reset`, {
+  const res = await axios.post(`${baseURL}/auth/request-reset-password`, {
     email
   });
   return res.data;

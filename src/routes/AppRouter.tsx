@@ -12,7 +12,6 @@ import AboutView from "../pages/view/AboutView.tsx";
 import FeedBackView from "../pages/view/FeedBackView.tsx";
 import Checkout from "../pages/checkout/Checkout.tsx";
 import ShopsListView from "../pages/view/ShopsListView.tsx";
-import ResetPasswordPage from "../components/ResetPasswordPage.tsx";
 import SupportView from "../pages/view/SupportView.tsx";
 import Signup from "../pages/Signup.tsx";
 import EmailVerified from "../components/EmailVerifiedView.tsx";
@@ -20,6 +19,7 @@ import EmailVerified from "../components/EmailVerifiedView.tsx";
 import LandingPage from "../pages/LandingPage/LandingPage.tsx";
 import SignIn from "../pages/Login/SignIn.tsx";
 import CouponsListView from "../pages/view/CouponsListView.tsx";
+import ResetPassword from "../pages/Login/components/ResetPassword.tsx";
 
 const AppRouter = () => {
   const { isAuthenticated, role } = useAuth();
@@ -139,7 +139,7 @@ const AppRouter = () => {
 
         {/* Email Verification and Password Reset */}
         <Route path="/email-verified" element={<EmailVerified />} />
-        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Admin Dashboard (Protected) */}
         <Route

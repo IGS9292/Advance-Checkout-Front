@@ -59,6 +59,15 @@ export default function CouponsListView() {
         <Button variant="contained" onClick={() => setOpen(true)}>
           Add Coupon
         </Button>
+        {/* <Tooltip title="Sync Data">
+  <Button variant="contained" onClick={() => setOpen(true)}>
+    <SyncIcon />
+  </Button>
+</Tooltip> */}
+
+        {/* <Button variant="contained"startIcon={<SyncIcon />} >
+          sync
+        </Button> */}
       </Box>
       <CustomizedDataGrid rows={rows} columns={columns} />
 
