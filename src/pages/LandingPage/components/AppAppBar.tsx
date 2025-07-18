@@ -31,7 +31,28 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   padding: "8px 12px"
 }));
 
-export default function AppAppBar() {
+type AppAppBarProps = {
+  scrollToRefs: Record<string, React.RefObject<HTMLDivElement | null>>;
+};
+const navItems = [
+  { label: "Features", key: "features" },
+  { label: "Testimonials", key: "testimonials" },
+  { label: "Highlights", key: "highlights" },
+  { label: "Pricing", key: "pricing" },
+  { label: "FAQ", key: "faq" },
+  { label: "Add Shop", key: "add-shop" }
+];
+
+export default function AppAppBar({ scrollToRefs }: AppAppBarProps) {
+  const scrollWithOffset = (ref: React.RefObject<HTMLElement | null>) => {
+    if (ref.current) {
+      const offset = 80;
+      const top =
+        ref.current.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  };
+
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -55,42 +76,17 @@ export default function AppAppBar() {
             sx={{ flexGrow: 1, display: "flex", alignItems: "center", px: 0 }}
           >
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <Button variant="text" color="info" size="small">
-                Features
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Testimonials
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Highlights
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Pricing
-              </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                FAQ
-              </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                Blog
-              </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                Add Shop
-              </Button>
+              {navItems.map((item) => (
+                <Button
+                  key={item.key}
+                  variant="text"
+                  color="info"
+                  size="small"
+                  onClick={() => scrollWithOffset(scrollToRefs[item.key])}
+                >
+                  {item.label}
+                </Button>
+              ))}
             </Box>
           </Box>
           <Box
@@ -135,12 +131,18 @@ export default function AppAppBar() {
                   </IconButton>
                 </Box>
 
-                <MenuItem>Features</MenuItem>
-                <MenuItem>Testimonials</MenuItem>
-                <MenuItem>Highlights</MenuItem>
-                <MenuItem>Pricing</MenuItem>
-                <MenuItem>FAQ</MenuItem>
-                <MenuItem>Blog</MenuItem>
+                {navItems.map((item) => (
+                  <MenuItem
+                    key={item.key}
+                    onClick={() => {
+                      scrollWithOffset(scrollToRefs[item.key]);
+                      toggleDrawer(false)();
+                    }}
+                  >
+                    {item.label}
+                  </MenuItem>
+                ))}
+
                 <Divider sx={{ my: 3 }} />
                 <MenuItem>
                   <Button color="primary" variant="contained" fullWidth>

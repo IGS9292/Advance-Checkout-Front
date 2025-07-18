@@ -1,3 +1,4 @@
+import React, { useRef } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import AppTheme from "../../shared/shared-theme/AppTheme";
@@ -12,26 +13,56 @@ import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 import AddShop from "./components/AddShop";
 
+const sectionKeys = [
+  "features",
+  "testimonials",
+  "highlights",
+  "pricing",
+  "faq",
+  "add-shop"
+];
+
 export default function LandingPage(props: { disableCustomTheme?: boolean }) {
+  const sectionRefs = useRef<
+    Record<string, React.RefObject<HTMLDivElement | null>>
+  >({} as Record<string, React.RefObject<HTMLDivElement | null>>);
+
+  sectionKeys.forEach((key) => {
+    if (!sectionRefs.current[key]) {
+      sectionRefs.current[key] = React.createRef<HTMLDivElement>();
+    }
+  });
+
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-
-      <AppAppBar />
+      <AppAppBar scrollToRefs={sectionRefs.current} />
       <Hero />
       <div>
         <LogoCollection />
-        <Features />
+        <div ref={sectionRefs.current["features"]}>
+          <Features />
+        </div>
         <Divider />
-        <Testimonials />
+        <div ref={sectionRefs.current["testimonials"]}>
+          <Testimonials />
+        </div>
         <Divider />
-        <Highlights />
+        <div ref={sectionRefs.current["highlights"]}>
+          <Highlights />
+        </div>
         <Divider />
-        <Pricing />
+        <div ref={sectionRefs.current["pricing"]}>
+          <Pricing />
+        </div>
         <Divider />
-        <FAQ />
+        <div ref={sectionRefs.current["faq"]}>
+          <FAQ />
+        </div>
         <Divider />
-        <AddShop/>
+        <div ref={sectionRefs.current["add-shop"]}>
+          <AddShop />
+        </div>
         <Divider />
         <Footer />
       </div>
