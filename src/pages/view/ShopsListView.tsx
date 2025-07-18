@@ -9,9 +9,12 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  MenuItem
+  MenuItem,
+  FormControl,
+  FormLabel
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
 import Search from "../dashboard/components/Search";
 import { useDynamicColumns } from "../dashboard/internals/data/gridData";
@@ -21,45 +24,47 @@ import {
   updateShop,
   updateShopStatus
 } from "../../services/ShopService";
-// import { useShopContext } from "../../contexts/ShopContext";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
+// const mapOrdersToRange = (value: number | string) => {
+//   const num = typeof value === "string" ? parseInt(value) : value;
+//   if (num <= 500) return "0-500";
+//   if (num <= 2000) return "500-2000";
+//   if (num <= 10000) return "2000-10000";
+//   return "10000+";
+// };
 
 const ShopsListView = () => {
-  // const context = useShopContext();
-
-  // if (!context) return null;
-
-  // const { shops, fetchShops } = useShopContext();
   const [rows, setRows] = useState<any[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [formData, setFormData] = useState({
-    shopName: "",
-    shopUrl: "",
-    shopContactNo: "",
-    ordersPerMonth: "",
-    email: "",
-    status: "pending"
-  });
   const [editingRow, setEditingRow] = useState<any>(null);
-  // useEffect(() => {
-  //   fetchShops(); // make sure this is called ONCE when component loads
-  // }, []);
-  // useEffect(() => {
-  //   console.log("🔄 Shops from context updated:", shops);
-  //   setRows(shops);
-  // }, [shops]);
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+      shopName: "",
+      shopUrl: "",
+      shopContactNo: "",
+      ordersPerMonth: "",
+      email: "",
+      status: "approved"
+    }
+  });
 
   const handleEdit = (row: any) => {
     setEditingRow(row);
-    setFormData({
-      shopName: row.shopName,
-      shopUrl: row.shopUrl,
-      shopContactNo: row.shopContactNo,
-      ordersPerMonth: row.ordersPerMonth,
-      email: row.email,
-      status: String(row.status)
-    });
+    setValue("shopName", row.shopName);
+    setValue("shopUrl", row.shopUrl);
+    setValue("shopContactNo", row.shopContactNo);
+    setValue("ordersPerMonth", row.ordersPerMonth);
+    const email = row.users;
+    setValue("email", email);
+    setValue("status", row.status);
     setOpenDialog(true);
   };
 
@@ -67,15 +72,17 @@ const ShopsListView = () => {
     if (window.confirm("Delete this shop?")) {
       try {
         await deleteShop(row.id);
-        fetchColumnsAndData(setRows, baseURL); // Refresh
+        fetchColumnsAndData(setRows, baseURL);
       } catch (err) {
         console.error("Delete failed:", err);
       }
     }
   };
+
   const handleApprove = async (id: number) => {
     try {
       await updateShopStatus(id, "approved");
+      alert("✅ Request approved and email sent successfully");
       fetchColumnsAndData(setRows, baseURL);
     } catch (err) {
       console.error("Approval failed", err);
@@ -90,6 +97,7 @@ const ShopsListView = () => {
       console.error("Rejection failed", err);
     }
   };
+
   const { columnsMeta: dynamicCols, fetchColumnsAndData } = useDynamicColumns(
     handleEdit,
     handleDelete,
@@ -102,54 +110,60 @@ const ShopsListView = () => {
   }, []);
 
   const columns = dynamicCols;
+  //  const handleOpenDialog = () => setOpenDialog(true);
 
-  const handleOpenDialog = () => setOpenDialog(true);
+  const handleOpenDialog = () => {
+    reset();
+    setEditingRow(null);
+    setOpenDialog(true);
+  };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditingRow(null);
-    setFormData({
-      shopName: "",
-      shopUrl: "",
-      shopContactNo: "",
-      ordersPerMonth: "",
-      email: "",
-      status: "pending"
-    });
+    reset();
   };
 
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSave = async () => {
+  const onSubmit = async (data: any) => {
+    console.log("🟢 onSubmit triggered", data);
     const payload = {
-      shopName: formData.shopName,
-      shopUrl: formData.shopUrl,
-      shopContactNo: formData.shopContactNo,
-      ordersPerMonth: parseInt(formData.ordersPerMonth),
-      email: formData.email,
-      status: formData.status as "pending" | "approved" | "rejected"
+      shopName: data.shopName,
+      shopUrl: data.shopUrl,
+      shopContactNo: data.shopContactNo,
+      ordersPerMonth: parseInt(data.ordersPerMonth, 10),
+      status: data.status as "pending" | "approved" | "rejected"
     };
+
+    //   export const updateShop = async (
+    // shopId: string | number,
+    // data: {
+    //   shopName: string;
+    //   shopUrl: string;
+    //   shopContactNo: string;
+    //   ordersPerMonth: number;
+    //   status: string;
+    // }
+    //   // const payload = {
+    //   shopName: data.shopName,
+    //   shopUrl: data.shopUrl,
+    //   shopContactNo: data.shopContactNo,
+    //   ordersPerMonth: parseInt(data.ordersPerMonth),
+    //   email: data.email,
+    //   status: data.status as "pending" | "approved" | "rejected"
+    // };
     try {
       if (editingRow) {
-        await updateShop(editingRow.id, payload);
-      } else {
-        await createShop(payload);
-      }
+        // console.log("edit FORM SUBMITTED", data);
 
-      //         const isRequestMode = role === "1"; // true if normal admin (not superadmin)
-      //     if (editingRow) {
-      //         await updateShop(editingRow.id, payload); // editing existing shop
-      //       } else {
-      //         if (isRequestMode) {
-      //           // user requesting a shop (status will default to pending in backend)
-      //           await requestShop(payload);
-      //         } else {
-      //           // superadmin creating a shop directly
-      //           await createShop(payload);
-      //         }
-      //       }
+        await updateShop(editingRow.id, payload);
+        alert("✅ shop details updated ");
+        // console.log("Updated shop with:", payload);
+      } else {
+        // await createShop(payload);
+
+        await createShop({ ...payload, email: data.email });
+        alert("✅ shop added and email sent successfully");
+      }
       handleCloseDialog();
       fetchColumnsAndData(setRows, baseURL);
     } catch (err) {
@@ -159,6 +173,8 @@ const ShopsListView = () => {
 
   return (
     <>
+      {errors.shopName && <span>{errors.shopName.message}</span>}
+
       <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
         <Box
           sx={{
@@ -198,76 +214,100 @@ const ShopsListView = () => {
       >
         <DialogTitle>{editingRow ? "Edit Shop" : "Add New Shop"}</DialogTitle>
         <DialogContent>
-          <Stack spacing={2} mt={1}>
-            <TextField
-              label="Shop Name"
-              name="shopName"
-              value={formData.shopName}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="User Email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              fullWidth
-              disabled={Boolean(editingRow)}
-            />
-            <TextField
-              label="Shop URL"
-              name="shopUrl"
-              value={formData.shopUrl}
-              onChange={handleChange}
-              fullWidth
-            />
-            <TextField
-              label="Contact Number"
-              name="shopContactNo"
-              value={formData.shopContactNo}
-              onChange={(e) => {
-                const input = e.target.value;
-                if (/^\d{0,10}$/.test(input)) {
-                  handleChange(e);
-                }
-              }}
-              fullWidth
-              inputProps={{
-                maxLength: 10,
-                inputMode: "numeric",
-                pattern: "\\d{10}"
-              }}
-            />
-            <TextField
-              select
-              label="Orders per month"
-              name="ordersPerMonth"
-              value={formData.ordersPerMonth}
-              onChange={handleChange}
-              fullWidth
-              required
-            >
-              <MenuItem value="0-50">0 - 500</MenuItem>
-              <MenuItem value="51-200">500 - 2000</MenuItem>
-              <MenuItem value="201-1000">2000 - 10000</MenuItem>
-              <MenuItem value="1000+">10000+</MenuItem>
-            </TextField>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={2} mt={1}>
+              <FormControl fullWidth required>
+                <FormLabel>Shop Name</FormLabel>
+                <Controller
+                  name="shopName"
+                  control={control}
+                  rules={{ required: "Required" }}
+                  render={({ field }) => <TextField {...field} />}
+                />
+              </FormControl>
 
-            <TextField
-              label="Status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              fullWidth
-            />
-          </Stack>
+              <FormControl fullWidth required>
+                <FormLabel>User Email</FormLabel>
+                <Controller
+                  name="email"
+                  control={control}
+                  rules={{
+                    required: "Required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Invalid email"
+                    }
+                  }}
+                  render={({ field }) => (
+                    <TextField {...field} disabled={Boolean(editingRow)} />
+                  )}
+                />
+              </FormControl>
+
+              <FormControl fullWidth>
+                <FormLabel>Shop URL</FormLabel>
+                <Controller
+                  name="shopUrl"
+                  control={control}
+                  render={({ field }) => <TextField {...field} />}
+                />
+              </FormControl>
+
+              <FormControl fullWidth required>
+                <FormLabel>Contact Number</FormLabel>
+                <Controller
+                  name="shopContactNo"
+                  control={control}
+                  rules={{ required: "Required" }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      inputProps={{
+                        maxLength: 10,
+                        inputMode: "numeric",
+                        pattern: "\\d{10}"
+                      }}
+                    />
+                  )}
+                />
+              </FormControl>
+
+              <FormControl fullWidth required>
+                <FormLabel>Orders per month</FormLabel>
+                <Controller
+                  name="ordersPerMonth"
+                  control={control}
+                  rules={{ required: "Required" }}
+                  render={({ field }) => (
+                    <TextField select {...field}>
+                      <MenuItem value="0-500">0 - 500</MenuItem>
+                      <MenuItem value="500-2000">500 - 2000</MenuItem>
+                      <MenuItem value="2000-10000">2000 - 10000</MenuItem>
+                      <MenuItem value="10000+">10000+</MenuItem>
+                    </TextField>
+                  )}
+                />
+              </FormControl>
+
+              <FormControl fullWidth required>
+                <FormLabel>Status</FormLabel>
+                <Controller
+                  name="status"
+                  control={control}
+                  rules={{ required: "Required" }}
+                  render={({ field }) => <TextField {...field} />}
+                />
+              </FormControl>
+            </Stack>
+
+            <DialogActions sx={{ mt: 2 }}>
+              <Button onClick={handleCloseDialog}>Cancel</Button>
+              <Button variant="contained" type="submit">
+                {editingRow ? "Update" : "Save"}
+              </Button>
+            </DialogActions>
+          </form>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave}>
-            {editingRow ? "Update" : "Save"}
-          </Button>
-        </DialogActions>
       </Dialog>
     </>
   );

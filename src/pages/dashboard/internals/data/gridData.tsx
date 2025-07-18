@@ -7,14 +7,6 @@ import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import type { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { getAllShops } from "../../../../services/ShopService";
 
-// const statusMap: Record<
-//   number,
-//   { label: string; color: "success" | "warning" | "default" }
-// > = {
-//   0: { label: "Pending", color: "warning" },
-//   1: { label: "Approved", color: "success" }
-// };
-
 export const useDynamicColumns = (
   handleEdit: (row: any) => void,
   handleDelete: (row: any) => void,
@@ -29,12 +21,19 @@ export const useDynamicColumns = (
   ) => {
     try {
       const data = await getAllShops();
-      const rawShops = Array.isArray(data.shops) ? data.shops : [];
+      let rawShops = Array.isArray(data.shops) ? data.shops : [];
+
+      // 👉 Inject srNo into each row
+      rawShops = rawShops.map((shop: any, index: any) => ({
+        ...shop,
+        srNo: index + 1
+      }));
 
       const sampleRow = rawShops[0] || {};
       // console.log("Shops Data:", rawShops);
 
       const orderedFields = [
+        "srNo",
         "shopName",
         "users",
         "shopUrl",
@@ -58,7 +57,16 @@ export const useDynamicColumns = (
         .map((field) => {
           const col = inferredColumns.find((c: any) => c.field === field);
           if (!col) return null;
-
+          if (field === "srNo") {
+            return {
+              ...col,
+              headerName: "Sr No.",
+              width: 90,
+              sortable: false,
+              align: "center",
+              headerAlign: "center"
+            };
+          }
           if (field === "status") {
             return {
               ...col,
@@ -90,14 +98,14 @@ export const useDynamicColumns = (
             ...col,
             headerName: field === "users" ? "User" : col.headerName,
             ...(col.type === "number" && {
-              align: "right",
-              headerAlign: "right"
+              align: "center",
+              headerAlign: "center"
             })
           };
         })
         .filter(Boolean) as GridColDef[];
 
-      // 👇 Action column
+      //  Action column
       mappedColumns.push({
         field: "actions",
         headerName: "Actions",

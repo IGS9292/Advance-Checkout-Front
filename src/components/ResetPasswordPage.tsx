@@ -10,7 +10,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import { PasswordStrengthMeter } from "../shared/components/PasswordStrengthMeter"; // Optional
 import zxcvbn from "zxcvbn";
-import { resetPassword } from "../services/authService";
+import { resetPassword } from "../services/AuthService";
 
 const ResetPasswordPage: React.FC = () => {
   const { token } = useParams();

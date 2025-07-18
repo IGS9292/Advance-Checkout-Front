@@ -3,7 +3,7 @@ import { Box, Button, Typography, Stack, Alert } from "@mui/material";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import AppTextField from "../shared/components/TextField";
 import AppPasswordField from "../shared/components/Password";
-import { sendVerificationLink, signupUser } from "../services/authService";
+import { sendVerificationLink, signupUser } from "../services/AuthService";
 
 // const baseURL = import.meta.env.VITE_API_BASE as string;
 

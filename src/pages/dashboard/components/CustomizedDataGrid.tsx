@@ -16,7 +16,7 @@ export default function CustomizedDataGrid({ rows, columns }: Props) {
     <>
       {/* <Search /> */}
       <DataGrid
-        checkboxSelection
+        // checkboxSelection
         rows={rows}
         columns={columns}
         getRowClassName={(params) =>

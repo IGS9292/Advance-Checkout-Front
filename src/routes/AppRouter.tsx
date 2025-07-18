@@ -19,6 +19,7 @@ import EmailVerified from "../components/EmailVerifiedView.tsx";
 // import AddShop from "../pages/LandingPage/components/AddShop.tsx";
 import LandingPage from "../pages/LandingPage/LandingPage.tsx";
 import SignIn from "../pages/Login/SignIn.tsx";
+import CouponsListView from "../pages/view/CouponsListView.tsx";
 
 const AppRouter = () => {
   const { isAuthenticated, role } = useAuth();
@@ -155,6 +156,7 @@ const AppRouter = () => {
           <Route path="clients" element={<ClientsView />} />
           <Route path="tasks" element={<TasksView />} />
           <Route path="checkout" element={<Checkout />} />
+          <Route path="coupons" element={<CouponsListView />} />
           <Route path="support" element={<SupportView />} />
           <Route path="settings" element={<SettingsView />} />
           <Route path="about" element={<AboutView />} />

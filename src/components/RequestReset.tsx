@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { requestPasswordReset } from "../services/authService";
+import { requestPasswordReset } from "../services/AuthService";
 
 const RequestReset: React.FC = () => {
   const baseURL = import.meta.env.VITE_API_BASE as string;

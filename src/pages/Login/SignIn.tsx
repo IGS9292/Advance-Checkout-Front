@@ -17,7 +17,7 @@ import AppTheme from "../../shared/shared-theme/AppTheme";
 import ColorModeSelect from "../../shared/shared-theme/ColorModeSelect";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { loginUser } from "../../services/authService";
+import { loginUser } from "../../services/AuthService";
 import ReCAPTCHA from "react-google-recaptcha";
 
 const Card = styled(MuiCard)(({ theme }) => ({
