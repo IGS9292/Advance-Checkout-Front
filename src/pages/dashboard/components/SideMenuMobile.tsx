@@ -28,7 +28,7 @@ export default function SideMenuMobile({
   const handleLogout = () => {
       console.log("Logging out...");
     logout();
-    navigate("/login"); // redirect to login after logout
+    navigate("/"); 
   };
   return (
     <Drawer

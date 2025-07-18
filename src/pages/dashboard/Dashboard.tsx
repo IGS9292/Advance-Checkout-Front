@@ -1,4 +1,3 @@
-import * as React from "react";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid/themeAugmentation";
@@ -9,9 +8,8 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import AppNavbar from "./components/AppNavbar";
 import Header from "./components/Header";
-import MainGrid from "./components/MainGrid";
 import SideMenu from "./components/SideMenu";
-import AppTheme from "../shared-theme/AppTheme";
+import AppTheme from "../../shared/shared-theme/AppTheme";
 import {
   chartsCustomizations,
   dataGridCustomizations,
@@ -19,7 +17,6 @@ import {
   treeViewCustomizations
 } from "./theme/customizations";
 import { Outlet } from "react-router-dom";
-import Checkout from "../checkout/Checkout";
 
 const xThemeComponents = {
   ...chartsCustomizations,

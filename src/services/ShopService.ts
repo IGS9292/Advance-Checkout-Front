@@ -14,18 +14,44 @@ export const deleteShop = async (shopId: string | number) => {
 
 export const updateShop = async (
   shopId: string | number,
-  data: { name: string; status: string; eventCount: number }
+  data: {
+    shopName: string;
+    shopUrl: string;
+    shopContactNo: string;
+    ordersPerMonth: number;
+    status: string;
+  }
 ) => {
   const res = await axios.put(`${baseURL}/v1/shops/${shopId}`, data);
   return res.data;
 };
+export const requestShop = async (data: {
+  shopName: string;
+  shopUrl: string;
+  shopContactNo: string;
+  ordersPerMonth: number;
+  email: string;
+}) => {
+  const res = await axios.post(`${baseURL}/v1/shops/request`, data);
+  return res.data;
+};
 
 export const createShop = async (data: {
-  name: string;
-  status: string;
-  eventCount: number;
-   email: string;
+  shopName: string;
+  shopUrl: string;
+  shopContactNo: string;
+  ordersPerMonth: number;
+  email: string;
+  status?: "pending" | "approved" | "rejected";
 }) => {
   const res = await axios.post(`${baseURL}/v1/shops`, data);
+  // alert("shop alreadyeists",res.data)
+  return res.data;
+};
+export const updateShopStatus = async (
+  id: number,
+  status: "approved" | "rejected"
+) => {
+  const res = await axios.patch(`${baseURL}/v1/${id}/status`, { status });
   return res.data;
 };
