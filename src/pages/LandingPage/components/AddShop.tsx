@@ -166,7 +166,7 @@ const AddShop: React.FC = () => {
           <Grid size={{ xs: 12, md: 6 }}>
             <form onSubmit={handleSubmit}>
               <Stack spacing={2}>
-                <AppTextField
+                <TextField
                   label="Full Name (Shop Name)"
                   name="shopName"
                   value={formData.shopName}
