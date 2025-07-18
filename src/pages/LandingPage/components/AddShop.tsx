@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Grid,
@@ -7,12 +7,13 @@ import {
   MenuItem,
   Stack,
   Container,
-  TextField
+  TextField,
+  FormLabel,
+  FormControl
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import AppTextField from "../../../shared/components/TextField";
+import { useForm, Controller } from "react-hook-form";
 import { requestShop } from "../../../services/ShopService";
-// import { useShopContext } from "../../../contexts/ShopContext";
 
 const StyledBox = styled("div")(({ theme }) => ({
   alignSelf: "center",
@@ -43,53 +44,38 @@ const StyledBox = styled("div")(({ theme }) => ({
 }));
 
 const AddShop: React.FC = () => {
-  // const context = useShopContext();
-  // if (!context) return null;
-
-  // const { fetchShops } = context;
-
-  const [formData, setFormData] = useState({
-    shopName: "",
-    shopUrl: "",
-    email: "",
-    shopContactNo: "",
-    ordersPerMonth: "",
-    status: "pending"
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+      shopName: "",
+      shopUrl: "",
+      email: "",
+      shopContactNo: "",
+      ordersPerMonth: "",
+      status: "pending"
+    }
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: any) => {
     const payload = {
-      shopName: formData.shopName,
-      shopUrl: formData.shopUrl,
-      shopContactNo: formData.shopContactNo,
-      ordersPerMonth: parseInt(formData.ordersPerMonth, 10),
-      email: formData.email,
-      status: formData.status as "pending" | "approved" | "rejected"
+      shopName: data.shopName,
+      shopUrl: data.shopUrl,
+      shopContactNo: data.shopContactNo,
+      ordersPerMonth: parseInt(data.ordersPerMonth, 10),
+      email: data.email,
+      status: data.status as "pending" | "approved" | "rejected"
     };
 
     try {
       await requestShop(payload);
-      // await fetchShops();
       alert("✅ Request submitted. Await approval.");
-      setFormData({
-        shopName: "",
-        shopUrl: "",
-        email: "",
-        shopContactNo: "",
-        ordersPerMonth: "",
-        status: "pending"
-      });
+      reset();
     } catch (err) {
-      console.error("❌ Error:", err);
+      console.error("❌ Error submitting shop request:", err);
     }
   };
 
@@ -149,6 +135,7 @@ const AddShop: React.FC = () => {
           }}
         >
           {/* Video Section */}
+
           <Grid size={{ xs: 12, md: 6 }}>
             <Typography variant="subtitle1" gutterBottom>
               Here’s what happens when you book a demo, Checkout the demo...
@@ -164,54 +151,104 @@ const AddShop: React.FC = () => {
 
           {/* Form Section */}
           <Grid size={{ xs: 12, md: 6 }}>
-            <form onSubmit={handleSubmit}>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
-                <TextField
-                  label="Full Name (Shop Name)"
-                  name="shopName"
-                  value={formData.shopName}
-                  onChange={handleChange}
-                  fullWidth
-                  required
-                />
-                <TextField
-                  label="Shop URL"
-                  name="shopUrl"
-                  value={formData.shopUrl}
-                  onChange={handleChange}
-                  fullWidth
-                />
-                <TextField
-                  label="User Email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  fullWidth
-                  required
-                />
-                <TextField
-                  label="Contact Number"
-                  name="shopContactNo"
-                  value={formData.shopContactNo}
-                  onChange={handleChange}
-                  fullWidth
-                  required
-                />
-                <TextField
-                  select
-                  label="Orders per month"
-                  name="ordersPerMonth"
-                  value={formData.ordersPerMonth}
-                  onChange={handleChange}
-                  fullWidth
-                  required
-                >
-                  <MenuItem value="0-500">0 - 500</MenuItem>
-                  <MenuItem value="500-2000">500 - 2000</MenuItem>
-                  <MenuItem value="2000-10000">2000 - 10000</MenuItem>
-                  <MenuItem value="10000+">10000+</MenuItem>
-                </TextField>
+                <FormControl fullWidth required>
+                  <FormLabel htmlFor="shopName">
+                    Full Name (Shop Name)
+                  </FormLabel>
+                  <Controller
+                    name="shopName"
+                    control={control}
+                    rules={{ required: "Shop name is required" }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        id="shopName"
+                        error={!!errors.shopName}
+                        helperText={errors.shopName?.message}
+                      />
+                    )}
+                  />
+                </FormControl>
+
+                <FormControl fullWidth>
+                  <FormLabel htmlFor="shopUrl">Shop URL</FormLabel>
+                  <Controller
+                    name="shopUrl"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField {...field} id="shopUrl" />
+                    )}
+                  />
+                </FormControl>
+
+                <FormControl fullWidth required>
+                  <FormLabel htmlFor="email">User Email</FormLabel>
+                  <Controller
+                    name="email"
+                    control={control}
+                    rules={{
+                      required: "Email is required",
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: "Enter a valid email"
+                      }
+                    }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        id="email"
+                        type="email"
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
+                      />
+                    )}
+                  />
+                </FormControl>
+
+                <FormControl fullWidth required>
+                  <FormLabel htmlFor="shopContactNo">Contact Number</FormLabel>
+                  <Controller
+                    name="shopContactNo"
+                    control={control}
+                    rules={{ required: "Contact number is required" }}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        id="shopContactNo"
+                        error={!!errors.shopContactNo}
+                        helperText={errors.shopContactNo?.message}
+                      />
+                    )}
+                  />
+                </FormControl>
+
+                <FormControl fullWidth required>
+                  <FormLabel htmlFor="ordersPerMonth">
+                    Orders per month
+                  </FormLabel>
+                  <Controller
+                    name="ordersPerMonth"
+                    control={control}
+                    rules={{ required: "Please select an option" }}
+                    render={({ field }) => (
+                      <TextField
+                        select
+                        {...field}
+                        id="ordersPerMonth"
+                        error={!!errors.ordersPerMonth}
+                        helperText={errors.ordersPerMonth?.message}
+                      >
+                        <MenuItem value="0-500">0 - 500</MenuItem>
+                        <MenuItem value="500-2000">500 - 2000</MenuItem>
+                        <MenuItem value="2000-10000">2000 - 10000</MenuItem>
+                        <MenuItem value="10000+">10000+</MenuItem>
+                      </TextField>
+                    )}
+                  />
+                </FormControl>
+
                 <Button
                   type="submit"
                   variant="contained"
@@ -222,7 +259,7 @@ const AddShop: React.FC = () => {
                   Request to Add Shop
                 </Button>
               </Stack>
-            </form>
+            </Box>
           </Grid>
         </Grid>
       </Container>

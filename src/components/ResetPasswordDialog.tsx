@@ -8,7 +8,7 @@ import {
   Button,
   Typography
 } from "@mui/material";
-import { requestPasswordReset } from "../services/authService";
+import { requestPasswordReset } from "../services/AuthService";
 
 interface Props {
   open: boolean;

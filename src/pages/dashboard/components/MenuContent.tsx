@@ -20,9 +20,9 @@ const mainListItems = [
   { text: "Analytics", icon: <AnalyticsRoundedIcon />, path: "/analytics" },
   { text: "Clients", icon: <PeopleRoundedIcon />, path: "/clients" },
   { text: "Tasks", icon: <AssignmentRoundedIcon />, path: "/tasks" },
+  { text: "Coupons", icon: <AssignmentRoundedIcon />, path: "/coupons" },
   { text: "Checkout", icon: <AssignmentRoundedIcon />, path: "/checkout" },
   { text: "Shops", icon: <AssignmentRoundedIcon />, path: "/shops" },
-
   { text: "Support", icon: <AssignmentRoundedIcon />, path: "/support" }
 ];
 
@@ -40,6 +40,7 @@ export default function MenuContent() {
   const filteredMainItems = mainListItems.filter((item) => {
     if (item.text === "Shops" && role !== "0") return false;
     if (item.text === "Checkout" && role !== "1") return false;
+    if (item.text === "Coupons" && role !== "1") return false;
     return true;
   });
 

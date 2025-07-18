@@ -7,7 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import ResetPasswordDialog from "../components/ResetPasswordDialog";
 import AppTextField from "../shared/components/TextField";
 import AppPasswordField from "../shared/components/Password";
-import { loginUser } from "../services/authService";
+import { loginUser } from "../services/AuthService";
 
 interface LoginForm {
   email: string;
