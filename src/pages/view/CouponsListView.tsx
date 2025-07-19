@@ -8,7 +8,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
+  Grid
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
@@ -16,6 +17,7 @@ import { getCoupons, deleteCoupon } from "../../services/CouponService";
 import { getCouponColumns } from "../coupons/useCouponColumns";
 import SyncIcon from "@mui/icons-material/Sync";
 import type { GridColDef } from "@mui/x-data-grid";
+import Search from "../../shared/components/Search";
 
 export default function CouponsListView() {
   const [rows, setRows] = useState<any[]>([]);
@@ -50,16 +52,21 @@ export default function CouponsListView() {
   }, []);
 
   return (
-    <Box p={2}>
+    <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2
+        }}
       >
-        <Typography variant="h6">Coupons</Typography>
+        <Typography component="h2" variant="h6">
+          Coupons
+        </Typography>
 
-        <Box display="flex" gap={2}>
+        <Stack direction="row" spacing={2}>
+          <Search />
           <Button variant="contained" onClick={() => setOpen(true)}>
             Add Coupon
           </Button>
@@ -71,9 +78,13 @@ export default function CouponsListView() {
           >
             Sync
           </Button>
-        </Box>
+        </Stack>
       </Box>
-      <CustomizedDataGrid rows={rows} columns={columns} />
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, lg: 12 }}>
+          <CustomizedDataGrid rows={rows} columns={columns} />
+        </Grid>
+      </Grid>
 
       <Dialog
         open={open}

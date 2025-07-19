@@ -1,5 +1,4 @@
 import { DataGrid, type GridColDef, type GridRowsProp } from "@mui/x-data-grid";
-// import { getColu } from "../internals/data/gridData";
 
 type Props = {
   rows: GridRowsProp;
@@ -7,14 +6,8 @@ type Props = {
 };
 
 export default function CustomizedDataGrid({ rows, columns }: Props) {
-  // const columns = React.useMemo(
-  //   () => getColumns(onEdit, onDelete),
-  //   [onEdit, onDelete]
-  // );
-
   return (
     <>
-      {/* <Search /> */}
       <DataGrid
         // checkboxSelection
         rows={rows}

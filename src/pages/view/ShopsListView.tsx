@@ -16,7 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
-import Search from "../dashboard/components/Search";
+import Search from "../../shared/components/Search";
 import { useDynamicColumns } from "../dashboard/internals/data/gridData";
 import {
   createShop,
@@ -42,6 +42,8 @@ const ShopsListView = () => {
   const [rows, setRows] = useState<any[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingRow, setEditingRow] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredRows, setFilteredRows] = useState<any[]>([]);
 
   const {
     control,
@@ -77,7 +79,7 @@ const ShopsListView = () => {
     if (window.confirm("Delete this shop?")) {
       try {
         await deleteShop(row.id);
-        fetchColumnsAndData(setRows, baseURL);
+        await fetchColumnsAndData(setRows, setFilteredRows, baseURL);
       } catch (err) {
         console.error("Delete failed:", err);
       }
@@ -88,7 +90,7 @@ const ShopsListView = () => {
     try {
       await updateShopStatus(id, "approved");
       alert("✅ Request approved and email sent successfully");
-      fetchColumnsAndData(setRows, baseURL);
+      await fetchColumnsAndData(setRows, setFilteredRows, baseURL);
     } catch (err) {
       console.error("Approval failed", err);
     }
@@ -97,7 +99,7 @@ const ShopsListView = () => {
   const handleReject = async (id: number) => {
     try {
       await updateShopStatus(id, "rejected");
-      fetchColumnsAndData(setRows, baseURL);
+      await fetchColumnsAndData(setRows, setFilteredRows, baseURL);
     } catch (err) {
       console.error("Rejection failed", err);
     }
@@ -111,8 +113,26 @@ const ShopsListView = () => {
   );
 
   useEffect(() => {
-    fetchColumnsAndData(setRows, baseURL);
+    fetchColumnsAndData(setRows, setFilteredRows, baseURL);
   }, []);
+
+  // Filter rows based on searchTerm
+  useEffect(() => {
+    const filtered = filteredRows.filter((row) => {
+      const shopNameMatch = row.shopName
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const userMatch = row.users
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const contactNoMatch = row.shopContactNo?.includes(searchTerm);
+      const statusMatch = row.status
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      return shopNameMatch || userMatch || contactNoMatch || statusMatch;
+    });
+    setRows(filtered);
+  }, [searchTerm, filteredRows]);
 
   const columns = dynamicCols;
   //  const handleOpenDialog = () => setOpenDialog(true);
@@ -170,7 +190,7 @@ const ShopsListView = () => {
         alert("✅ shop added and email sent successfully");
       }
       handleCloseDialog();
-      fetchColumnsAndData(setRows, baseURL);
+      await fetchColumnsAndData(setRows, setFilteredRows, baseURL);
     } catch (err) {
       console.error("Save failed:", err);
     }
@@ -193,7 +213,7 @@ const ShopsListView = () => {
             Shops
           </Typography>
           <Stack direction="row" spacing={2}>
-            <Search />
+            <Search onSearch={(value) => setSearchTerm(value)} />
             <Button
               variant="contained"
               color="primary"
@@ -204,8 +224,8 @@ const ShopsListView = () => {
           </Stack>
         </Box>
 
-        <Grid container spacing={2} columns={12}>
-          <Grid size={{ xs: 12, lg: 9 }}>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, lg: 12 }}>
             <CustomizedDataGrid rows={rows} columns={columns} />
           </Grid>
         </Grid>

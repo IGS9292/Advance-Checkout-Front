@@ -17,6 +17,7 @@ export const useDynamicColumns = (
 
   const fetchColumnsAndData = async (
     setRows: React.Dispatch<any[]>,
+    setFilteredRows: React.Dispatch<any[]>,
     baseURL: string
   ) => {
     try {
@@ -174,6 +175,7 @@ export const useDynamicColumns = (
         }
       });
 
+      setFilteredRows(rawShops);
       setRows(rawShops);
       setColumnsMeta(mappedColumns);
     } catch (err) {

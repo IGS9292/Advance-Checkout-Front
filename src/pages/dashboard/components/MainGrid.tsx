@@ -5,7 +5,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Copyright from "../internals/components/Copyright";
 import ChartUserByCountry from "./ChartUserByCountry";
-import CustomizedTreeView from "./CustomizedTreeView";
+import CustomizedTreeView from "../../../shared/components/CustomizedTreeView";
 import CustomizedDataGrid from "./CustomizedDataGrid";
 import HighlightedCard from "./HighlightedCard";
 import PageViewsBarChart from "./PageViewsBarChart";
@@ -88,16 +88,10 @@ export default function MainGrid() {
           <PageViewsBarChart />
         </Grid>
       </Grid>
-      {/* <Typography component="h2" variant="h6" sx={{ mb: 2 }}>
-        Details
-      </Typography> */}
+
       <Grid container spacing={2} columns={12}>
-        {/* <Grid size={{ xs: 12, lg: 9 }}>
-          <CustomizedDataGrid />
-        </Grid> */}
         <Grid size={{ xs: 12, lg: 3 }}>
           <Stack gap={2} direction={{ xs: "column", sm: "row", lg: "column" }}>
-            <CustomizedTreeView />
             <ChartUserByCountry />
           </Stack>
         </Grid>
