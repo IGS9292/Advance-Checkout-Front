@@ -12,6 +12,7 @@ import MenuContent from "./MenuContent";
 import CardAlert from "./CardAlert";
 import { useAuth } from "../../../contexts/AuthContext"; // adjust path as needed
 import { useNavigate } from "react-router-dom";
+import { Tooltip } from "@mui/material";
 
 interface SideMenuMobileProps {
   open: boolean | undefined;
@@ -22,13 +23,13 @@ export default function SideMenuMobile({
   open,
   toggleDrawer
 }: SideMenuMobileProps) {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-      console.log("Logging out...");
+    console.log("Logging out...");
     logout();
-    navigate("/"); 
+    navigate("/");
   };
   return (
     <Drawer
@@ -49,20 +50,39 @@ export default function SideMenuMobile({
           height: "100%"
         }}
       >
-        <Stack direction="row" sx={{ p: 2, pb: 0, gap: 1 }}>
+        <Stack direction="row" sx={{ p: 1, pb: 0, gap: 1 }}>
           <Stack
             direction="row"
             sx={{ gap: 1, alignItems: "center", flexGrow: 1, p: 1 }}
           >
             <Avatar
               sizes="small"
-              alt="Riley Carter"
+              alt="Profile Image"
               src="/static/images/avatar/7.jpg"
               sx={{ width: 24, height: 24 }}
-            />
-            <Typography component="p" variant="h6">
-              Riley Carter
-            </Typography>
+            >
+              {" "}
+              {!user?.shopName ? "" : user?.shopName[0].toUpperCase()}
+            </Avatar>
+
+            <Stack direction="column" sx={{ alignItems: "left" }}>
+              <Typography component="p" variant="h6">
+                {user?.shopName || "No shop"}
+              </Typography>
+              <Tooltip title={user?.email || "user@example.com"}>
+                <Typography
+                  variant="caption"
+                  noWrap
+                  sx={{
+                    color: "text.secondary",
+                    maxWidth: 140,
+                    display: "block"
+                  }}
+                >
+                  {user?.email || "user@example.com"}
+                </Typography>
+              </Tooltip>
+            </Stack>
           </Stack>
           <MenuButton showBadge>
             <NotificationsRoundedIcon />

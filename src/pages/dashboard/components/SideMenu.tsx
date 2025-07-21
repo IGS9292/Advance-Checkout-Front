@@ -10,8 +10,9 @@ import CardAlert from "./CardAlert";
 import OptionsMenu from "./OptionsMenu";
 import advanceCheckoutLogo from "../../../assets/advanceCheckoutLogo.png";
 import { useAuth } from "../../../contexts/AuthContext";
+import { Tooltip } from "@mui/material";
 
-const drawerWidth = 240;
+const drawerWidth = 260;
 
 const Drawer = styled(MuiDrawer)({
   width: drawerWidth,
@@ -53,15 +54,7 @@ export default function SideMenu() {
           style={{ height: "100%", width: "100%" }}
         />
       </Box>
-      {/* <Box
-        sx={{
-          display: 'flex',
-          mt: 'calc(var(--template-frame-height, 0px) + 4px)',
-          p: 1.5,
-        }}
-      > */}
-      {/* <SelectContent /> */}
-      {/* </Box> */}
+
       <Divider />
       <Box
         sx={{
@@ -89,8 +82,9 @@ export default function SideMenu() {
           alt="Riley Carter"
           src="/static/images/avatar/7.jpg"
           sx={{ width: 36, height: 36 }}
-        />
-
+        >
+          {!user?.shopName ? "" : user?.shopName[0].toUpperCase()}
+        </Avatar>
         <Box sx={{ mr: "auto" }}>
           <Typography
             variant="body2"
@@ -98,22 +92,21 @@ export default function SideMenu() {
           >
             {user?.shopName || "No shop"}
           </Typography>
-          <Typography variant="caption" sx={{ color: "text.secondary" }}>
-            {user?.email || "user@example.com"}
-          </Typography>
+          <Tooltip title={user?.email || "user@example.com"}>
+            <Typography
+              variant="caption"
+              noWrap
+              sx={{
+                color: "text.secondary",
+                maxWidth: 140,
+                display: "block"
+              }}
+            >
+              {user?.email || "user@example.com"}
+            </Typography>
+          </Tooltip>
         </Box>
 
-        {/* <Box sx={{ mr: "auto" }}>
-          <Typography
-            variant="body2"
-            sx={{ fontWeight: 500, lineHeight: "16px" }}
-          >
-            Riley Carter
-          </Typography>
-          <Typography variant="caption" sx={{ color: "text.secondary" }}>
-            riley@email.com
-          </Typography>
-        </Box> */}
         <OptionsMenu />
       </Stack>
     </Drawer>
