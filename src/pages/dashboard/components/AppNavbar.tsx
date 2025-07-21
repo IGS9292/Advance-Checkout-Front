@@ -5,12 +5,13 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import MuiToolbar from "@mui/material/Toolbar";
 import { tabsClasses } from "@mui/material/Tabs";
-import Typography from "@mui/material/Typography";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
+// import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import SideMenuMobile from "./SideMenuMobile";
 import MenuButton from "./MenuButton";
 import ColorModeIconDropdown from "../../../shared/shared-theme/ColorModeIconDropdown";
+import advanceCheckoutLogo from "../../../assets/advanceCheckoutLogo.png";
+// import { IconButton } from "@mui/material";
 
 const Toolbar = styled(MuiToolbar)({
   width: "100%",
@@ -39,7 +40,7 @@ export default function AppNavbar() {
     <AppBar
       position="fixed"
       sx={{
-        display: { xs: "auto", md: "none" },
+        display: { xs: "flex", md: "none" },
         boxShadow: 0,
         bgcolor: "background.paper",
         backgroundImage: "none",
@@ -51,59 +52,56 @@ export default function AppNavbar() {
       <Toolbar variant="regular">
         <Stack
           direction="row"
-          sx={{
-            alignItems: "center",
-            flexGrow: 1,
-            width: "100%",
-            gap: 1
-          }}
+          alignItems="center"
+          justifyContent="space-between"
+          width="100%"
         >
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ justifyContent: "center", mr: "auto" }}
-          >
-            <CustomIcon />
-            <Typography
-              variant="h4"
-              component="h1"
-              sx={{ color: "text.primary" }}
-            >
-              Dashboard
-            </Typography>
-          </Stack>
-          <ColorModeIconDropdown />
-          <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
-            <MenuRoundedIcon />
-          </MenuButton>
-          <SideMenuMobile open={open} toggleDrawer={toggleDrawer} />
+          {/* Logo Section */}
+          <Box sx={{ display: "flex", alignItems: "center", height: 40 }}>
+            <img
+              src={advanceCheckoutLogo}
+              alt="Advance Checkout Logo"
+              style={{ height: "100%", width: "auto" }}
+            />
+          </Box>
+          {/* Theme & Menu Controls */}
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <ColorModeIconDropdown />
+            <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
+              <MenuRoundedIcon />
+            </MenuButton>
+            <SideMenuMobile open={open} toggleDrawer={toggleDrawer} />
+          </Stack>{" "}
         </Stack>
+
+        {/* Drawer Component */}
+        <SideMenuMobile open={open} toggleDrawer={toggleDrawer} />
       </Toolbar>
     </AppBar>
   );
 }
 
-export function CustomIcon() {
-  return (
-    <Box
-      sx={{
-        width: "1.5rem",
-        height: "1.5rem",
-        bgcolor: "black",
-        borderRadius: "999px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "center",
-        backgroundImage:
-          "linear-gradient(135deg, hsl(210, 98%, 60%) 0%, hsl(210, 100%, 35%) 100%)",
-        color: "hsla(210, 100%, 95%, 0.9)",
-        border: "1px solid",
-        borderColor: "hsl(210, 100%, 55%)",
-        boxShadow: "inset 0 2px 5px rgba(255, 255, 255, 0.3)"
-      }}
-    >
-      <DashboardRoundedIcon color="inherit" sx={{ fontSize: "1rem" }} />
-    </Box>
-  );
-}
+// export function CustomIcon() {
+//   return (
+//     <Box
+//       sx={{
+//         width: "1.5rem",
+//         height: "1.5rem",
+//         bgcolor: "black",
+//         borderRadius: "999px",
+//         display: "flex",
+//         justifyContent: "center",
+//         alignItems: "center",
+//         alignSelf: "center",
+//         backgroundImage:
+//           "linear-gradient(135deg, hsl(210, 98%, 60%) 0%, hsl(210, 100%, 35%) 100%)",
+//         color: "hsla(210, 100%, 95%, 0.9)",
+//         border: "1px solid",
+//         borderColor: "hsl(210, 100%, 55%)",
+//         boxShadow: "inset 0 2px 5px rgba(255, 255, 255, 0.3)"
+//       }}
+//     >
+//       <DashboardRoundedIcon color="inherit" sx={{ fontSize: "1rem" }} />
+//     </Box>
+//   );
+// }

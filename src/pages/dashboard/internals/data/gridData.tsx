@@ -37,6 +37,7 @@ export const useDynamicColumns = (
         "srNo",
         "shopName",
         "users",
+        "shopAccessToken",
         "shopUrl",
         "shopContactNo",
         "ordersPerMonth",
@@ -68,6 +69,14 @@ export const useDynamicColumns = (
               headerAlign: "center"
             };
           }
+          if (field === "shopAccessToken") {
+            return {
+              ...col,
+              headerName: "Shop Access Token",
+              editable: true
+            };
+          }
+
           if (field === "status") {
             return {
               ...col,
@@ -98,6 +107,7 @@ export const useDynamicColumns = (
           return {
             ...col,
             headerName: field === "users" ? "User" : col.headerName,
+            editable: field === "shopAccessToken",
             ...(col.type === "number" && {
               align: "center",
               headerAlign: "center"

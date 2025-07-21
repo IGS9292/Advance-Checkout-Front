@@ -58,7 +58,8 @@ const ShopsListView = () => {
       shopContactNo: "",
       ordersPerMonth: "0-500",
       email: "",
-      status: "approved"
+      status: "approved",
+      shopAccessToken: "Not generated"
     }
   });
 
@@ -72,6 +73,7 @@ const ShopsListView = () => {
     const email = row.users;
     setValue("email", email);
     setValue("status", row.status);
+    setValue("shopAccessToken", row.shopAccessToken || "");
     setOpenDialog(true);
   };
 
@@ -151,31 +153,19 @@ const ShopsListView = () => {
 
   const onSubmit = async (data: any) => {
     console.log("🟢 onSubmit triggered", data);
+    if (!data.email) {
+      alert("❌ Email is required");
+      return;
+    }
     const payload = {
       shopName: data.shopName,
       shopUrl: data.shopUrl,
       shopContactNo: data.shopContactNo,
       ordersPerMonth: parseInt(data.ordersPerMonth, 10),
-      status: data.status as "pending" | "approved" | "rejected"
+      status: data.status as "pending" | "approved" | "rejected",
+      shopAccessToken: data.shopAccessToken
     };
 
-    //   export const updateShop = async (
-    // shopId: string | number,
-    // data: {
-    //   shopName: string;
-    //   shopUrl: string;
-    //   shopContactNo: string;
-    //   ordersPerMonth: number;
-    //   status: string;
-    // }
-    //   // const payload = {
-    //   shopName: data.shopName,
-    //   shopUrl: data.shopUrl,
-    //   shopContactNo: data.shopContactNo,
-    //   ordersPerMonth: parseInt(data.ordersPerMonth),
-    //   email: data.email,
-    //   status: data.status as "pending" | "approved" | "rejected"
-    // };
     try {
       if (editingRow) {
         // console.log("edit FORM SUBMITTED", data);
@@ -185,7 +175,9 @@ const ShopsListView = () => {
         // console.log("Updated shop with:", payload);
       } else {
         // await createShop(payload);
+        // console.log("Email:", data.email); // This should NOT be undefined
 
+        // console.log("Final Payload:", { ...payload, email: data.email });
         await createShop({ ...payload, email: data.email });
         alert("✅ shop added and email sent successfully");
       }
@@ -266,6 +258,14 @@ const ShopsListView = () => {
                   render={({ field }) => (
                     <TextField {...field} disabled={Boolean(editingRow)} />
                   )}
+                />
+              </FormControl>
+              <FormControl fullWidth>
+                <FormLabel>Shop Access Token</FormLabel>
+                <Controller
+                  name="shopAccessToken"
+                  control={control}
+                  render={({ field }) => <TextField {...field} />}
                 />
               </FormControl>
 

@@ -20,9 +20,13 @@ export const updateShop = async (
     shopContactNo: string;
     ordersPerMonth: number;
     status: string;
+    shopAccessToken?: string;
   }
 ) => {
-  const res = await axios.put(`${baseURL}/v1/shops/${shopId}`, data);
+  const res = await axios.put(`${baseURL}/v1/shops/${shopId}`, {
+    ...data,
+    shop_access_token: data.shopAccessToken
+  });
   return res.data;
 };
 export const requestShop = async (data: {
@@ -35,7 +39,6 @@ export const requestShop = async (data: {
   const res = await axios.post(`${baseURL}/v1/shops/request`, data);
   return res.data;
 };
-
 export const createShop = async (data: {
   shopName: string;
   shopUrl: string;
@@ -43,11 +46,16 @@ export const createShop = async (data: {
   ordersPerMonth: number;
   email: string;
   status?: "pending" | "approved" | "rejected";
+  shopAccessToken?: string;
 }) => {
-  const res = await axios.post(`${baseURL}/v1/shops`, data);
-  // alert("shop alreadyeists",res.data)
+  const res = await axios.post(`${baseURL}/v1/shops`, {
+    ...data,
+    shop_access_token: data.shopAccessToken
+  });
+
   return res.data;
 };
+
 export const updateShopStatus = async (
   id: number,
   status: "approved" | "rejected"
