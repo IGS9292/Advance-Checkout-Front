@@ -121,9 +121,12 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
         id: data.user.id,
         email: data.user.email,
         role: data.user.role,
-        token: data.token
+        token: data.token,
+        shopName: data.user.shopName
       };
+     
       login(userData);
+       console.log("userData", userData);
       if (userData.role === SUPERADMIN) {
         navigate("/superadmin-dashboard");
       } else {

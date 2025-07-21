@@ -9,6 +9,7 @@ import MenuContent from "./MenuContent";
 import CardAlert from "./CardAlert";
 import OptionsMenu from "./OptionsMenu";
 import advanceCheckoutLogo from "../../../assets/advanceCheckoutLogo.png";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const drawerWidth = 240;
 
@@ -24,6 +25,8 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu() {
+  const { user } = useAuth();
+
   return (
     <Drawer
       variant="permanent"
@@ -87,7 +90,20 @@ export default function SideMenu() {
           src="/static/images/avatar/7.jpg"
           sx={{ width: 36, height: 36 }}
         />
+
         <Box sx={{ mr: "auto" }}>
+          <Typography
+            variant="body2"
+            sx={{ fontWeight: 500, lineHeight: "16px" }}
+          >
+            {user?.shopName || "No shop"}
+          </Typography>
+          <Typography variant="caption" sx={{ color: "text.secondary" }}>
+            {user?.email || "user@example.com"}
+          </Typography>
+        </Box>
+
+        {/* <Box sx={{ mr: "auto" }}>
           <Typography
             variant="body2"
             sx={{ fontWeight: 500, lineHeight: "16px" }}
@@ -97,7 +113,7 @@ export default function SideMenu() {
           <Typography variant="caption" sx={{ color: "text.secondary" }}>
             riley@email.com
           </Typography>
-        </Box>
+        </Box> */}
         <OptionsMenu />
       </Stack>
     </Drawer>

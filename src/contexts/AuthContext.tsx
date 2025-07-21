@@ -6,6 +6,8 @@ interface User {
   id: string;
   role: string;
   token: string;
+  email: string;
+  shopName?: string;
 }
 
 // Define context value shape
@@ -40,8 +42,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const login = (userData: User) => {
-
-
     setUser(userData);
         // console.log("userData:", userData);
     localStorage.setItem("user", JSON.stringify(userData));
