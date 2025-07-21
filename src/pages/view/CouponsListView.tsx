@@ -26,16 +26,13 @@ import {
 } from "../../services/CouponService";
 import { useCouponColumns } from "../coupons/useCouponColumns";
 import SyncIcon from "@mui/icons-material/Sync";
-import type { GridColDef } from "@mui/x-data-grid";
 import Search from "../../shared/components/Search";
 import { Controller, useForm } from "react-hook-form";
-import LoadingButton from "@mui/lab/LoadingButton";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 export default function CouponsListView() {
   const [rows, setRows] = useState<any[]>([]);
   // const [columns, setColumns] = useState<GridColDef[]>([]);
-  const [open, setOpen] = useState(false);
   const [editingRow, setEditingRow] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
@@ -122,22 +119,19 @@ export default function CouponsListView() {
     }
   };
   // Filter rows based on searchTerm
-  // useEffect(() => {
-  //   const filtered = filteredRows.filter((row) => {
-  //     const shopNameMatch = row.shopName
-  //       ?.toLowerCase()
-  //       .includes(searchTerm.toLowerCase());
-  //     const userMatch = row.users
-  //       ?.toLowerCase()
-  //       .includes(searchTerm.toLowerCase());
-  //     const contactNoMatch = row.shopContactNo?.includes(searchTerm);
-  //     const statusMatch = row.status
-  //       ?.toLowerCase()
-  //       .includes(searchTerm.toLowerCase());
-  //     return shopNameMatch || userMatch || contactNoMatch || statusMatch;
-  //   });
-  //   setRows(filtered);
-  // }, [searchTerm, filteredRows]);
+  useEffect(() => {
+    const filtered = filteredRows.filter((row) => {
+      const couponTitleMatch = row.title
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+      const statusMatch = row.status
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      return couponTitleMatch || statusMatch;
+    });
+    setRows(filtered);
+  }, [searchTerm, filteredRows]);
 
   const columns = dynamicCols;
 
@@ -201,7 +195,7 @@ export default function CouponsListView() {
         </Typography>
 
         <Stack direction="row" spacing={2}>
-          {/* <Search /> */}
+          <Search onSearch={(value) => setSearchTerm(value)} />
           {/* <Button variant="contained" onClick={() => setOpen(true)}> */}
           <Button variant="contained" onClick={handleOpenDialog}>
             Add Coupon
