@@ -40,13 +40,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const login = (userData: User) => {
+
+
     setUser(userData);
+        // console.log("userData:", userData);
     localStorage.setItem("user", JSON.stringify(userData));
+     localStorage.setItem("token", userData.token);
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+      localStorage.removeItem("token"); 
   };
 
   const value: AuthContextType & { loading: boolean } = {

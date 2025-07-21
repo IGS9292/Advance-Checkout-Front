@@ -53,10 +53,10 @@ export default function MainGrid() {
   // const SUPERADMIN = "0";
   const ADMIN = "1";
   const { role } = useAuth(); // 👈 get current user role
-  console.log("Dashboard role", typeof role);
+  // console.log("Dashboard role", typeof role);
 
   if (role === ADMIN) {
-    console.log("admin Dashboard ");
+    // console.log("admin Dashboard ");
     return <AdminDashboard />;
   }
 

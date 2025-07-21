@@ -3,8 +3,13 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
-export const getCoupons = async () => {
-  const response = await axios.get(`${baseURL}/v1/coupons`);
+export const getCoupons = async (token?: string) => {
+  if (!token) throw new Error("No token available");
+  const response = await axios.get(`${baseURL}/v1/coupons`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
   return response.data;
 };
 

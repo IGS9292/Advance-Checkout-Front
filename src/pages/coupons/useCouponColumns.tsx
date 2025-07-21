@@ -6,6 +6,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import { getCoupons } from "../../services/CouponService";
 import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 
 export const useCouponColumns = (
   handleEdit: (row: any) => void,
@@ -14,6 +15,7 @@ export const useCouponColumns = (
   handleReject: (id: number) => void
 ) => {
   const [columnsMeta, setColumnsMeta] = useState<GridColDef[]>([]);
+  const { user } = useAuth();
 
   const fetchCouponsDetails = async (
     setRows: React.Dispatch<any[]>,
@@ -21,8 +23,9 @@ export const useCouponColumns = (
     baseURL: string
   ) => {
     try {
-      const data = await getCoupons();
-      console.log("✅ Fetched coupons:", data);
+      const data = await getCoupons(user?.token);
+      // const data = await getCoupons();
+      // console.log("✅ Fetched coupons:", data);
 
       let coupons = Array.isArray(data.coupons) ? data.coupons : [];
 
