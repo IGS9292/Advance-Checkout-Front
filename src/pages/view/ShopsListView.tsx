@@ -175,9 +175,9 @@ const ShopsListView = () => {
         // console.log("Updated shop with:", payload);
       } else {
         // await createShop(payload);
-        // console.log("Email:", data.email); // This should NOT be undefined
+        console.log("Email:", data.email); // This should NOT be undefined
 
-        // console.log("Final Payload:", { ...payload, email: data.email });
+        console.log("Final Payload:", { ...payload, email: data.email });
         await createShop({ ...payload, email: data.email });
         alert("✅ shop added and email sent successfully");
       }

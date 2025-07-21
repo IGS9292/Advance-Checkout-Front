@@ -122,22 +122,22 @@ export default function CouponsListView() {
     }
   };
   // Filter rows based on searchTerm
-  useEffect(() => {
-    const filtered = filteredRows.filter((row) => {
-      const shopNameMatch = row.shopName
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const userMatch = row.users
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const contactNoMatch = row.shopContactNo?.includes(searchTerm);
-      const statusMatch = row.status
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      return shopNameMatch || userMatch || contactNoMatch || statusMatch;
-    });
-    setRows(filtered);
-  }, [searchTerm, filteredRows]);
+  // useEffect(() => {
+  //   const filtered = filteredRows.filter((row) => {
+  //     const shopNameMatch = row.shopName
+  //       ?.toLowerCase()
+  //       .includes(searchTerm.toLowerCase());
+  //     const userMatch = row.users
+  //       ?.toLowerCase()
+  //       .includes(searchTerm.toLowerCase());
+  //     const contactNoMatch = row.shopContactNo?.includes(searchTerm);
+  //     const statusMatch = row.status
+  //       ?.toLowerCase()
+  //       .includes(searchTerm.toLowerCase());
+  //     return shopNameMatch || userMatch || contactNoMatch || statusMatch;
+  //   });
+  //   setRows(filtered);
+  // }, [searchTerm, filteredRows]);
 
   const columns = dynamicCols;
 

@@ -25,25 +25,36 @@ export const useCouponColumns = (
     try {
       const data = await getCoupons(user?.token);
       // const data = await getCoupons();
-      // console.log("✅ Fetched coupons:", data);
+      console.log("✅ Fetched coupons:", data);
 
       let coupons = Array.isArray(data.coupons) ? data.coupons : [];
 
       // 🔹 Flatten couponDetails & add srNo
       coupons = coupons.map((c: any, index: number) => {
-        const { couponDetails = {}, shop = {} } = c;
+        const { couponDetail = {}, shop = {} } = c;
+        const rawDiscount = couponDetail.value;
+        const valueType = couponDetail.value_type;
+
+        let discountDisplay = "-";
+        if (rawDiscount && valueType) {
+          const absDiscount = Math.abs(Number(rawDiscount));
+          discountDisplay =
+            valueType === "fixed_amount"
+              ? `$${absDiscount} (fixed)`
+              : `${absDiscount}% (percentage)`;
+        }
 
         return {
           ...c,
           srNo: index + 1,
-          shopName: shop.shopName || "-",
-          discount: couponDetails.discount || "-",
-          usageLimit: couponDetails.usageLimit || "-",
-          startsAt: couponDetails.startsAt
-            ? new Date(couponDetails.startsAt).toISOString().split("T")[0]
+          // shopName: shop.shopName || "-",
+          discount: discountDisplay || "-",
+          usageLimit: couponDetail.usage_limit || "-",
+          startsAt: couponDetail.starts_at
+            ? new Date(couponDetail.starts_at).toISOString().split("T")[0]
             : "-",
-          endsAt: couponDetails.endsAt
-            ? new Date(couponDetails.endsAt).toISOString().split("T")[0]
+          endsAt: couponDetail.ends_at
+            ? new Date(couponDetail.ends_at).toISOString().split("T")[0]
             : "-"
         };
       });
@@ -51,7 +62,7 @@ export const useCouponColumns = (
       const orderedFields = [
         "srNo",
         "title",
-        "shopName",
+        // "shopName",
         "discount",
         "usageLimit",
         "startsAt",
@@ -81,12 +92,12 @@ export const useCouponColumns = (
               sortable: false
             };
           }
-          if (field === "shopName") {
-            return {
-              ...col,
-              headerName: "Shop Name"
-            };
-          }
+          // if (field === "shopName") {
+          //   return {
+          //     ...col,
+          //     headerName: "Shop Name"
+          //   };
+          // }
 
           return {
             ...col,
