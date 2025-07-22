@@ -7,6 +7,7 @@ import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import { getCoupons } from "../../services/CouponService";
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import type { AxiosError } from "axios";
 
 export const useCouponColumns = (
   handleEdit: (row: any) => void,
@@ -15,7 +16,7 @@ export const useCouponColumns = (
   handleReject: (id: number) => void
 ) => {
   const [columnsMeta, setColumnsMeta] = useState<GridColDef[]>([]);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const fetchCouponsDetails = async (
     setRows: React.Dispatch<any[]>,
@@ -207,9 +208,16 @@ export const useCouponColumns = (
       setFilteredRows(coupons);
       setRows(coupons);
       setColumnsMeta(mappedColumns);
-    } catch (err) {
-      console.error("❌ Failed to fetch coupons", err);
-      alert("❌ Failed to load coupons. Please check your server logs.");
+    } catch (error) {
+      const err = error as AxiosError;
+
+      if (err.response?.status === 401) {
+        alert("Session expired. Please log in again.");
+        logout();
+      } else {
+        console.error("❌ Failed to fetch coupons", err);
+        alert("❌ Failed to load coupons. Please check your server logs.");
+      }
     }
   };
 

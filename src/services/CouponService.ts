@@ -13,27 +13,48 @@ export const getCoupons = async (token?: string) => {
   return response.data;
 };
 
-export const createCoupon = async (couponData: any) => {
-  const response = await axios.post(`${baseURL}/v1/coupons`, couponData);
+export const createCoupon = async (couponData: any, token?: string) => {
+  const response = await axios.post(`${baseURL}/v1/coupons`, couponData, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
   return response.data;
 };
 
-export const updateCoupon = async (id: number, updatedData: any) => {
-  const response = await axios.put(`${baseURL}/v1/coupons/${id}`, updatedData);
-  return response.data;
-};
-
-export const deleteCoupon = async (id: number) => {
-  const response = await axios.delete(`${baseURL}/v1/coupons/${id}`);
+export const updateCoupon = async (
+  id: number,
+  updatedData: any,
+  token?: string
+) => {
+  const response = await axios.put(`${baseURL}/v1/coupons/${id}`, updatedData, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
   return response.data;
 };
 
 export const updateCouponStatus = async (
   id: number,
-  status: "pending" | "approved" | "rejected"
+  status: "pending" | "approved" | "rejected",
+  token?: string
 ) => {
-  const response = await axios.patch(`${baseURL}/v1/coupons/${id}/status`, {
-    status
-  });
+  const response = await axios.patch(
+    `${baseURL}/v1/coupons/${id}/status`,
+    {
+      status
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
+};
+
+export const deleteCoupon = async (id: number) => {
+  const response = await axios.delete(`${baseURL}/v1/coupons/${id}`);
   return response.data;
 };

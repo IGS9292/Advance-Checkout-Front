@@ -28,6 +28,7 @@ import { useCouponColumns } from "../coupons/useCouponColumns";
 import SyncIcon from "@mui/icons-material/Sync";
 import Search from "../../shared/components/Search";
 import { Controller, useForm } from "react-hook-form";
+import { useAuth } from "../../contexts/AuthContext";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 export default function CouponsListView() {
@@ -38,6 +39,7 @@ export default function CouponsListView() {
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   const {
     control,
@@ -52,16 +54,16 @@ export default function CouponsListView() {
       usageLimit: "",
       startsAt: "",
       endsAt: "",
-      status: ""
+      status: "pending"
     }
   });
   const handleEdit = (row: any) => {
     setEditingRow(row);
     setValue("title", row.title);
-    setValue("discount", row.discount);
-    setValue("usageLimit", row.usageLimit);
-    setValue("startsAt", row.startsAt);
-    setValue("endsAt", row.endsAt);
+    setValue("discount", row.couponDetail?.value || ""); // ✅ Use `couponDetail`
+    setValue("usageLimit", row.couponDetail?.usage_limit || "");
+    setValue("startsAt", row.couponDetail?.starts_at?.slice(0, 10) || "");
+    setValue("endsAt", row.couponDetail?.ends_at?.slice(0, 10) || "");
     setValue("status", row.status);
 
     setOpenDialog(true);
@@ -80,7 +82,7 @@ export default function CouponsListView() {
 
   const handleApprove = async (id: number) => {
     try {
-      await updateCouponStatus(id, "approved");
+      await updateCouponStatus(id, "approved", user?.token);
       alert("✅ Request approved and email sent successfully");
       fetchCouponsDetails(setRows, setFilteredRows, baseURL);
     } catch (err) {
@@ -90,7 +92,7 @@ export default function CouponsListView() {
 
   const handleReject = async (id: number) => {
     try {
-      await updateCouponStatus(id, "rejected");
+      await updateCouponStatus(id, "rejected", user?.token);
       fetchCouponsDetails(setRows, setFilteredRows, baseURL);
     } catch (err) {
       console.error("Rejection failed", err);
@@ -148,31 +150,34 @@ export default function CouponsListView() {
   };
 
   const onSubmit = async (data: any) => {
-    console.log("🟢 onSubmit triggered", data);
-    const payload = {
-      title: data.title,
-      couponDetails: {
-        discount: data.discount,
-        usageLimit: parseInt(data.usageLimit),
-        startsAt: data.startsAt,
-        endsAt: data.endsAt
-      },
-      status: data.status
-      // status: data.status as "pending" | "approved" | "rejected"
+    const couponDetailsPayload = {
+      discount: parseFloat(data.discount),
+      usageLimit: parseInt(data.usageLimit),
+      startsAt: data.startsAt,
+      endsAt: data.endsAt
     };
+
     try {
       if (editingRow) {
-        // console.log("edit FORM SUBMITTED", data);
-
-        await updateCoupon(editingRow.id, payload);
-        alert("✅ shop details updated ");
-        // console.log("Updated shop with:", payload);
+        const payload = {
+          couponDetails: couponDetailsPayload,
+          status: data.status
+        };
+        console.log("🟢 onSubmit payload", payload);
+        await updateCoupon(editingRow.id, payload, user?.token);
+        alert("✅ Coupon details updated ");
       } else {
-        // await createShop(payload);
-
-        await createCoupon(payload);
-        alert("✅ shop added and email sent successfully");
+        // ✅ Send `title` when creating new coupon
+        const payload = {
+          title: data.title,
+          couponDetails: couponDetailsPayload,
+          status: data.status
+        };
+        console.log("🟢 onSubmit payload", payload);
+        await createCoupon(payload, user?.token);
+        alert("✅ Coupon created successfully");
       }
+
       handleCloseDialog();
       await fetchCouponsDetails(setRows, setFilteredRows, baseURL);
     } catch (err) {
@@ -217,22 +222,6 @@ export default function CouponsListView() {
         </Grid>
       </Grid>
 
-      {/* <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      > */}
-      {/* <DialogTitle>{editingRow ? "Edit Coupon" : "Add Coupon"}</DialogTitle>
-        <DialogContent> */}
-      {/* You can build a form here using react-hook-form like in ShopsListView */}
-      {/* <Typography>Form coming soon...</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained">Save</Button>
-        </DialogActions> */}
-      {/* </Dialog> */}
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
@@ -250,6 +239,7 @@ export default function CouponsListView() {
                   control={control}
                   rules={{ required: "Required" }}
                   render={({ field }) => <TextField {...field} />}
+                  disabled={!!editingRow}
                 />
               </FormControl>
 
