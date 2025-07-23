@@ -12,12 +12,14 @@ import AboutView from "../pages/view/AboutView.tsx";
 import FeedBackView from "../pages/view/FeedBackView.tsx";
 import Checkout from "../pages/checkout/Checkout.tsx";
 import ShopsListView from "../pages/view/ShopsListView.tsx";
-import SupportView from "../pages/view/SupportView.tsx";
 import EmailVerified from "../components/EmailVerifiedView.tsx";
 import LandingPage from "../pages/LandingPage/LandingPage.tsx";
 import SignIn from "../pages/Login/SignIn.tsx";
 import CouponsListView from "../pages/view/CouponsListView.tsx";
 import ResetPassword from "../pages/Login/components/ResetPassword.tsx";
+import ChatBox from "../pages/ChatSupport/components/ChatBox.tsx";
+import ChatList from "../pages/ChatSupport/components/ChatList.tsx";
+import ChatSupport from "../pages/ChatSupport/ChatSupport.tsx";
 
 const AppRouter = () => {
   const { isAuthenticated, role } = useAuth();
@@ -77,7 +79,7 @@ const AppRouter = () => {
           <Route path="tasks" element={<TasksView />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="coupons" element={<CouponsListView />} />
-          <Route path="support" element={<SupportView />} />
+          <Route path="chatSupport" element={<ChatSupport />} />
           <Route path="settings" element={<SettingsView />} />
           <Route path="about" element={<AboutView />} />
           <Route path="feedback" element={<FeedBackView />} />
@@ -98,7 +100,7 @@ const AppRouter = () => {
           <Route path="clients" element={<ClientsView />} />
           <Route path="tasks" element={<TasksView />} />
           <Route path="shops" element={<ShopsListView />} />
-          <Route path="support" element={<SupportView />} />
+          <Route path="chatSupport" element={<ChatSupport />} />
           <Route path="settings" element={<SettingsView />} />
           <Route path="about" element={<AboutView />} />
           <Route path="feedback" element={<FeedBackView />} />

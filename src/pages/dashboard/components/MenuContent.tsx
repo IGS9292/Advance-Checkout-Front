@@ -23,7 +23,17 @@ const mainListItems = [
   { text: "Coupons", icon: <AssignmentRoundedIcon />, path: "/coupons" },
   { text: "Checkout", icon: <AssignmentRoundedIcon />, path: "/checkout" },
   { text: "Shops", icon: <AssignmentRoundedIcon />, path: "/shops" },
-  { text: "Support", icon: <AssignmentRoundedIcon />, path: "/support" }
+  {
+    text: "Chat Support",
+    icon: <AssignmentRoundedIcon />,
+    path: "/chatsupport" // role: "1"
+  } // Admin
+  // {
+  //   text: "Support",
+  //   icon: <AssignmentRoundedIcon />,
+  //   path: "/chatlist",
+  //   role: "0"
+  // } // SuperAdmin
 ];
 
 const secondaryListItems = [
@@ -41,6 +51,8 @@ export default function MenuContent() {
     if (item.text === "Shops" && role !== "0") return false;
     if (item.text === "Checkout" && role !== "1") return false;
     if (item.text === "Coupons" && role !== "1") return false;
+    // if (item.text === "Support" && item.role && item.role !== role)
+    // return false;
     return true;
   });
 
@@ -52,9 +64,9 @@ export default function MenuContent() {
           return (
             <ListItem key={index} disablePadding sx={{ display: "block" }}>
               <ListItemButton
+                selected={location.pathname === fullPath}
                 component={Link}
                 to={fullPath}
-                selected={location.pathname === fullPath}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} />

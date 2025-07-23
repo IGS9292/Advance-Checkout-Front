@@ -33,7 +33,6 @@ import { useAuth } from "../../contexts/AuthContext";
 const baseURL = import.meta.env.VITE_API_BASE as string;
 export default function CouponsListView() {
   const [rows, setRows] = useState<any[]>([]);
-  // const [columns, setColumns] = useState<GridColDef[]>([]);
   const [editingRow, setEditingRow] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
@@ -60,7 +59,7 @@ export default function CouponsListView() {
   const handleEdit = (row: any) => {
     setEditingRow(row);
     setValue("title", row.title);
-    setValue("discount", row.couponDetail?.value || ""); // ✅ Use `couponDetail`
+    setValue("discount", row.couponDetail?.value || "");
     setValue("usageLimit", row.couponDetail?.usage_limit || "");
     setValue("startsAt", row.couponDetail?.starts_at?.slice(0, 10) || "");
     setValue("endsAt", row.couponDetail?.ends_at?.slice(0, 10) || "");
