@@ -60,6 +60,32 @@ export const fetchChatMessages = async (
   return visibleMessages;
 };
 
+
+// 🔹 Fetch Unread Counts
+export const fetchUnreadCounts = async (token: string) => {
+  const res = await axios.get(`${baseURL}/v1/unread-counts`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const countMap: { [id: string]: number } = {};
+  res.data.forEach((entry: any) => {
+    countMap[entry.senderId] = parseInt(entry.unreadCount);
+  });
+  return countMap;
+};
+
+// 🔹 Mark Messages As Read
+export const markMessagesAsRead = async (fromUserId: string, token: string) => {
+  const res = await axios.post(
+    `${baseURL}/v1/mark-read`,
+    { fromUserId },
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+  return res.data;
+};
+
 export const deleteChatMessages = async (
   userId: string,
   otherUserId: string,
