@@ -1,210 +1,233 @@
+import { Box, TextField, Button, Typography, Stack } from "@mui/material";
+import type { AdminUser } from "./ChatList";
 import { useEffect, useRef, useState } from "react";
-import { socket } from "../../../socket/socket";
-import { format, isValid, parseISO } from "date-fns";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  Stack
-} from "@mui/material";
-import { fetchChatMessages } from "../../../services/ChatSupportService";
 import { useAuth } from "../../../contexts/AuthContext";
+import { fetchChatMessages } from "../../../services/ChatSupportService";
+import { format, isToday, isYesterday, parseISO } from "date-fns";
 
-interface Message {
-  from: string;
-  to: string;
+interface Props {
+  userId: string;
+  selectedUser: AdminUser | null;
+  socket: any;
+}
+
+interface ChatMessage {
+  senderId: string;
+  receiverId: string;
   message: string;
-  timestamp: number;
+  timestamp: string;
 }
 
-interface ChatBoxProps {
-  currentUserId: string;
-  targetUserId: string;
-}
-
-const ChatBox = ({ currentUserId, targetUserId }: ChatBoxProps) => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [typing, setTyping] = useState(false);
-  const [isPartnerTyping, setIsPartnerTyping] = useState(false);
-  const typingTimeout = useRef<NodeJS.Timeout | null>(null);
-  const chatEndRef = useRef<HTMLDivElement | null>(null);
+const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const endRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
 
+  // Group messages by date
+  const groupByDate = (msgs: ChatMessage[]) => {
+    return msgs.reduce((acc: Record<string, ChatMessage[]>, msg) => {
+      const date = new Date(msg.timestamp);
+      let dateKey = format(date, "yyyy-MM-dd");
+      if (isToday(date)) dateKey = "Today";
+      else if (isYesterday(date)) dateKey = "Yesterday";
+
+      if (!acc[dateKey]) acc[dateKey] = [];
+      acc[dateKey].push(msg);
+      return acc;
+    }, {});
+  };
+
+  // Load chat on user change
   useEffect(() => {
-    const loadChatHistory = async () => {
+    const loadChat = async () => {
+      if (!userId || !selectedUser) return;
       try {
-        const token = user?.token; // Use token from AuthContext
-
-        if (!token || !currentUserId || !targetUserId) return;
-
-        const messagesFromDB = await fetchChatMessages(
-          currentUserId,
-          targetUserId,
-          token
+        const loadedMessages = await fetchChatMessages(
+          userId,
+          selectedUser.id,
+          user?.token
         );
-        setMessages(messagesFromDB);
+        setMessages(
+          loadedMessages.map((msg: any) => ({
+            senderId: msg.senderId,
+            receiverId: msg.receiverId,
+            message: msg.message,
+            timestamp: msg.timestamp
+          }))
+        );
       } catch (err) {
-        console.error("Failed to load chat history", err);
+        console.error("Error loading messages", err);
+      }
+    };
+    loadChat();
+  }, [selectedUser, userId, user?.token]);
+
+  // Listen for incoming messages
+  useEffect(() => {
+    if (!selectedUser) return;
+    const handler = (msg: any) => {
+      const from = msg.senderId || msg.fromId;
+      const to = msg.receiverId || msg.toId;
+      const isCurrentChat =
+        (from === userId && to === selectedUser.id) ||
+        (to === userId && from === selectedUser.id);
+
+      if (isCurrentChat) {
+        setMessages((prev) => [...prev, msg]);
       }
     };
 
-    loadChatHistory();
-  }, [currentUserId, targetUserId, user?.token]);
+    socket.on("receive_message", handler);
+    return () => socket.off("receive_message", handler);
+  }, [selectedUser, userId]);
 
+  // Scroll to bottom
   useEffect(() => {
-    socket.emit("register", { userId: currentUserId });
-
-    socket.on("receive_message", (data: Message) => {
-      setMessages((prev) => [...prev, data]);
-    });
-
-    socket.on("typing", (data) => {
-      if (data.from === targetUserId) {
-        setIsPartnerTyping(true);
-        setTimeout(() => setIsPartnerTyping(false), 2000);
-      }
-    });
-
-    return () => {
-      socket.off("receive_message");
-      socket.off("typing");
-    };
-  }, [currentUserId, targetUserId]);
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendTypingSignal = () => {
-    if (!typing) {
-      setTyping(true);
-      socket.emit("typing", { from: currentUserId, to: targetUserId });
-      if (typingTimeout.current) clearTimeout(typingTimeout.current);
-      typingTimeout.current = setTimeout(() => setTyping(false), 1000);
-    }
-  };
+  const handleSend = () => {
+    if (!message.trim() || !selectedUser) return;
 
-  const sendMessage = () => {
-    if (!newMessage.trim()) return;
-    const msg: Message = {
-      from: currentUserId,
-      to: targetUserId,
-      message: newMessage,
-      timestamp: Date.now()
+    const payload = {
+      from: userId,
+      to: selectedUser.id,
+      message
     };
-    socket.emit("send_message", msg);
-    setMessages((prev) => [...prev, msg]);
-    setNewMessage("");
+    socket.emit("send_message", payload);
+    setMessages((prev) => [
+      ...prev,
+      {
+        senderId: userId,
+        receiverId: selectedUser.id,
+        message,
+        timestamp: new Date().toISOString()
+      }
+    ]);
+    setMessage("");
   };
 
-
-const groupByDate = (msgs: Message[]) => {
-  return msgs.reduce((acc, msg) => {
-    const rawDate = msg.timestamp;
-
-    // Try to parse ISO string or date object
-    const parsedDate = typeof rawDate === "string" ? parseISO(rawDate) : new Date(rawDate);
-
-    // Skip invalid dates
-    if (!isValid(parsedDate)) return acc;
-
-    const date = format(parsedDate, "yyyy-MM-dd");
-
-    acc[date] = acc[date] ? [...acc[date], msg] : [msg];
-    return acc;
-  }, {} as Record<string, Message[]>);
-};
-
-  const groupedMessages = groupByDate(messages);
+  const grouped = groupByDate(messages);
 
   return (
-    <Paper variant="outlined" sx={{ p: 2, width: "100%" }}>
-      <Box
-        sx={{
-          height: 300,
-          overflowY: "auto",
-          backgroundColor: "#f9f9f9",
-          p: 1,
-          mb: 2,
-          borderRadius: 1
-        }}
-      >
-        {Object.entries(groupedMessages).map(([date, msgs]) => (
-          <Box key={date}>
-            <Typography
-              variant="caption"
-              align="center"
-              display="block"
-              sx={{ color: "#666", my: 1 }}
-            >
-              {format(new Date(date), "MMM d, yyyy")}
-            </Typography>
-            {msgs.map((msg, i) => (
-              <Box
-                key={i}
-                display="flex"
-                justifyContent={
-                  msg.from === currentUserId ? "flex-end" : "flex-start"
-                }
-                my={0.5}
-              >
-                <Box maxWidth="70%">
-                  <Box
-                    sx={{
-                      backgroundColor:
-                        msg.from === currentUserId ? "#1976d2" : "#e0e0e0",
-                      color: msg.from === currentUserId ? "#fff" : "#000",
-                      px: 2,
-                      py: 1,
-                      borderRadius: 2
-                    }}
-                  >
-                    {msg.message}
-                  </Box>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "#666",
-                      mt: 0.5,
-                      textAlign: msg.from === currentUserId ? "right" : "left"
-                    }}
-                  >
-                    {format(new Date(msg.timestamp), "hh:mm a")}
-                  </Typography>
-                </Box>
+    <Box
+      sx={{
+        flex: 1,
+        p: 2,
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        borderLeft: "1px solid #ccc"
+      }}
+    >
+      {selectedUser ? (
+        <>
+          <Typography variant="h6" gutterBottom>
+            Chat with {selectedUser.shop?.shopName || selectedUser.email}
+          </Typography>
+
+          <Box
+            sx={{
+              flex: 1,
+              overflowY: "auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+              mb: 2,
+              pr: 1
+            }}
+          >
+            {Object.entries(grouped).map(([date, msgs], index) => (
+              <Box key={date} sx={{ mt: index !== 0 ? 3 : 0 }}>
+                {" "}
+                {/* 24px spacing between date groups */}
+                <Typography
+                  align="center"
+                  variant="caption"
+                  sx={{ color: "text.secondary", my: 1 }}
+                >
+                  {date}
+                </Typography>
+                {msgs.map((msg, idx) => {
+                  const isSender = String(msg.senderId) === String(userId);
+                  return (
+                    <Box
+                      key={idx}
+                      sx={{
+                        display: "flex",
+                        justifyContent: isSender ? "flex-end" : "flex-start",
+                        mt: idx === 0 ? 0 : 1.5
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          backgroundColor: isSender
+                            ? "primary.light"
+                            : "grey.200",
+                          px: 2,
+                          pt: 1,
+                          pb: 2.5, // space for timestamp
+                          borderRadius: "24px", // Capsule effect
+                          minWidth: "10%",
+                          maxWidth: "70%",
+                          width: "fit-content",
+                          position: "relative",
+                          wordBreak: "break-word",
+                          boxShadow: 1,
+                          alignSelf: isSender ? "flex-end" : "flex-start"
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: isSender ? "inherit" : "black",
+                            pr: 4 // space for timestamp if message is short
+                          }}
+                        >
+                          {msg.message}
+                        </Typography>
+
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            position: "absolute",
+                            bottom: 6,
+                            right: 10,
+                            fontSize: "0.65rem",
+                            color: "#555"
+                          }}
+                        >
+                          {format(new Date(msg.timestamp), "p")}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  );
+                })}
               </Box>
             ))}
+            <div ref={endRef} />
           </Box>
-        ))}
-        <div ref={chatEndRef} />
-      </Box>
 
-      {isPartnerTyping && (
-        <Typography variant="caption" color="text.secondary" mb={1}>
-          {targetUserId} is typing...
+          <Stack direction="row" spacing={2}>
+            <TextField
+              fullWidth
+              placeholder="Type message..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            />
+            <Button variant="contained" onClick={handleSend}>
+              Send
+            </Button>
+          </Stack>
+        </>
+      ) : (
+        <Typography variant="h6" color="text.secondary" sx={{ m: "auto" }}>
+          Select a user to start chatting
         </Typography>
       )}
-
-      <Stack direction="row" spacing={1}>
-        <TextField
-          fullWidth
-          size="small"
-          placeholder="Type message..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={(e) => {
-            sendTypingSignal();
-            if (e.key === "Enter") sendMessage();
-          }}
-        />
-        <Button variant="contained" onClick={sendMessage}>
-          Send
-        </Button>
-      </Stack>
-    </Paper>
+    </Box>
   );
 };
 
