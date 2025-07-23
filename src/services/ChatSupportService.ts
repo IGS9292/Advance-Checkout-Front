@@ -32,7 +32,9 @@ export const getChatHistory = async (
       Authorization: `Bearer ${token}`
     }
   });
-  return response.data; // List of messages
+  const allMessages = response.data;
+
+  return allMessages.filter((msg: any) => msg.visible !== false);
 };
 
 // 🔹 Get Messages (query-based for real-time polling/chat)
@@ -48,7 +50,26 @@ export const fetchChatMessages = async (
       Authorization: `Bearer ${token}`
     }
   });
-  console.log("Loaded from backend:", response.data);
+  const allMessages = response.data;
 
-  return response.data; // List of messages
+  // ✅ Only return messages that are marked visible
+  const visibleMessages = allMessages.filter(
+    (msg: any) => msg.visible !== false
+  );
+
+  return visibleMessages;
+};
+
+export const deleteChatMessages = async (
+  userId: string,
+  otherUserId: string,
+  token?: string
+) => {
+  const res = await axios.delete(
+    `${baseURL}/v1/delete-messages/${userId}/${otherUserId}`,
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  );
+  return res.data;
 };

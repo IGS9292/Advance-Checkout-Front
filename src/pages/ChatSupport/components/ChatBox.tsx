@@ -1,9 +1,20 @@
-import { Box, TextField, Button, Typography, Stack } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Stack,
+  IconButton
+} from "@mui/material";
 import type { AdminUser } from "./ChatList";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
-import { fetchChatMessages } from "../../../services/ChatSupportService";
+import {
+  deleteChatMessages,
+  fetchChatMessages
+} from "../../../services/ChatSupportService";
 import { format, isToday, isYesterday, parseISO } from "date-fns";
+import { GridDeleteIcon } from "@mui/x-data-grid";
 
 interface Props {
   userId: string;
@@ -110,6 +121,21 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
 
   const grouped = groupByDate(messages);
 
+  const handleDeleteMessages = async () => {
+    if (!userId || !selectedUser?.id) return;
+
+    const confirm = window.confirm(
+      "Are you sure you want to delete all messages?"
+    );
+    if (!confirm) return;
+
+    try {
+      await deleteChatMessages(userId, selectedUser.id, user?.token);
+      setMessages([]); // clear from UI
+    } catch (error) {
+      console.error("Failed to delete messages:", error);
+    }
+  };
   return (
     <Box
       sx={{
@@ -123,9 +149,23 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
     >
       {selectedUser ? (
         <>
-          <Typography variant="h6" gutterBottom>
-            Chat with {selectedUser.shop?.shopName || selectedUser.email}
-          </Typography>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="h6" gutterBottom>
+              Chat with {selectedUser.shop?.shopName || selectedUser.email}
+            </Typography>
+
+            <IconButton
+              onClick={handleDeleteMessages}
+              size="small"
+              sx={{ color: "error.main" }}
+            >
+              <GridDeleteIcon />
+            </IconButton>
+          </Stack>
 
           <Box
             sx={{
