@@ -1,111 +1,158 @@
-import { styled } from "@mui/material/styles";
-import Avatar from "@mui/material/Avatar";
-import MuiDrawer, { drawerClasses } from "@mui/material/Drawer";
+import { styled, useTheme } from "@mui/material/styles";
+import MuiDrawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { useState } from "react";
 import MenuContent from "./MenuContent";
-import CardAlert from "./CardAlert";
 import OptionsMenu from "./OptionsMenu";
 import advanceCheckoutLogo from "../../../assets/advanceCheckoutLogo.png";
 import { useAuth } from "../../../contexts/AuthContext";
-import { Tooltip } from "@mui/material";
 
-const drawerWidth = 260;
+interface StyledDrawerProps {
+  open: boolean;
+}
+const drawerWidth = 230;
+const collapsedDrawerWidth = 64;
 
-const Drawer = styled(MuiDrawer)({
-  width: drawerWidth,
+// const openedMixin = (theme: Theme) => ({
+//   width: drawerWidth,
+//   transition: theme.transitions.create("width", {
+//     easing: theme.transitions.easing.sharp,
+//     duration: theme.transitions.duration.enteringScreen
+//   }),
+//   overflowX: "hidden"
+// });
+
+// const closedMixin = (theme: Theme) => ({
+//   width: 64,
+//   transition: theme.transitions.create("width", {
+//     easing: theme.transitions.easing.sharp,
+//     duration: theme.transitions.duration.leavingScreen
+//   }),
+//   overflowX: "hidden"
+// });
+
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  padding: theme.spacing(1.5),
+  height: 70
+}));
+
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open"
+})<StyledDrawerProps>(({ theme, open }) => ({
   flexShrink: 0,
+  whiteSpace: "nowrap",
   boxSizing: "border-box",
-  mt: 10,
-  [`& .${drawerClasses.paper}`]: {
-    width: drawerWidth,
-    boxSizing: "border-box"
+  overflowX: "hidden",
+  width: open ? drawerWidth : 60, // Use one `width` based on `open`
+  transition: theme.transitions.create("width", {
+    easing: theme.transitions.easing.sharp,
+    duration: open
+      ? theme.transitions.duration.enteringScreen
+      : theme.transitions.duration.leavingScreen
+  }),
+  "& .MuiDrawer-paper": {
+    width: open ? drawerWidth : 64,
+    overflowX: "hidden",
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: open
+        ? theme.transitions.duration.enteringScreen
+        : theme.transitions.duration.leavingScreen
+    })
   }
-});
+}));
 
 export default function SideMenu() {
+  const theme = useTheme();
+  const [open, setOpen] = useState(true);
   const { user } = useAuth();
 
+  const handleToggleDrawer = () => {
+    setOpen(!open);
+  };
+
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        display: { xs: "none", md: "block" },
-        [`& .${drawerClasses.paper}`]: {
-          backgroundColor: "background.paper"
-        }
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          mt: "calc(var(--template-frame-height, 0px) + 4px)",
-          p: 1.5,
-          gap: 1,
-          height: 70
-        }}
-      >
-        <img
-          src={advanceCheckoutLogo}
-          alt="Advance Checkout Logo"
-          style={{ height: "100%", width: "100%" }}
-        />
-      </Box>
+    <Drawer variant="permanent" open={open}>
+      {/* Logo & Toggle Button */}
+      <DrawerHeader>
+        {open ? (
+          <img
+            src={advanceCheckoutLogo}
+            alt="Advance Checkout Logo"
+            style={{ height: 40, width: "auto", maxWidth: "100%" }}
+          />
+        ) : (
+          <Box sx={{ width: 40 }} /> // Keep layout spacing when collapsed
+        )}
+
+        <IconButton onClick={handleToggleDrawer} size="small">
+          {open ? <ChevronLeftIcon /> : <MenuRoundedIcon />}
+        </IconButton>
+      </DrawerHeader>
 
       <Divider />
+
+      {/* Menu Content */}
       <Box
         sx={{
+          flexGrow: 1,
           overflow: "auto",
-          height: "100%",
           display: "flex",
           flexDirection: "column"
         }}
       >
-        <MenuContent />
-        <CardAlert />
+        <MenuContent drawerOpen={open} />
       </Box>
+
+      {/* Bottom Footer */}
       <Stack
         direction="row"
+        spacing={1}
+        alignItems="center"
+        justifyContent="space-between"
         sx={{
           p: 2,
-          gap: 1,
-          alignItems: "center",
           borderTop: "1px solid",
           borderColor: "divider"
         }}
       >
-        <Avatar
-          sizes="small"
-          alt="Riley Carter"
-          src="/static/images/avatar/7.jpg"
-          sx={{ width: 36, height: 36 }}
-        >
-          {!user?.shopName ? "" : user?.shopName[0].toUpperCase()}
+        <Avatar alt={user?.shopName || "User"} sx={{ width: 34, height: 34 }}>
+          {user?.shopName?.[0]?.toUpperCase() || ""}
         </Avatar>
-        <Box sx={{ mr: "auto" }}>
-          <Typography
-            variant="body2"
-            sx={{ fontWeight: 500, lineHeight: "16px" }}
-          >
-            {user?.shopName || "No shop"}
-          </Typography>
-          <Tooltip title={user?.email || "user@example.com"}>
-            <Typography
-              variant="caption"
-              noWrap
-              sx={{
-                color: "text.secondary",
-                maxWidth: 140,
-                display: "block"
-              }}
-            >
-              {user?.email || "user@example.com"}
+
+        {open && (
+          <Box sx={{ flexGrow: 1, mx: 1 }}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {user?.shopName || "No shop"}
             </Typography>
-          </Tooltip>
-        </Box>
+            <Tooltip title={user?.email || "user@example.com"}>
+              <Typography
+                variant="caption"
+                noWrap
+                sx={{
+                  color: "text.secondary",
+                  maxWidth: 115,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "block"
+                }}
+              >
+                {user?.email || "user@example.com"}
+              </Typography>
+            </Tooltip>
+          </Box>
+        )}
 
         <OptionsMenu />
       </Stack>
