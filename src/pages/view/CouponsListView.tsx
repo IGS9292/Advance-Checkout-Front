@@ -206,6 +206,7 @@ export default function CouponsListView() {
           </Button>
           <Button
             variant="contained"
+            color="secondary" 
             loading={loading}
             loadingPosition="start"
             startIcon={<SyncIcon />}

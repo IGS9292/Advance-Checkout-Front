@@ -19,7 +19,7 @@ const mainListItems = [
   { text: "Home", icon: <HomeRoundedIcon />, path: "/dashboard" },
   { text: "Analytics", icon: <AnalyticsRoundedIcon />, path: "/analytics" },
   { text: "Clients", icon: <PeopleRoundedIcon />, path: "/clients" },
-  { text: "Tasks", icon: <AssignmentRoundedIcon />, path: "/tasks" },
+  { text: "Orders", icon: <AssignmentRoundedIcon />, path: "/orders" },
   { text: "Coupons", icon: <AssignmentRoundedIcon />, path: "/coupons" },
   { text: "Checkout", icon: <AssignmentRoundedIcon />, path: "/checkout" },
   { text: "Shops", icon: <AssignmentRoundedIcon />, path: "/shops" },
