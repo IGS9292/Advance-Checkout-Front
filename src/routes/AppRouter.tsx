@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // import Login from "../pages/Login";
 import Dashboard from "../pages/dashboard/Dashboard";
-import MainGrid from "../pages/dashboard/components/MainGrid";
 import AnalyticsView from "../pages/view/AnalyticsView";
 import ClientsView from "../pages/view/ClientsView.tsx";
 import ProtectedRoute from "./ProtectedRoute";
@@ -19,6 +18,7 @@ import CouponsListView from "../pages/view/CouponsListView.tsx";
 import ResetPassword from "../pages/Login/components/ResetPassword.tsx";
 import ChatSupport from "../pages/ChatSupport/ChatSupport.tsx";
 import Orders from "../pages/orders/orders.tsx";
+import DashboardView from "../pages/dashboard/components/DashboardView.tsx";
 
 const AppRouter = () => {
   const { isAuthenticated, role } = useAuth();
@@ -71,8 +71,8 @@ const AppRouter = () => {
             </ProtectedRoute>
           }
         >
-          <Route index element={<MainGrid />} />
-          <Route path="dashboard" element={<MainGrid />} />
+          <Route index element={<DashboardView />} />
+          <Route path="dashboard" element={<DashboardView />} />
           <Route path="analytics" element={<AnalyticsView />} />
           <Route path="clients" element={<ClientsView />} />
           <Route path="tasks" element={<TasksView />} />
@@ -94,8 +94,8 @@ const AppRouter = () => {
             </ProtectedRoute>
           }
         >
-          <Route index element={<MainGrid />} />
-          <Route path="dashboard" element={<MainGrid />} />
+          <Route index element={<DashboardView />} />
+          <Route path="dashboard" element={<DashboardView />} />
           <Route path="analytics" element={<AnalyticsView />} />
           <Route path="clients" element={<ClientsView />} />
           <Route path="tasks" element={<TasksView />} />

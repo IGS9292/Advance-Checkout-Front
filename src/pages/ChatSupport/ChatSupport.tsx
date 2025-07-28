@@ -45,7 +45,9 @@ const ChatSupportView = () => {
         height="88vh"
         overflow="hidden"
       >
-        <ChatBoxAdmin userId={userId} socket={socket} />;
+        <Stack width="100%" height="100%">
+          <ChatBoxAdmin userId={userId} socket={socket} />
+        </Stack>
       </Box>
     );
   }

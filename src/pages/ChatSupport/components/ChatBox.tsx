@@ -192,8 +192,8 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
                 color: "error.main",
                 mb: 1,
                 outline: "none",
-                border: "none", 
-                boxShadow: "none", 
+                border: "none",
+                boxShadow: "none",
                 "&:focus": {
                   outline: "none"
                 }
@@ -218,13 +218,14 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
               <Box key={date} sx={{ mt: index !== 0 ? 3 : 0 }}>
                 {" "}
                 {/* 24px spacing between date groups */}
-                <Typography
-                  align="center"
-                  variant="caption"
-                  sx={{ color: "text.secondary", my: 1 }}
-                >
-                  {date}
-                </Typography>
+                <Box sx={{ display: "flex", justifyContent: "center", my: 1 }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary" }}
+                  >
+                    {date}
+                  </Typography>
+                </Box>
                 {msgs.map((msg, idx) => {
                   const isSender = String(msg.senderId) === String(userId);
                   return (

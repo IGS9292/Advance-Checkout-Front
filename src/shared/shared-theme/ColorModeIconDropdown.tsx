@@ -1,90 +1,42 @@
 import * as React from "react";
 import DarkModeIcon from "@mui/icons-material/DarkModeRounded";
 import LightModeIcon from "@mui/icons-material/LightModeRounded";
-import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import type { IconButtonOwnProps } from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import { useColorScheme } from "@mui/material/styles";
 
+const COLOR_MODE_KEY = "color-mode";
+
 export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
-  const { mode, systemMode, setMode } = useColorScheme();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const { mode, setMode } = useColorScheme();
+
+  // On mount, set initial mode from localStorage or system
+  React.useEffect(() => {
+    const savedMode = localStorage.getItem(COLOR_MODE_KEY);
+    if (savedMode === "light" || savedMode === "dark") {
+      setMode(savedMode);
+    } else {
+      // Default to system mode
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      const systemDefault = prefersDark ? "dark" : "light";
+      setMode(systemDefault);
+      localStorage.setItem(COLOR_MODE_KEY, systemDefault);
+    }
+  }, [setMode]);
+
+  const handleToggle = () => {
+    const newMode = mode === "light" ? "dark" : "light";
+    setMode(newMode);
+    localStorage.setItem(COLOR_MODE_KEY, newMode);
   };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleMode = (targetMode: "system" | "light" | "dark") => () => {
-    setMode(targetMode);
-    handleClose();
-  };
-  if (!mode) {
-    return (
-      <Box
-        data-screenshot="toggle-mode"
-        sx={(theme) => ({
-          verticalAlign: "bottom",
-          display: "inline-flex",
-          width: "2.25rem",
-          height: "2.25rem",
-          borderRadius: (theme.vars || theme).shape.borderRadius,
-          border: "1px solid",
-          borderColor: (theme.vars || theme).palette.divider
-        })}
-      />
-    );
-  }
-  const resolvedMode = (systemMode || mode) as "light" | "dark";
-  const icon = {
-    light: <LightModeIcon />,
-    dark: <DarkModeIcon />
-  }[resolvedMode];
+
+  const icon = mode === "dark" ? <DarkModeIcon /> : <LightModeIcon />;
+
   return (
-    <React.Fragment>
-      <IconButton
-        data-screenshot="toggle-mode"
-        onClick={handleClick}
-        disableRipple
-        size="small"
-        aria-controls={open ? "color-scheme-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        {...props}
-      >
-        {icon}
-      </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        id="account-menu"
-        open={open}
-        onClose={handleClose}
-        onClick={handleClose}
-        slotProps={{
-          paper: {
-            variant: "outlined",
-            elevation: 0,
-            sx: {
-              my: "4px"
-            }
-          }
-        }}
-        transformOrigin={{ horizontal: "right", vertical: "top" }}
-        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-      >
-        <MenuItem selected={mode === "system"} onClick={handleMode("system")}>
-          System
-        </MenuItem>
-        <MenuItem selected={mode === "light"} onClick={handleMode("light")}>
-          Light
-        </MenuItem>
-        <MenuItem selected={mode === "dark"} onClick={handleMode("dark")}>
-          Dark
-        </MenuItem>
-      </Menu>
-    </React.Fragment>
+    <IconButton onClick={handleToggle} size="small" {...props}>
+      {icon}
+    </IconButton>
   );
 }
