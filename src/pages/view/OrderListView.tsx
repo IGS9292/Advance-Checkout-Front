@@ -26,8 +26,6 @@ import {
   updateOrder
 } from "../../services/OrderService";
 
-
-
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
 export default function OrderListView() {
@@ -37,7 +35,7 @@ export default function OrderListView() {
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { user,role } = useAuth();
+  const { user, role } = useAuth();
 
   const {
     control,
@@ -66,7 +64,7 @@ export default function OrderListView() {
   const handleDelete = async (row: any) => {
     if (window.confirm("Delete this order detail?")) {
       try {
-        await deleteOrder(row.id,user?.token);
+        await deleteOrder(row.id, user?.token);
         fetchOrderDetails(setRows, setFilteredRows, baseURL);
       } catch (err) {
         console.error("Delete failed:", err);
@@ -161,9 +159,11 @@ export default function OrderListView() {
 
         <Stack direction="row" spacing={2}>
           <Search onSearch={(value) => setSearchTerm(value)} />
-          <Button variant="contained" onClick={handleOpenDialog}>
-            Add Order
-          </Button>
+          {role == "1" && (
+            <Button variant="contained" onClick={handleOpenDialog}>
+              Add Order
+            </Button>
+          )}
           <Button
             variant="contained"
             color="secondary"
@@ -210,8 +210,14 @@ export default function OrderListView() {
                 <Controller
                   name="order_id"
                   control={control}
-                  rules={{ required: "Required" }}
-                  render={({ field }) => <TextField {...field} />}
+                  rules={{ required: "Order Id required " }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      error={!!errors.order_id}
+                      helperText={errors.order_id?.message}
+                    />
+                  )}
                 />
               </FormControl>
 
@@ -220,8 +226,15 @@ export default function OrderListView() {
                 <Controller
                   name="order_qty"
                   control={control}
-                  rules={{ required: "Required" }}
-                  render={({ field }) => <TextField {...field} type="number" />}
+                  rules={{ required: "Order Quantity Required" }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type="number"
+                      error={!!errors.order_qty}
+                      helperText={errors.order_qty?.message}
+                    />
+                  )}
                 />
               </FormControl>
 
@@ -230,8 +243,15 @@ export default function OrderListView() {
                 <Controller
                   name="total_amount"
                   control={control}
-                  rules={{ required: "Required" }}
-                  render={({ field }) => <TextField {...field} type="number" />}
+                  rules={{ required: "Total Amount required" }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type="number"
+                      error={!!errors.total_amount}
+                      helperText={errors.total_amount?.message}
+                    />
+                  )}
                 />
               </FormControl>
             </Stack>

@@ -80,47 +80,50 @@ export const UseOrderColumns = (
         .filter(Boolean) as GridColDef[];
 
       // Add action buttons column
-      mappedColumns.push({
-        field: "actions",
-        headerName: "Actions",
-        sortable: false,
-        filterable: false,
-        align: "center",
-        headerAlign: "center",
-        width: 140,
-        renderCell: (params) => {
-          return (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 0.5,
-                justifyContent: "center"
-              }}
-            >
-              <Tooltip title="Edit">
-                <Box
-                  component="span"
-                  sx={{ cursor: "pointer", color: "primary.main" }}
-                  onClick={() => handleEdit(params.row)}
-                >
-                  <EditOutlinedIcon fontSize="small" />
-                </Box>
-              </Tooltip>
 
-              <Tooltip title="Delete">
-                <Box
-                  component="span"
-                  sx={{ cursor: "pointer", color: "error.main" }}
-                  onClick={() => handleDelete(params.row)}
-                >
-                  <DeleteOutlineIcon fontSize="small" />
-                </Box>
-              </Tooltip>
-            </Box>
-          );
-        }
-      });
+      if (role === "1") {
+        mappedColumns.push({
+          field: "actions",
+          headerName: "Actions",
+          sortable: false,
+          filterable: false,
+          align: "center",
+          headerAlign: "center",
+          width: 140,
+          renderCell: (params) => {
+            return (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                  justifyContent: "center"
+                }}
+              >
+                <Tooltip title="Edit">
+                  <Box
+                    component="span"
+                    sx={{ cursor: "pointer", color: "primary.main" }}
+                    onClick={() => handleEdit(params.row)}
+                  >
+                    <EditOutlinedIcon fontSize="small" />
+                  </Box>
+                </Tooltip>
+
+                <Tooltip title="Delete">
+                  <Box
+                    component="span"
+                    sx={{ cursor: "pointer", color: "error.main" }}
+                    onClick={() => handleDelete(params.row)}
+                  >
+                    <DeleteOutlineIcon fontSize="small" />
+                  </Box>
+                </Tooltip>
+              </Box>
+            );
+          }
+        });
+      }
 
       setFilteredRows(orders);
       setRows(orders);

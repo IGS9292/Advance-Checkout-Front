@@ -60,6 +60,31 @@ export const fetchChatMessages = async (
   return visibleMessages;
 };
 
+// 🔹 Get Last Messages per user (for chat list view)
+// services/ChatSupportService.ts
+export const fetchLastChatMessage = async (
+  from: string,
+  to: string,
+  token?: string
+) => {
+  if (!token) throw new Error("No token provided");
+  const response = await axios.get(`${baseURL}/v1/messages`, {
+    params: { from, to },
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const allMessages = response.data;
+
+  // Sort descending (latest first) just in case
+  const sorted = allMessages.sort(
+    (a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+
+  return sorted[0]; // last message
+};
+
 
 // 🔹 Fetch Unread Counts
 export const fetchUnreadCounts = async (token: string) => {

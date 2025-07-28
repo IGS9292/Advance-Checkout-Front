@@ -190,8 +190,6 @@ const ShopsListView = () => {
 
   return (
     <>
-      {errors.shopName && <span>{errors.shopName.message}</span>}
-
       <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
         <Box
           sx={{
@@ -229,6 +227,7 @@ const ShopsListView = () => {
         maxWidth="sm"
         fullWidth
       >
+        {/* {errors.shopName && <span>{errors.shopName.message}</span>} */}
         <DialogTitle>{editingRow ? "Edit Shop" : "Add New Shop"}</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -238,8 +237,14 @@ const ShopsListView = () => {
                 <Controller
                   name="shopName"
                   control={control}
-                  rules={{ required: "Required" }}
-                  render={({ field }) => <TextField {...field} />}
+                  rules={{ required: "Shop Name is required." }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      error={!!errors.shopName}
+                      helperText={errors.shopName?.message}
+                    />
+                  )}
                 />
               </FormControl>
 
@@ -249,14 +254,19 @@ const ShopsListView = () => {
                   name="email"
                   control={control}
                   rules={{
-                    required: "Required",
+                    required: "User email is required.",
                     pattern: {
                       value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                       message: "Invalid email"
                     }
                   }}
                   render={({ field }) => (
-                    <TextField {...field} disabled={Boolean(editingRow)} />
+                    <TextField
+                      {...field}
+                      disabled={Boolean(editingRow)}
+                      error={!!errors.email}
+                      helperText={errors.email?.message}
+                    />
                   )}
                 />
               </FormControl>
@@ -283,10 +293,12 @@ const ShopsListView = () => {
                 <Controller
                   name="shopContactNo"
                   control={control}
-                  rules={{ required: "Required" }}
+                  rules={{ required: "Contact Number is required" }}
                   render={({ field }) => (
                     <TextField
                       {...field}
+                      error={!!errors.shopContactNo}
+                      helperText={errors.shopContactNo?.message}
                       inputProps={{
                         maxLength: 10,
                         inputMode: "numeric",
@@ -302,9 +314,14 @@ const ShopsListView = () => {
                 <Controller
                   name="ordersPerMonth"
                   control={control}
-                  rules={{ required: "Required" }}
+                  rules={{ required: "Orders Per Month " }}
                   render={({ field }) => (
-                    <TextField select {...field}>
+                    <TextField
+                      select
+                      {...field}
+                      // error={!!errors.ordersPerMonth}
+                      // helperText={errors.ordersPerMonth?.message}
+                    >
                       <MenuItem value="0-500">0 - 500</MenuItem>
                       <MenuItem value="500-2000">500 - 2000</MenuItem>
                       <MenuItem value="2000-10000">2000 - 10000</MenuItem>
@@ -319,9 +336,14 @@ const ShopsListView = () => {
                 <Controller
                   name="status"
                   control={control}
-                  rules={{ required: "Required" }}
+                  rules={{ required: "Status Required" }}
                   render={({ field }) => (
-                    <TextField select {...field}>
+                    <TextField
+                      select
+                      {...field}
+                      // error={!!errors.ordersPerMonth}
+                      // helperText={errors.ordersPerMonth?.message}
+                    >
                       <MenuItem value="approved">approved</MenuItem>
                       <MenuItem value="pending">pending</MenuItem>
                     </TextField>

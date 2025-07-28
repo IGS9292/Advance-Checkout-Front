@@ -33,14 +33,22 @@ export default function OptionsMenu() {
   const handleLogout = () => {
     console.log("Logging out...");
     logout();
-    navigate("/"); 
+    navigate("/");
   };
   return (
     <React.Fragment>
       <MenuButton
         aria-label="Open menu"
         onClick={handleClick}
-        sx={{ borderColor: "transparent" }}
+        sx={{
+          borderColor: "transparent",
+          outline: "none",
+          border: "none",
+          boxShadow: "none",
+          "&:focus": {
+            outline: "none"
+          }
+        }}
       >
         <MoreVertRoundedIcon />
       </MenuButton>

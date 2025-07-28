@@ -206,7 +206,7 @@ export default function CouponsListView() {
           </Button>
           <Button
             variant="contained"
-            color="secondary" 
+            color="secondary"
             loading={loading}
             loadingPosition="start"
             startIcon={<SyncIcon />}
@@ -237,8 +237,14 @@ export default function CouponsListView() {
                 <Controller
                   name="title"
                   control={control}
-                  rules={{ required: "Required" }}
-                  render={({ field }) => <TextField {...field} />}
+                  rules={{ required: "Title required" }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      error={!!errors.title}
+                      helperText={errors.title?.message}
+                    />
+                  )}
                   disabled={!!editingRow}
                 />
               </FormControl>
@@ -248,8 +254,14 @@ export default function CouponsListView() {
                 <Controller
                   name="discount"
                   control={control}
-                  rules={{ required: "Required" }}
-                  render={({ field }) => <TextField {...field} />}
+                  rules={{ required: "Discount required" }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      error={!!errors.discount}
+                      helperText={errors.discount?.message}
+                    />
+                  )}
                 />
               </FormControl>
 
@@ -258,8 +270,15 @@ export default function CouponsListView() {
                 <Controller
                   name="usageLimit"
                   control={control}
-                  rules={{ required: "Required" }}
-                  render={({ field }) => <TextField {...field} type="number" />}
+                  rules={{ required: "Usage limit required" }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type="number"
+                      error={!!errors.usageLimit}
+                      helperText={errors.usageLimit?.message}
+                    />
+                  )}
                 />
               </FormControl>
 
@@ -268,8 +287,15 @@ export default function CouponsListView() {
                 <Controller
                   name="startsAt"
                   control={control}
-                  rules={{ required: "Required" }}
-                  render={({ field }) => <TextField {...field} type="date" />}
+                  rules={{ required: "Starts at required" }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type="date"
+                      error={!!errors.startsAt}
+                      helperText={errors.startsAt?.message}
+                    />
+                  )}
                 />
               </FormControl>
 
@@ -278,8 +304,15 @@ export default function CouponsListView() {
                 <Controller
                   name="endsAt"
                   control={control}
-                  rules={{ required: "Required" }}
-                  render={({ field }) => <TextField {...field} type="date" />}
+                  rules={{ required: "Ends at required" }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type="date"
+                      error={!!errors.endsAt}
+                      helperText={errors.endsAt?.message}
+                    />
+                  )}
                 />
               </FormControl>
 
@@ -288,9 +321,14 @@ export default function CouponsListView() {
                 <Controller
                   name="status"
                   control={control}
-                  rules={{ required: "Required" }}
+                  rules={{ required: "Status required" }}
                   render={({ field }) => (
-                    <TextField select {...field}>
+                    <TextField
+                      select
+                      {...field}
+                      error={!!errors.status}
+                      helperText={errors.status?.message}
+                    >
                       <MenuItem value="approved">approved</MenuItem>
                       <MenuItem value="pending">pending</MenuItem>
                     </TextField>

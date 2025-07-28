@@ -8,12 +8,16 @@ import {
   ListItemText,
   Divider,
   Paper,
-  Badge
+  Badge,
+  ListItemAvatar,
+  Avatar,
+  Tooltip
 } from "@mui/material";
 import {
   getAdminUsers,
   fetchUnreadCounts,
-  markMessagesAsRead
+  markMessagesAsRead,
+  fetchLastChatMessage
 } from "../../../services/ChatSupportService";
 import {
   loadUnreadCounts,
@@ -21,6 +25,8 @@ import {
   clearUnreadCountForUser
 } from "../../../shared/utils/helper/unreadStorage";
 import { useAuth } from "../../../contexts/AuthContext";
+import type { ChatMessage } from "./ChatBox";
+import { format } from "date-fns";
 
 export interface AdminUser {
   id: string;
@@ -42,10 +48,14 @@ const ChatList: React.FC<Props> = ({ userId, setSelectedUser, socket }) => {
   const [unreadCounts, setUnreadCounts] = useState<{
     [userId: string]: number;
   }>(loadUnreadCounts());
+  const [lastMessages, setLastMessages] = useState<Record<string, ChatMessage>>(
+    {}
+  );
 
   const { user } = useAuth();
   const token = user?.token;
-  // 🔹 Fetch unread counts on mount
+
+  // 🔹 Fetch unread counts
   useEffect(() => {
     const fetchCounts = async () => {
       if (!token) return;
@@ -60,35 +70,49 @@ const ChatList: React.FC<Props> = ({ userId, setSelectedUser, socket }) => {
     fetchCounts();
   }, [token]);
 
-  // 🔹 Handle new incoming messages
+  // 🔹 Handle incoming messages (live update)
   useEffect(() => {
     if (!socket) return;
 
-    const handleReceiveMessage = (message: any) => {
-      if (message.senderId !== userId) {
-        const isCurrentChatOpen = false; // replace with `selectedUser?.id === message.senderId` if available
+    const handleReceiveMessage = (message: ChatMessage) => {
+      const otherUserId =
+        message.senderId === userId ? message.receiverId : message.senderId;
 
-        if (!isCurrentChatOpen) {
-          setUnreadCounts((prev) => {
-            const updated = {
-              ...prev,
-              [message.senderId]: (prev[message.senderId] || 0) + 1
-            };
-            saveUnreadCounts(updated);
-            return updated;
-          });
-        }
+      const isCurrentChatOpen = false; // Could be improved by passing selectedUser from parent
+
+      if (!isCurrentChatOpen && message.senderId !== userId) {
+        setUnreadCounts((prev) => {
+          const updated = {
+            ...prev,
+            [message.senderId]: (prev[message.senderId] || 0) + 1
+          };
+          saveUnreadCounts(updated);
+          return updated;
+        });
       }
+
+      // 🔹 Update last message in real-time
+      setLastMessages((prev) => {
+        if (
+          !prev[otherUserId] ||
+          new Date(message.timestamp) > new Date(prev[otherUserId].timestamp)
+        ) {
+          return {
+            ...prev,
+            [otherUserId]: message
+          };
+        }
+        return prev;
+      });
     };
 
     socket.on("receive_message", handleReceiveMessage);
-
     return () => {
       socket.off("receive_message", handleReceiveMessage);
     };
   }, [socket, userId]);
 
-  // 🔹 Connect socket
+  // 🔹 Socket connection
   useEffect(() => {
     if (!connected && userId) {
       socket.connect();
@@ -116,7 +140,31 @@ const ChatList: React.FC<Props> = ({ userId, setSelectedUser, socket }) => {
     fetchAdmins();
   }, [userId]);
 
-  // 🔹 Handle user click
+  // 🔹 Fetch last messages
+  useEffect(() => {
+    const loadLastMessages = async () => {
+      const messagesMap: Record<string, any> = {};
+
+      for (const u of adminUsers) {
+        const lastMessage = await fetchLastChatMessage(
+          userId,
+          u.id,
+          user?.token
+        );
+        if (lastMessage) {
+          messagesMap[u.id] = lastMessage;
+        }
+      }
+
+      setLastMessages(messagesMap);
+    };
+
+    if (user && adminUsers.length) {
+      loadLastMessages();
+    }
+  }, [adminUsers, user]);
+
+  // 🔹 User click handler
   const handleUserClick = async (user: AdminUser) => {
     setSelectedUser(user);
     if (token) {
@@ -153,12 +201,78 @@ const ChatList: React.FC<Props> = ({ userId, setSelectedUser, socket }) => {
                 <Box
                   sx={{ display: "flex", alignItems: "center", width: "100%" }}
                 >
-                  <ListItemText primary={user.shop?.shopName || user.email} />
-                  <Badge
-                    color="error"
-                    badgeContent={unreadCounts[user.id] || 0}
-                    invisible={!unreadCounts[user.id]}
-                    sx={{ ml: 1 }} // margin-left for spacing
+                  <ListItemAvatar>
+                    <Badge
+                      color="error"
+                      badgeContent={unreadCounts[user.id] || 0}
+                      invisible={!unreadCounts[user.id]}
+                      overlap="circular"
+                      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                    >
+                      <Avatar sx={{ height: 36, width: 36, fontSize: 15 }}>
+                        {user.shop?.shopName
+                          ? user.shop.shopName.charAt(0).toUpperCase()
+                          : user.email.charAt(0).toUpperCase()}
+                      </Avatar>
+                    </Badge>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={user.shop?.shopName || user.email}
+                    secondary={
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          width: "100%"
+                        }}
+                      >
+                        <Tooltip
+                          title={
+                            lastMessages[user.id]
+                              ? `${
+                                  lastMessages[user.id].senderId === userId
+                                    ? "You: "
+                                    : ""
+                                }${lastMessages[user.id].message}`
+                              : ""
+                          }
+                          placement="top-start"
+                        >
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            noWrap
+                            sx={{
+                              maxWidth: "160px", // Adjust width for truncation
+                              overflow: "hidden",
+                              textOverflow: "ellipsis"
+                            }}
+                          >
+                            {lastMessages[user.id]
+                              ? `${
+                                  lastMessages[user.id].senderId === userId
+                                    ? "You: "
+                                    : ""
+                                }${lastMessages[user.id].message}`
+                              : "No messages yet"}
+                          </Typography>
+                        </Tooltip>
+
+                        {lastMessages[user.id] && (
+                          <Typography
+                            variant="caption"
+                            color="text.disabled"
+                            sx={{ ml: 2, whiteSpace: "nowrap", flexShrink: 0 }}
+                          >
+                            {format(
+                              new Date(lastMessages[user.id].timestamp),
+                              "p"
+                            )}
+                          </Typography>
+                        )}
+                      </Box>
+                    }
                   />
                 </Box>
               </ListItemButton>

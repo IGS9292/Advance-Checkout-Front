@@ -93,12 +93,23 @@ export default function SideMenu() {
             style={{ height: 40, width: "auto", maxWidth: "100%" }}
           />
         ) : (
-          <Box sx={{ width: 40 }} /> // Keep layout spacing when collapsed
+          <Box sx={{ width: 40 }} />
         )}
 
-        <IconButton onClick={handleToggleDrawer} size="small">
-          {open ? <ChevronLeftIcon /> : <MenuRoundedIcon />}
-        </IconButton>
+        <Tooltip title={open ? "Collapse Sidebar" : "Expand Sidebar"}>
+          <IconButton
+            onClick={handleToggleDrawer}
+            size="small"
+            sx={{
+              boxShadow: "none",
+              "&:focus": {
+                outline: "none"
+              }
+            }}
+          >
+            {open ? <ChevronLeftIcon /> : <MenuRoundedIcon />}
+          </IconButton>
+        </Tooltip>
       </DrawerHeader>
 
       <Divider />

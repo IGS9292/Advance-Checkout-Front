@@ -4,7 +4,8 @@ import {
   Button,
   Typography,
   Stack,
-  IconButton
+  IconButton,
+  Avatar
 } from "@mui/material";
 import type { AdminUser } from "./ChatList";
 import { useEffect, useRef, useState } from "react";
@@ -13,7 +14,7 @@ import {
   deleteChatMessages,
   fetchChatMessages
 } from "../../../services/ChatSupportService";
-import { format, isToday, isYesterday, parseISO } from "date-fns";
+import { format, isThisWeek, isToday, isYesterday, parseISO } from "date-fns";
 import { GridDeleteIcon } from "@mui/x-data-grid";
 
 interface Props {
@@ -22,7 +23,7 @@ interface Props {
   socket: any;
 }
 
-interface ChatMessage {
+export interface ChatMessage {
   senderId: string;
   receiverId: string;
   message: string;
@@ -32,16 +33,28 @@ interface ChatMessage {
 const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+
   const endRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
 
   // Group messages by date
+
   const groupByDate = (msgs: ChatMessage[]) => {
     return msgs.reduce((acc: Record<string, ChatMessage[]>, msg) => {
       const date = new Date(msg.timestamp);
-      let dateKey = format(date, "yyyy-MM-dd");
-      if (isToday(date)) dateKey = "Today";
-      else if (isYesterday(date)) dateKey = "Yesterday";
+      let dateKey = format(date, "dd-MM-yyyy");
+
+      if (isToday(date)) {
+        dateKey = "Today";
+      } else if (isYesterday(date)) {
+        dateKey = "Yesterday";
+      } else if (isThisWeek(date, { weekStartsOn: 1 })) {
+        // Show weekday name like "Monday"
+        dateKey = format(date, "EEEE");
+      } else {
+        // Older than this week: fallback to full date
+        dateKey = format(date, "dd-MM-yyyy");
+      }
 
       if (!acc[dateKey]) acc[dateKey] = [];
       acc[dateKey].push(msg);
@@ -154,14 +167,37 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography variant="h6" gutterBottom>
-              Chat with {selectedUser.shop?.shopName || selectedUser.email}
-            </Typography>
-
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                mb: 1,
+                width: "100%"
+              }}
+            >
+              <Avatar sx={{ height: 36, width: 36, fontSize: 15 }}>
+                {selectedUser.shop?.shopName
+                  ? selectedUser.shop.shopName.charAt(0).toUpperCase()
+                  : selectedUser.email.charAt(0).toUpperCase()}
+              </Avatar>
+              <Typography variant="h6" gutterBottom>
+                {selectedUser.shop?.shopName || selectedUser.email}
+              </Typography>
+            </Box>
             <IconButton
               onClick={handleDeleteMessages}
               size="small"
-              sx={{ color: "error.main" }}
+              sx={{
+                color: "error.main",
+                mb: 1,
+                outline: "none",
+                border: "none", 
+                boxShadow: "none", 
+                "&:focus": {
+                  outline: "none"
+                }
+              }}
             >
               <GridDeleteIcon />
             </IconButton>
