@@ -1,20 +1,36 @@
-
 import ReactECharts from "echarts-for-react";
 interface PieChartProps {
-  title: string;
   data: { name: string; value: number }[];
 }
 
-export default function PieChart({ title, data }: PieChartProps) {
+export default function PieChart({ data }: PieChartProps) {
   const option = {
-    title: { text: title, left: "center" },
     tooltip: { trigger: "item" },
     legend: { bottom: 10, left: "center" },
+    toolbox: {
+      show: true,
+      orient: "horizontal",
+      top: 0,
+      right: 0,
+      itemSize: 16,
+      feature: {
+        saveAsImage: {
+          title: "Save",
+          type: "png",
+          name: "chart",
+          pixelRatio: 2
+        }
+      }
+    },
     series: [
       {
         type: "pie",
         radius: "50%",
         data,
+        label: {
+          color: "#333",
+          fontWeight: "bold"
+        },
         emphasis: {
           itemStyle: {
             shadowBlur: 10,

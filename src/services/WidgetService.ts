@@ -34,14 +34,19 @@ export const fetchDashboardCounts = async (token: string) => {
   }
 };
 
-export const getOrdersPerDay = async (token: string) => {
+export const getOrdersPerDay = async (
+  token: string,
+  dateFilter?: { range?: string; from?: string; to?: string }
+) => {
   const res = await axios.get(`${baseURL}/v1/orders-per-day`, {
     headers: {
       Authorization: `Bearer ${token}`
-    }
+    },
+    params: dateFilter // this adds ?range=this_week etc.
   });
   return res.data;
 };
+
 
 export const getOrdersByShop = async (token?: string) => {
   if (!token) throw new Error("No token available");

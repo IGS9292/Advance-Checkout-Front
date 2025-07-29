@@ -2,23 +2,35 @@
 import ReactECharts from "echarts-for-react";
 
 interface BarChartProps {
-  title: string;
   categories: string[];
   values: number[];
   label?: string;
 }
 
 export default function BarChart({
-  title,
   categories,
   values,
   label = "Count"
 }: BarChartProps) {
   const option = {
-    title: { text: title, left: "center" },
     tooltip: {},
     xAxis: { type: "category", data: categories },
     yAxis: { type: "value" },
+    toolbox: {
+      show: true,
+      orient: "horizontal",
+      top: 0,
+      right: 0,
+      itemSize: 16,
+      feature: {
+        saveAsImage: {
+          title: "Save",
+          type: "png",
+          name: "chart",
+          pixelRatio: 2
+        }
+      }
+    },
     series: [
       {
         name: label,

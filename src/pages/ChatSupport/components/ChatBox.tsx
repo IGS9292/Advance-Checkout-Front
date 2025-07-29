@@ -5,7 +5,8 @@ import {
   Typography,
   Stack,
   IconButton,
-  Avatar
+  Avatar,
+  Tooltip
 } from "@mui/material";
 import type { AdminUser } from "./ChatList";
 import { useEffect, useRef, useState } from "react";
@@ -185,22 +186,24 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
                 {selectedUser.shop?.shopName || selectedUser.email}
               </Typography>
             </Box>
-            <IconButton
-              onClick={handleDeleteMessages}
-              size="small"
-              sx={{
-                color: "error.main",
-                mb: 1,
-                outline: "none",
-                border: "none",
-                boxShadow: "none",
-                "&:focus": {
-                  outline: "none"
-                }
-              }}
-            >
-              <GridDeleteIcon />
-            </IconButton>
+            <Tooltip title="Delete Chat">
+              <IconButton
+                onClick={handleDeleteMessages}
+                size="small"
+                sx={{
+                  color: "error.main",
+                  mb: 1,
+                  outline: "none",
+                  border: "none",
+                  boxShadow: "none",
+                  "&:focus": {
+                    outline: "none"
+                  }
+                }}
+              >
+                <GridDeleteIcon />
+              </IconButton>
+            </Tooltip>
           </Stack>
 
           <Box
