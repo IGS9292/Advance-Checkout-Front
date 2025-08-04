@@ -190,7 +190,12 @@ const ShopsListView = () => {
 
   return (
     <>
-      <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: { sm: "100%", lg: "100%" }
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -215,8 +220,10 @@ const ShopsListView = () => {
         </Box>
 
         <Grid container spacing={2}>
-          <Grid size={{ xs: 12, lg: 12 }}>
-            <CustomizedDataGrid rows={rows} columns={columns} />
+          <Grid size={{ xs: 12 }}>
+            <Box sx={{ width: "100%", overflowX: "auto" }}>
+              <CustomizedDataGrid rows={rows} columns={columns} />
+            </Box>
           </Grid>
         </Grid>
       </Box>

@@ -87,7 +87,8 @@ export const useCouponColumns = (
             return {
               ...col,
               headerName: "Sr No.",
-              width: 60,
+              minWidth: 60,
+              flex: 0.3,
               align: "center",
               headerAlign: "center",
               sortable: false
@@ -114,7 +115,8 @@ export const useCouponColumns = (
       mappedColumns.push({
         field: "status",
         headerName: "Status",
-        width: 120,
+        minWidth: 120,
+        flex: 1,
         renderCell: (params: GridRenderCellParams) => (
           <Chip
             variant="outlined"
@@ -145,7 +147,8 @@ export const useCouponColumns = (
         filterable: false,
         align: "center",
         headerAlign: "center",
-        width: 140,
+        minWidth: 140,
+        flex: 0.5,
         renderCell: (params) => {
           const isPending = params.row.status === "pending";
 

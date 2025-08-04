@@ -19,6 +19,7 @@ import ResetPassword from "../pages/Login/components/ResetPassword.tsx";
 import ChatSupport from "../pages/ChatSupport/ChatSupport.tsx";
 import Orders from "../pages/orders/orders.tsx";
 import DashboardView from "../pages/dashboard/components/DashboardView.tsx";
+import PaymentGateway from "../pages/paymentGateway/PaymentGateway.tsx";
 
 const AppRouter = () => {
   const { isAuthenticated, role } = useAuth();
@@ -79,6 +80,7 @@ const AppRouter = () => {
           <Route path="orders" element={<Orders />} />
           <Route path="coupons" element={<CouponsListView />} />
           <Route path="checkout" element={<Checkout />} />
+          <Route path="payment-gateway" element={<PaymentGateway/>} />
           <Route path="chatSupport" element={<ChatSupport />} />
           <Route path="settings" element={<SettingsView />} />
           <Route path="about" element={<AboutView />} />
@@ -101,6 +103,7 @@ const AppRouter = () => {
           <Route path="tasks" element={<TasksView />} />
           <Route path="orders" element={<Orders />} />
           <Route path="shops" element={<ShopsListView />} />
+          <Route path="payment-gateway" element={<PaymentGateway/>} />
           <Route path="chatSupport" element={<ChatSupport />} />
           <Route path="settings" element={<SettingsView />} />
           <Route path="about" element={<AboutView />} />

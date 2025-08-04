@@ -20,7 +20,7 @@ const ChatSupportView = () => {
         height="88vh"
         overflow="hidden"
       >
-        <Stack direction="row" flexGrow={1} width="100%" height="100%">
+        <Stack direction="row" width="100%" height="100%">
           <ChatList
             userId={userId}
             setSelectedUser={setSelectedUser}

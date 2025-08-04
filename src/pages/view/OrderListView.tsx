@@ -144,7 +144,9 @@ export default function OrderListView() {
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px" } }}>
+    <Box
+      sx={{ width: "100%", maxWidth: { sm: "100%", md: "1700px", lg: "100%" } }}
+    >
       <Box
         sx={{
           display: "flex",
@@ -178,7 +180,9 @@ export default function OrderListView() {
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
-          <CustomizedDataGrid rows={rows} columns={columns} />
+          <Box sx={{ width: "100%", overflowX: "auto" }}>
+            <CustomizedDataGrid rows={rows} columns={columns} />
+          </Box>
         </Grid>
       </Grid>
 

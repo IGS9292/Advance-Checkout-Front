@@ -9,7 +9,6 @@ export default function CustomizedDataGrid({ rows, columns }: Props) {
   return (
     <>
       <DataGrid
-        // checkboxSelection
         rows={rows}
         columns={columns}
         getRowClassName={(params) =>
@@ -19,21 +18,17 @@ export default function CustomizedDataGrid({ rows, columns }: Props) {
           pagination: { paginationModel: { pageSize: 15 } }
         }}
         pageSizeOptions={[10, 20, 50]}
-        disableColumnResize
         density="compact"
         hideFooterSelectedRowCount
         sx={{
-          "& .MuiDataGrid-cell:focus": {
+          "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
             outline: "none"
           },
-          "& .MuiDataGrid-cell:focus-within": {
-            outline: "none"
-          },
-          "& .MuiDataGrid-row.Mui-selected": {
+          "& .MuiDataGrid-row.Mui-selected, & .MuiDataGrid-cell.Mui-selected": {
             backgroundColor: "transparent"
           },
-          "& .MuiDataGrid-cell.Mui-selected": {
-            backgroundColor: "transparent"
+          "& .MuiDataGrid-columnHeaders, & .MuiDataGrid-cell": {
+            transition: "all 0.2s ease"
           }
         }}
         slotProps={{

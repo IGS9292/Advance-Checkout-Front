@@ -55,7 +55,8 @@ export const UseOrderColumns = (
             return {
               ...col,
               headerName: "Sr No.",
-              width: 60,
+              minWidth: 60,
+              flex: 0.3,
               align: "center",
               headerAlign: "center",
               sortable: false
@@ -65,6 +66,8 @@ export const UseOrderColumns = (
           if (field === "shopName") {
             return {
               ...col,
+              minWidth: 120,
+              flex: 1,
               headerName: "Shop Name"
             };
           }
@@ -89,7 +92,8 @@ export const UseOrderColumns = (
           filterable: false,
           align: "center",
           headerAlign: "center",
-          width: 140,
+          minWidth: 140,
+          flex: 0.5,
           renderCell: (params) => {
             return (
               <Box

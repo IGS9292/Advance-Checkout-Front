@@ -21,6 +21,7 @@ import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
 import PaymentRoundedIcon from "@mui/icons-material/PaymentRounded";
 import SmsRoundedIcon from "@mui/icons-material/SmsRounded";
 import StoreRoundedIcon from "@mui/icons-material/StoreRounded";
+import { CurrencyRupeeRounded } from "@mui/icons-material";
 
 const mainListItems = [
   { text: "Home", icon: <HomeRoundedIcon />, path: "/dashboard" },
@@ -40,6 +41,11 @@ const mainListItems = [
     role: "1"
   },
   { text: "Shops", icon: <StoreRoundedIcon />, path: "/shops", role: "0" },
+  {
+    text: "Payment Gateway",
+    icon: <CurrencyRupeeRounded />,
+    path: "/payment-gateway"
+  },
   {
     text: "Chat Support",
     icon: <SmsRoundedIcon />,
