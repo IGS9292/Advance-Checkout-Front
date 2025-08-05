@@ -360,7 +360,9 @@ const ShopsListView = () => {
             </Stack>
 
             <DialogActions sx={{ mt: 2 }}>
-              <Button onClick={handleCloseDialog}>Cancel</Button>
+              <Button onClick={handleCloseDialog} variant="outlined">
+                Cancel
+              </Button>
               <Button variant="contained" type="submit">
                 {editingRow ? "Update" : "Save"}
               </Button>

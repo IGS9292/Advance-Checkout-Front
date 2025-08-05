@@ -96,7 +96,7 @@ const PaymentMethodShop = () => {
           const configured = gateway.shopConnections?.[0];
           return (
             <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={gateway.id}>
-              <Paper elevation={3} sx={{ p: 2, textAlign: "center" }}>
+              <Paper elevation={1} sx={{ p: 2, textAlign: "center" }}>
                 <Box display="flex" justifyContent="center" mb={2}>
                   <Avatar
                     src={gateway.gatewayImageUrl}
@@ -127,10 +127,13 @@ const PaymentMethodShop = () => {
                     />
                   ) : (
                     <Button
-                      variant="text"
+                      variant="outlined"
                       color="primary"
                       onClick={() => handleSetupClick(gateway)}
-                      sx={{ minHeight: 32, padding: "4px 8px" }}
+                      sx={{
+                        minHeight: 32,
+                        padding: "4px 8px"
+                      }}
                     >
                       Click to setup
                     </Button>
@@ -190,7 +193,9 @@ const PaymentMethodShop = () => {
           </DialogContent>
 
           <DialogActions>
-            <Button onClick={() => setSelectedGateway(null)}>Cancel</Button>
+            <Button onClick={() => setSelectedGateway(null)} variant="outlined">
+              Cancel
+            </Button>
             <Button variant="contained" type="submit">
               Save & Activate
             </Button>

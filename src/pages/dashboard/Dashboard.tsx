@@ -2,7 +2,7 @@ import type {} from "@mui/x-date-pickers/themeAugmentation";
 import type {} from "@mui/x-charts/themeAugmentation";
 import type {} from "@mui/x-data-grid/themeAugmentation";
 import type {} from "@mui/x-tree-view/themeAugmentation";
-import { alpha } from "@mui/material/styles";
+import { alpha, useTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -17,6 +17,7 @@ import {
   treeViewCustomizations
 } from "./theme/customizations";
 import { Outlet } from "react-router-dom";
+import { useMediaQuery } from "@mui/material";
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -26,12 +27,16 @@ const xThemeComponents = {
 };
 
 export default function Dashboard(props: { disableCustomTheme?: boolean }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: "flex" }}>
-        <SideMenu />
-        <AppNavbar />
+        <Box>
+          {!isMobile && <SideMenu />}
+          <AppNavbar />
+        </Box>
         {/* Main content */}
         <Box
           component="main"
