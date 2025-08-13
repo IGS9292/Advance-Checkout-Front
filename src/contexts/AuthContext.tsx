@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 // Define user shape
 interface User {
-  id: string; // associate shopId
+  id: string; 
   role: string;
   token: string;
   email: string;

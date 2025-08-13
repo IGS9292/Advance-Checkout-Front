@@ -50,6 +50,12 @@ const mainListItems = [
     text: "Chat Support",
     icon: <SmsRoundedIcon />,
     path: "/chatsupport"
+  },
+  {
+    text: "Customers",
+    icon: <SmsRoundedIcon />,
+    path: "/customers",
+    role: "1"
   }
 ];
 
