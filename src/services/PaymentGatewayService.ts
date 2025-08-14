@@ -1,9 +1,14 @@
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_API_BASE as string;
+// Create a single axios instance
+export const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE,
+  withCredentials: true // ✅ send cookies / credentials
+});
 
+// Use api instance for all requests
 export const getAllPaymentMethods = async () => {
-  const res = await axios.get(`${baseURL}/v1/payment-method`);
+  const res = await api.get("/v1/payment-method");
   return res.data;
 };
 
@@ -12,7 +17,7 @@ export const createPaymentMethod = async (data: {
   gatewayImage?: string;
   status?: "active" | "inactive";
 }) => {
-  const res = await axios.post(`${baseURL}/v1/payment-method`, data);
+  const res = await api.post("/v1/payment-method", data);
   return res.data;
 };
 
@@ -24,7 +29,7 @@ export const updatePaymentMethod = async (
     status?: "active" | "inactive";
   }
 ) => {
-  const res = await axios.put(`${baseURL}/v1/payment-method/${id}`, data);
+  const res = await api.put(`/v1/payment-method/${id}`, data);
   return res.data;
 };
 
@@ -32,13 +37,11 @@ export const updatePaymentMethodStatus = async (
   id: number,
   status: "active" | "inactive"
 ) => {
-  const res = await axios.patch(`${baseURL}/v1/payment-method/${id}/status`, {
-    status
-  });
+  const res = await api.put(`/v1/payment-method/${id}/status`, { status });
   return res.data;
 };
 
 export const deletePaymentMethod = async (id: string | number) => {
-  const res = await axios.delete(`${baseURL}/v1/payment-method/${id}`);
+  const res = await api.delete(`/v1/payment-method/${id}`);
   return res.data;
 };

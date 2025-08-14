@@ -1,5 +1,5 @@
 import type { GridColDef } from "@mui/x-data-grid";
-import { getAllCustomers } from "../../../services/customers.service";
+import { getAllCustomers } from "../../../services/Customers.service";
 import { useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import type { AxiosError } from "axios";
@@ -16,6 +16,7 @@ export const UseCustomerCols = (onView: (row: any) => void) => {
   ) => {
     try {
       const data = await getAllCustomers(user?.token);
+      // console.log("customers token :::----", user?.token);
 
       // ✅ Expecting { defaultAddresses: [], otherAddresses: [] }
       const defaultAddresses = Array.isArray(data?.defaultAddresses)

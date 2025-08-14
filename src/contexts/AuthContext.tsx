@@ -1,76 +1,103 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import type { ReactNode } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  login as loginAction,
+  logout as logoutAction,
+  setAccessToken,
+  setUser
+} from "../store/authSlice";
+import type { RootState, AppDispatch } from "../store";
+import { getCurrentUser, refreshAccessToken } from "../services/AuthService";
 
-// Define user shape
-interface User {
-  id: string; 
+export interface User {
+  id: string;
   role: string;
   token: string;
   email: string;
   shopName?: string;
 }
 
-// Define context value shape
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   role: string | null;
-  login: (userData: User) => void;
+  login: (credentials: {
+    email: string;
+    password: string;
+    token: string;
+  }) => Promise<void>;
   logout: () => void;
   loading: boolean;
 }
 
-// Create context with undefined initially
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
-// Provider props
-interface AuthProviderProps {
-  children: ReactNode;
-}
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const dispatch = useDispatch<AppDispatch>();
 
-// Auth provider
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // NEW
+  const { user, accessToken, loading } = useSelector(
+    (state: RootState) => state.auth
+  );
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false); // Done loading
-  }, []);
+    const restoreSession = async () => {
+      try {
+        const newAccessToken = await refreshAccessToken();
+        dispatch(setAccessToken(newAccessToken));
+        // Fetch user object
+        const userData = await getCurrentUser(newAccessToken);
+        dispatch(setUser(userData));
 
-  const login = (userData: User) => {
-    setUser(userData);
-        // console.log("userData:", userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-     localStorage.setItem("token", userData.token);
+        const lastPath = localStorage.getItem("lastPath");
+        if (lastPath && window.location.pathname !== lastPath) {
+          window.history.replaceState({}, "", lastPath);
+        }
+      } catch {
+        dispatch(logoutAction());
+      }
+    };
+    restoreSession();
+  }, [dispatch]);
+
+  const login = async (credentials: {
+    email: string;
+    password: string;
+    token: string;
+  }) => {
+    try {
+      // Login call
+      const data = await dispatch(loginAction(credentials)).unwrap();
+
+      // data contains { user, token }
+      dispatch(setAccessToken(data.token));
+    } catch (err) {
+      throw err; // propagate error to UI
+    }
   };
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-      localStorage.removeItem("token"); 
+    dispatch(logoutAction());
   };
 
-  const value: AuthContextType & { loading: boolean } = {
-    user,
+  const authValue: AuthContextType = {
+    user: user ? { ...user, token: accessToken || "" } : null,
     isAuthenticated: !!user,
-    role: user?.role?.toString() || null,
+    role: user?.role || null,
     login,
     logout,
     loading
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>
+  );
 };
 
-// Typed custom hook
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };

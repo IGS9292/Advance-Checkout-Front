@@ -56,7 +56,7 @@ export const updateShopStatus = async (
   id: number,
   status: "approved" | "rejected"
 ) => {
-  const res = await axios.patch(`${baseURL}/v1/${id}/status`, { status });
+  const res = await axios.put(`${baseURL}/v1/${id}/status`, { status });
   return res.data;
 };
 

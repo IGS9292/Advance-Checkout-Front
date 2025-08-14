@@ -72,6 +72,7 @@ interface MenuContentProps {
 export default function MenuContent({ drawerOpen = true }: MenuContentProps) {
   const { role } = useAuth(); // "0" = superadmin, "1" = admin
   const location = useLocation();
+  console.log("role menucontent ::::", typeof role);
   const basePath = role === "0" ? "/superadmin-dashboard" : "/admin-dashboard";
 
   const filteredMainItems = mainListItems.filter((item) => {
