@@ -1,16 +1,8 @@
-import React, { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  login as loginAction,
-  logout as logoutAction,
-  setAccessToken,
-  setUser
-} from "../store/authSlice";
-import type { RootState, AppDispatch } from "../store";
-import { getCurrentUser, refreshAccessToken } from "../services/AuthService";
 
-export interface User {
+// Define user shape
+interface User {
   id: string;
   role: string;
   token: string;
@@ -18,86 +10,67 @@ export interface User {
   shopName?: string;
 }
 
-export interface AuthContextType {
+// Define context value shape
+interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   role: string | null;
-  login: (credentials: {
-    email: string;
-    password: string;
-    token: string;
-  }) => Promise<void>;
+  login: (userData: User) => void;
   logout: () => void;
   loading: boolean;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
+// Create context with undefined initially
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const dispatch = useDispatch<AppDispatch>();
+// Provider props
+interface AuthProviderProps {
+  children: ReactNode;
+}
 
-  const { user, accessToken, loading } = useSelector(
-    (state: RootState) => state.auth
-  );
+// Auth provider
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true); // NEW
 
   useEffect(() => {
-    const restoreSession = async () => {
-      try {
-        const newAccessToken = await refreshAccessToken();
-        dispatch(setAccessToken(newAccessToken));
-        // Fetch user object
-        const userData = await getCurrentUser(newAccessToken);
-        dispatch(setUser(userData));
-
-        const lastPath = localStorage.getItem("lastPath");
-        if (lastPath && window.location.pathname !== lastPath) {
-          window.history.replaceState({}, "", lastPath);
-        }
-      } catch {
-        dispatch(logoutAction());
-      }
-    };
-    restoreSession();
-  }, [dispatch]);
-
-  const login = async (credentials: {
-    email: string;
-    password: string;
-    token: string;
-  }) => {
-    try {
-      // Login call
-      const data = await dispatch(loginAction(credentials)).unwrap();
-
-      // data contains { user, token }
-      dispatch(setAccessToken(data.token));
-    } catch (err) {
-      throw err; // propagate error to UI
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     }
+    setLoading(false); // Done loading
+  }, []);
+
+  const login = (userData: User) => {
+    setUser(userData);
+    // console.log("userData:", userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", userData.token);
   };
 
   const logout = () => {
-    dispatch(logoutAction());
+    setUser(null);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
-  const authValue: AuthContextType = {
-    user: user ? { ...user, token: accessToken || "" } : null,
+  const value: AuthContextType & { loading: boolean } = {
+    user,
     isAuthenticated: !!user,
-    role: user?.role || null,
+    role: user?.role?.toString() || null,
     login,
     logout,
     loading
   };
 
-  return (
-    <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// Typed custom hook
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within an AuthProvider");
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
   return context;
 };

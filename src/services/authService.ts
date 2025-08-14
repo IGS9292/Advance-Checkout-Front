@@ -1,14 +1,6 @@
-// AuthService.ts
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
-
-export const refreshAccessToken = async () => {
-  const res = await axios.get(`${baseURL}/auth/refresh-token`, {
-    withCredentials: true
-  });
-  return res.data.accessToken;
-};
 
 export const loginUser = async ({
   email,
@@ -19,27 +11,12 @@ export const loginUser = async ({
   password: string;
   token: string;
 }) => {
-  const res = await axios.post(
-    `${baseURL}/auth/login`,
-    {
-      email,
-      password,
-      token
-    },
-    { withCredentials: true }
-  ); // to send/receive HTTP-only cookie
-
-  // This returns { user, accessToken }
-  return res.data;
-};
-
-// AuthService.ts
-export const getCurrentUser = async (token: string) => {
-  const res = await axios.get(`${baseURL}/auth/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-    withCredentials: true
+  const res = await axios.post(`${baseURL}/auth/login`, {
+    email,
+    password,
+    token
   });
-  return res.data.user;
+  return res.data;
 };
 
 export const signupUser = async ({

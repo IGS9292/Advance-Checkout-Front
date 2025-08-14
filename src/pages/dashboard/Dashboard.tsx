@@ -16,12 +16,8 @@ import {
   datePickersCustomizations,
   treeViewCustomizations
 } from "./theme/customizations";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useMediaQuery } from "@mui/material";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../store";
-import { useEffect } from "react";
-import RouteTracker from "../../helper/RouteTracker";
 
 const xThemeComponents = {
   ...chartsCustomizations,
@@ -33,24 +29,6 @@ const xThemeComponents = {
 export default function Dashboard(props: { disableCustomTheme?: boolean }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { accessToken } = useSelector((state: RootState) => state.auth);
-  // Store last route when it changes
-  useEffect(() => {
-    if (accessToken && location.pathname !== "/login") {
-      localStorage.setItem("lastPath", location.pathname);
-    }
-  }, [location, accessToken]);
-
-  // Restore last route on mount
-  useEffect(() => {
-    const lastPath = localStorage.getItem("lastPath");
-    if (accessToken && lastPath && location.pathname === "/") {
-      navigate(lastPath);
-    }
-  }, []);
-
   return (
     <AppTheme {...props} themeComponents={xThemeComponents}>
       <CssBaseline enableColorScheme />
@@ -81,7 +59,6 @@ export default function Dashboard(props: { disableCustomTheme?: boolean }) {
           >
             <Header />
             {/* <Checkout/> */}
-            <RouteTracker />
             <Outlet />
 
             {/* <MainGrid /> */}

@@ -1,19 +1,15 @@
-// In a top-level component like App.tsx
-import { useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { useEffect } from "react";
-import type { RootState } from "../store";
-import { useAuth } from "../contexts/AuthContext";
+// // In a top-level component like App.tsx
+// import { useLocation } from "react-router-dom";
+// import { useEffect } from "react";
 
-const RouteTracker = () => {
-  const location = useLocation();
-  const { role } = useAuth();
+// const RouteTracker = () => {
+//   const location = useLocation();
 
-  useEffect(() => {
-    localStorage.setItem("lastPath", location.pathname + location.search);
-  }, [location]);
+//   useEffect(() => {
+//     localStorage.setItem("lastPath", location.pathname + location.search);
+//   }, [location]);
 
-  return null;
-};
+//   return null;
+// };
 
-export default RouteTracker;
+// export default RouteTracker;

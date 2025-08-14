@@ -113,25 +113,27 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
 
     try {
       // Call login from AuthContext with credentials
-      await login({ email, password, token: captchaToken });
-
-      // After login, get user from AuthContext
-      const { user } = useAuth(); // make sure to call inside the component body
-
-      if (!user) {
-        alert("Login failed");
+      const data = await loginUser({ email, password, token: captchaToken });
+      if (!data.status) {
+        alert(data.message || "Invalid login");
         return;
       }
 
       // console.log("user", user);
+      const userData = {
+        id: data.user.id,
+        email: data.user.email,
+        role: data.user.role,
+        token: data.token,
+        shopName: data.user.shopName
+      };
 
-      // const lastPath = localStorage.getItem("lastPath");
-      if (user.role === SUPERADMIN) {
-        const lastPath = localStorage.getItem("lastPath");
-        navigate(lastPath || "/superadmin-dashboard");
+      login(userData);
+      console.log("userData", userData);
+      if (userData.role === SUPERADMIN) {
+        navigate("/superadmin-dashboard");
       } else {
-        const lastPath = localStorage.getItem("lastPath");
-        navigate(lastPath || "/admin-dashboard");
+        navigate("/admin-dashboard");
       }
     } catch (err: any) {
       alert(err.response?.data?.message || "Login failed");

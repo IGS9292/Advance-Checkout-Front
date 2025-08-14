@@ -40,7 +40,7 @@ export const updateCouponStatus = async (
   status: "pending" | "approved" | "rejected",
   token?: string
 ) => {
-  const response = await axios.put(
+  const response = await axios.patch(
     `${baseURL}/v1/coupons/${id}/status`,
     {
       status
