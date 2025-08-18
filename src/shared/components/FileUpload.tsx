@@ -10,6 +10,9 @@ export const FileUpload: React.FC<{
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
+    // console.log("file console -",file)
+    // return;
     if (!file) return;
 
     setLoading(true);
@@ -19,7 +22,7 @@ export const FileUpload: React.FC<{
       const formData = new FormData();
       formData.append("file", file);
       const res = await axios.post(
-        `${import.meta.env.VITE_API_BASE}/upload`,
+        `${import.meta.env.VITE_API_BASE}/v1/file-upload`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" }

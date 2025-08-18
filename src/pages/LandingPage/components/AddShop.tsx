@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -14,6 +14,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { useForm, Controller } from "react-hook-form";
 import { requestShop } from "../../../services/ShopService";
+import { getAllPlans } from "../../../services/PlanService";
 
 const StyledBox = styled("div")(({ theme }) => ({
   alignSelf: "center",
@@ -43,6 +44,11 @@ const StyledBox = styled("div")(({ theme }) => ({
   })
 }));
 
+type Plan = {
+  id: number;
+  order_range: string;
+};
+
 const AddShop: React.FC = () => {
   const {
     handleSubmit,
@@ -60,12 +66,29 @@ const AddShop: React.FC = () => {
     }
   });
 
+  const [orderRanges, setOrderRanges] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const data = await getAllPlans();
+        const plans = Array.isArray(data) ? data : data?.plans || [];
+        const ranges = plans.map((plan: Plan) => plan.order_range);
+        console.log("order ranges->>>>", ranges);
+        setOrderRanges(ranges);
+      } catch (error) {
+        console.error("Error fetching plans:", error);
+      }
+    };
+    fetchPlans();
+  }, []);
+
   const onSubmit = async (data: any) => {
     const payload = {
       shopName: data.shopName,
       shopUrl: data.shopUrl,
       shopContactNo: data.shopContactNo,
-      ordersPerMonth: parseInt(data.ordersPerMonth, 10),
+      ordersPerMonth: data.ordersPerMonth,
       email: data.email,
       status: data.status as "pending" | "approved" | "rejected"
     };
@@ -224,7 +247,7 @@ const AddShop: React.FC = () => {
                   />
                 </FormControl>
 
-                <FormControl fullWidth required>
+                {/* <FormControl fullWidth required>
                   <FormLabel htmlFor="ordersPerMonth">
                     Orders per month
                   </FormLabel>
@@ -244,6 +267,32 @@ const AddShop: React.FC = () => {
                         <MenuItem value="500-2000">500 - 2000</MenuItem>
                         <MenuItem value="2000-10000">2000 - 10000</MenuItem>
                         <MenuItem value="10000+">10000+</MenuItem>
+                      </TextField>
+                    )}
+                  />
+                </FormControl> */}
+
+                <FormControl fullWidth required>
+                  <FormLabel htmlFor="ordersPerMonth">
+                    Orders per month
+                  </FormLabel>
+                  <Controller
+                    name="ordersPerMonth"
+                    control={control}
+                    rules={{ required: "Please select an option" }}
+                    render={({ field }) => (
+                      <TextField
+                        select
+                        {...field}
+                        id="ordersPerMonth"
+                        error={!!errors.ordersPerMonth}
+                        helperText={errors.ordersPerMonth?.message}
+                      >
+                        {orderRanges.map((range, idx) => (
+                          <MenuItem key={idx} value={range}>
+                            {range}
+                          </MenuItem>
+                        ))}
                       </TextField>
                     )}
                   />

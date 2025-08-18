@@ -21,6 +21,8 @@ import Orders from "../pages/orders/orders.tsx";
 import DashboardView from "../pages/dashboard/components/DashboardView.tsx";
 import PaymentGateway from "../pages/paymentGateway/PaymentGateway.tsx";
 import Customers from "../pages/customers/Customers.tsx";
+import Plan from "../pages/plan/Plan.tsx";
+import Shops from "../pages/shops/Shops.tsx";
 
 const AppRouter = () => {
   const { isAuthenticated, role } = useAuth();
@@ -104,7 +106,8 @@ const AppRouter = () => {
           <Route path="clients" element={<ClientsView />} />
           <Route path="tasks" element={<TasksView />} />
           <Route path="orders" element={<Orders />} />
-          <Route path="shops" element={<ShopsListView />} />
+          <Route path="shops" element={<Shops />} />
+           <Route path="plan" element={<Plan />} />
           <Route path="payment-gateway" element={<PaymentGateway />} />
           <Route path="chatSupport" element={<ChatSupport />} />
           <Route path="settings" element={<SettingsView />} />

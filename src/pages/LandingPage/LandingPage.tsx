@@ -12,6 +12,7 @@ import Testimonials from "./components/Testimonials";
 import FAQ from "./components/FAQ";
 import Footer from "./components/Footer";
 import AddShop from "./components/AddShop";
+import PlanCards from "./components/PlanCards";
 
 const sectionKeys = [
   "features",
@@ -53,7 +54,8 @@ export default function LandingPage(props: { disableCustomTheme?: boolean }) {
         </div>
         <Divider />
         <div ref={sectionRefs.current["pricing"]}>
-          <Pricing />
+          {/* <Pricing /> */}
+          <PlanCards />
         </div>
         <Divider />
         <div ref={sectionRefs.current["faq"]}>
@@ -64,6 +66,7 @@ export default function LandingPage(props: { disableCustomTheme?: boolean }) {
           <AddShop />
         </div>
         <Divider />
+
         <Footer />
       </div>
     </AppTheme>

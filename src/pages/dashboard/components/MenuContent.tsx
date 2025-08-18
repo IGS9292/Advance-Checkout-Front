@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  Card,
   List,
   ListItem,
   ListItemButton,
@@ -22,11 +23,12 @@ import PaymentRoundedIcon from "@mui/icons-material/PaymentRounded";
 import SmsRoundedIcon from "@mui/icons-material/SmsRounded";
 import StoreRoundedIcon from "@mui/icons-material/StoreRounded";
 import { CurrencyRupeeRounded } from "@mui/icons-material";
+import CardAlert from "./CardAlert";
 
 const mainListItems = [
   { text: "Home", icon: <HomeRoundedIcon />, path: "/dashboard" },
-  { text: "Analytics", icon: <AnalyticsRoundedIcon />, path: "/analytics" },
-  { text: "Clients", icon: <PeopleRoundedIcon />, path: "/clients" },
+  // { text: "Analytics", icon: <AnalyticsRoundedIcon />, path: "/analytics" },
+  // { text: "Clients", icon: <PeopleRoundedIcon />, path: "/clients" },
   { text: "Orders", icon: <ShoppingCartRoundedIcon />, path: "/orders" },
   {
     text: "Coupons",
@@ -40,7 +42,19 @@ const mainListItems = [
     path: "/checkout",
     role: "1"
   },
-  { text: "Shops", icon: <StoreRoundedIcon />, path: "/shops", role: "0" },
+  {
+    text: "Shops",
+    icon: <StoreRoundedIcon />,
+    path: "/shops",
+    role: "0"
+  },
+
+  {
+    text: "Plan",
+    icon: <AnalyticsRoundedIcon />,
+    path: "/plan",
+    role: "0"
+  },
   {
     text: "Payment Gateway",
     icon: <CurrencyRupeeRounded />,
@@ -53,7 +67,7 @@ const mainListItems = [
   },
   {
     text: "Customers",
-    icon: <SmsRoundedIcon />,
+    icon: <PeopleRoundedIcon />,
     path: "/customers",
     role: "1"
   }
@@ -71,6 +85,8 @@ interface MenuContentProps {
 
 export default function MenuContent({ drawerOpen = true }: MenuContentProps) {
   const { role } = useAuth(); // "0" = superadmin, "1" = admin
+  // const {  shopId } = useAuth();
+
   const location = useLocation();
   const basePath = role === "0" ? "/superadmin-dashboard" : "/admin-dashboard";
 
@@ -78,7 +94,7 @@ export default function MenuContent({ drawerOpen = true }: MenuContentProps) {
     if (item.role && item.role !== role) return false;
     return true;
   });
-
+  // console.log("shopId", shopId);
   const renderMenuItem = (item: any, index: number) => {
     const fullPath = `${basePath}${item.path}`;
     const selected = location.pathname === fullPath;
@@ -128,10 +144,15 @@ export default function MenuContent({ drawerOpen = true }: MenuContentProps) {
   };
 
   return (
-    <Stack sx={{ flexGrow: 1, p: 1, justifyContent: "space-between" }}>
-      <List dense>{filteredMainItems.map(renderMenuItem)}</List>
+    <>
+      <Stack sx={{ flexGrow: 1, p: 1, justifyContent: "space-between" }}>
+        <List dense>{filteredMainItems.map(renderMenuItem)}</List>
 
-      <List dense>{secondaryListItems.map(renderMenuItem)}</List>
-    </Stack>
+        <List dense>{secondaryListItems.map(renderMenuItem)}</List>
+      </Stack>
+
+      {/* {role === "1" && shopId && <CardAlert shopId={shopId} />} */}
+      {/* {role === "1" && <CardAlert />} */}
+    </>
   );
 }

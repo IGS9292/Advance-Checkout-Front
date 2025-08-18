@@ -4,14 +4,19 @@ const baseURL = import.meta.env.VITE_API_BASE as string;
 
 export const getAllShops = async () => {
   const res = await axios.get(`${baseURL}/v1/shops`);
-  return res.data;
+  // Ensure the frontend sees `planName` instead of `activePlan`
+  const shops = res.data.shops.map((shop: any) => ({
+    ...shop,
+    planName: shop.activePlan || null
+  }));
+  return { ...res.data, shops };
 };
 
 export const requestShop = async (data: {
   shopName: string;
   shopUrl: string;
   shopContactNo: string;
-  ordersPerMonth: number;
+  ordersPerMonth: string;
   email: string;
 }) => {
   const res = await axios.post(`${baseURL}/v1/shops/request`, data);
@@ -21,7 +26,7 @@ export const createShop = async (data: {
   shopName: string;
   shopUrl: string;
   shopContactNo: string;
-  ordersPerMonth: number;
+  ordersPerMonth: string;
   email: string;
   status?: "pending" | "approved" | "rejected";
   shopAccessToken?: string;
@@ -40,7 +45,7 @@ export const updateShop = async (
     shopName: string;
     shopUrl: string;
     shopContactNo: string;
-    ordersPerMonth: number;
+    ordersPerMonth: string;
     status: string;
     shopAccessToken?: string;
   }

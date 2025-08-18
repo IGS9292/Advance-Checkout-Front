@@ -7,6 +7,7 @@ interface User {
   role: string;
   token: string;
   email: string;
+  
   shopName?: string;
 }
 

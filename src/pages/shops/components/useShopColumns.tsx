@@ -5,9 +5,9 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import type { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { getAllShops } from "../../../../services/ShopService";
+import { getAllShops } from "../../../services/ShopService";
 
-export const useDynamicColumns = (
+export const useShopColumns = (
   handleEdit: (row: any) => void,
   handleDelete: (row: any) => void,
   handleApprove: (id: number) => void,
@@ -37,6 +37,7 @@ export const useDynamicColumns = (
         "srNo",
         "shopName",
         "users",
+        "planName",
         "shopAccessToken",
         "shopUrl",
         "shopContactNo",
@@ -70,6 +71,23 @@ export const useDynamicColumns = (
               headerAlign: "center"
             };
           }
+          if (field === "planName") {
+            return {
+              ...col,
+              headerName: "Active Plan",
+              minWidth: 140,
+              flex: 1,
+              renderCell: (params: GridRenderCellParams) => (
+                <Chip
+                  label={params.value || "No Active Plan"}
+                  color={params.value ? "primary" : "default"}
+                  size="small"
+                  variant="outlined"
+                />
+              )
+            };
+          }
+
           if (field === "shopAccessToken") {
             return {
               ...col,
@@ -129,8 +147,8 @@ export const useDynamicColumns = (
         filterable: false,
         align: "center",
         headerAlign: "center",
-minWidth: 140,
-  flex: 0.5,
+        minWidth: 140,
+        flex: 0.5,
         renderCell: (params) => {
           const isPending = params.row.status === "pending";
 

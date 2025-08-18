@@ -17,13 +17,19 @@ import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
 import Search from "../../shared/components/Search";
-import { useDynamicColumns } from "../dashboard/internals/data/gridData";
+import { useShopColumns } from "../shops/components/useShopColumns";
 import {
   createShop,
   deleteShop,
   updateShop,
   updateShopStatus
 } from "../../services/ShopService";
+import { getAllPlans } from "../../services/PlanService";
+
+type Plan = {
+  id: number;
+  order_range: string;
+};
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
@@ -44,6 +50,7 @@ const ShopsListView = () => {
   const [editingRow, setEditingRow] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
+  const [orderRanges, setOrderRanges] = useState<string[]>([]);
 
   const {
     control,
@@ -56,12 +63,27 @@ const ShopsListView = () => {
       shopName: "",
       shopUrl: "",
       shopContactNo: "",
-      ordersPerMonth: "0-500",
+      ordersPerMonth: "",
       email: "",
       status: "approved",
       shopAccessToken: "Not generated"
     }
   });
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const data = await getAllPlans();
+        const plans = Array.isArray(data) ? data : data?.plans || [];
+        const ranges = plans.map((plan: Plan) => plan.order_range);
+        console.log("order ranges->>>>", ranges);
+        setOrderRanges(ranges);
+      } catch (error) {
+        console.error("Error fetching plans:", error);
+      }
+    };
+    fetchPlans();
+  }, []);
 
   const handleEdit = (row: any) => {
     setEditingRow(row);
@@ -93,6 +115,7 @@ const ShopsListView = () => {
       await updateShopStatus(id, "approved");
       alert("✅ Request approved and email sent successfully");
       await fetchColumnsAndData(setRows, setFilteredRows, baseURL);
+      await getAllPlans();
     } catch (err) {
       console.error("Approval failed", err);
     }
@@ -107,7 +130,7 @@ const ShopsListView = () => {
     }
   };
 
-  const { columnsMeta: dynamicCols, fetchColumnsAndData } = useDynamicColumns(
+  const { columnsMeta: dynamicCols, fetchColumnsAndData } = useShopColumns(
     handleEdit,
     handleDelete,
     handleApprove,
@@ -161,7 +184,7 @@ const ShopsListView = () => {
       shopName: data.shopName,
       shopUrl: data.shopUrl,
       shopContactNo: data.shopContactNo,
-      ordersPerMonth: parseInt(data.ordersPerMonth, 10),
+      ordersPerMonth: data.ordersPerMonth,
       status: data.status as "pending" | "approved" | "rejected",
       shopAccessToken: data.shopAccessToken
     };
@@ -316,7 +339,7 @@ const ShopsListView = () => {
                 />
               </FormControl>
 
-              <FormControl fullWidth required>
+              {/* <FormControl fullWidth required>
                 <FormLabel>Orders per month</FormLabel>
                 <Controller
                   name="ordersPerMonth"
@@ -333,6 +356,30 @@ const ShopsListView = () => {
                       <MenuItem value="500-2000">500 - 2000</MenuItem>
                       <MenuItem value="2000-10000">2000 - 10000</MenuItem>
                       <MenuItem value="10000+">10000+</MenuItem>
+                    </TextField>
+                  )}
+                />
+              </FormControl> */}
+
+              <FormControl fullWidth required>
+                <FormLabel htmlFor="ordersPerMonth">Orders per month</FormLabel>
+                <Controller
+                  name="ordersPerMonth"
+                  control={control}
+                  rules={{ required: "Please select an option" }}
+                  render={({ field }) => (
+                    <TextField
+                      select
+                      {...field}
+                      id="ordersPerMonth"
+                      error={!!errors.ordersPerMonth}
+                      helperText={errors.ordersPerMonth?.message}
+                    >
+                      {orderRanges.map((range, idx) => (
+                        <MenuItem key={idx} value={range}>
+                          {range}
+                        </MenuItem>
+                      ))}
                     </TextField>
                   )}
                 />
