@@ -99,7 +99,6 @@ const RevenueInsights = () => {
             <FilterAltOutlined color="primary" />
           </IconButton>
         </Tooltip>
-
         {isFilterApplied && (
           <Tooltip title="Clear filter">
             <IconButton
@@ -110,7 +109,6 @@ const RevenueInsights = () => {
             </IconButton>
           </Tooltip>
         )}
-
         <Popover
           open={open}
           anchorEl={anchorEl}
@@ -131,8 +129,11 @@ const RevenueInsights = () => {
             }}
           />
         </Popover>
-
-        <DragIndicatorOutlined color="action" sx={{ cursor: "grab" }} />
+        <DragIndicatorOutlined
+          color="action"
+          className="drag-handle"
+          sx={{ cursor: "grab" }}
+        />
       </Stack>
 
       {/* Chart */}
