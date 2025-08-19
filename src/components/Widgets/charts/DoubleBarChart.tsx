@@ -83,7 +83,15 @@ const DoubleBarChart: React.FC<DoubleBarChartProps> = ({ data }) => {
         return content;
       }
     },
-    legend: { data: ["Highest Revenue", "Lowest Revenue"], bottom: 0 },
+    legend: {
+      data: ["Highest Revenue", "Lowest Revenue"],
+      top: 0,
+      // bottom: 10,
+      textStyle: {
+        color: "#808080",
+        fontSize: 12
+      }
+    },
     xAxis: { type: "category", data: monthNames },
     yAxis: { type: "value", max: yMax },
     series: [

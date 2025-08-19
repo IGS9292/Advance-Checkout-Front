@@ -16,7 +16,11 @@ export default function LineChart({ xData, yData }: LineChartProps) {
     tooltip: { trigger: "axis" },
     legend: {
       top: 0,
-      left: "center"
+      left: "center",
+         textStyle: {
+        color: "#808080", 
+        fontSize: 12 
+      }
     },
     xAxis: { type: "category", data: xData },
     yAxis: { type: "value" },

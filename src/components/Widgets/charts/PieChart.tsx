@@ -1,3 +1,4 @@
+import { color } from "echarts";
 import ReactECharts from "echarts-for-react";
 interface PieChartProps {
   data: { name: string; value: number }[];
@@ -6,7 +7,15 @@ interface PieChartProps {
 export default function PieChart({ data }: PieChartProps) {
   const option = {
     tooltip: { trigger: "item" },
-    legend: { bottom: 10, left: "center" },
+    legend: {
+      top: 0,
+      // bottom: 10,
+      left: "center",
+      textStyle: {
+        color: "#808080",
+        fontSize: 12
+      }
+    },
     toolbox: {
       show: true,
       orient: "horizontal",
@@ -28,7 +37,7 @@ export default function PieChart({ data }: PieChartProps) {
         radius: "50%",
         data,
         label: {
-          color: "#333",
+          color: "#808080",
           fontWeight: "bold"
         },
         emphasis: {
