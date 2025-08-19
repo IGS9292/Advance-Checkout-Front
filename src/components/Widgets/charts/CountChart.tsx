@@ -3,20 +3,20 @@ import {
   Card,
   Typography,
   CircularProgress,
-  Box,
-  IconButton,
-  Popover,
-  Tooltip
+  Box
+  // IconButton,
+  // Popover,
+  // Tooltip
 } from "@mui/material";
 import { getAllShops } from "../../../services/ShopService";
 import { getOrders } from "../../../services/OrderService";
 import {
-  DragIndicatorOutlined,
-  FilterAltOffOutlined,
-  FilterAltOutlined
+  DragIndicatorOutlined
+  // FilterAltOffOutlined,
+  // FilterAltOutlined
 } from "@mui/icons-material";
-import type { DateFilterState } from "../../../shared/components/DateFilter";
-import DateFilter from "../../../shared/components/DateFilter";
+// import type { DateFilterState } from "../../../shared/components/DateFilter";
+// import DateFilter from "../../../shared/components/DateFilter";
 
 interface CountChartProps {
   label: string;
@@ -28,26 +28,26 @@ export default function CountChart({ label, type, token }: CountChartProps) {
   const [value, setValue] = useState<number | null>(null);
 
   const [loading, setLoading] = useState(true);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [dateFilter, setDateFilter] = useState<DateFilterState>({
-    range: "today"
-  });
-  const open = Boolean(anchorEl);
+  // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  // const [dateFilter, setDateFilter] = useState<DateFilterState>({
+  //   range: "today"
+  // });
+  // const open = Boolean(anchorEl);
 
-  const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const isFilterApplied =
-    dateFilter.range !== "today" &&
-    !(
-      dateFilter.range === "custom" &&
-      !dateFilter.startDate &&
-      !dateFilter.endDate
-    );
+  // const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
+  // const isFilterApplied =
+  //   dateFilter.range !== "today" &&
+  //   !(
+  //     dateFilter.range === "custom" &&
+  //     !dateFilter.startDate &&
+  //     !dateFilter.endDate
+  //   );
 
-  const handleFilterClose = () => {
-    setAnchorEl(null);
-  };
+  // const handleFilterClose = () => {
+  //   setAnchorEl(null);
+  // };
 
   useEffect(() => {
     const fetchCount = async () => {
@@ -97,7 +97,7 @@ export default function CountChart({ label, type, token }: CountChartProps) {
           alignItems: "center"
         }}
       >
-        <Tooltip title={"Filter by date"}>
+        {/* <Tooltip title={"Filter by date"}>
           <IconButton
             sx={{
               borderColor: "transparent",
@@ -114,9 +114,9 @@ export default function CountChart({ label, type, token }: CountChartProps) {
           >
             <FilterAltOutlined color="primary" />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
 
-        {isFilterApplied && (
+        {/* {isFilterApplied && (
           <Tooltip title={"Clear filter"}>
             <IconButton
               sx={{
@@ -135,8 +135,8 @@ export default function CountChart({ label, type, token }: CountChartProps) {
               <FilterAltOffOutlined color="primary" />
             </IconButton>
           </Tooltip>
-        )}
-        <Popover
+        )} */}
+        {/* <Popover
           open={open}
           anchorEl={anchorEl}
           onClose={handleFilterClose}
@@ -155,7 +155,7 @@ export default function CountChart({ label, type, token }: CountChartProps) {
               handleFilterClose();
             }}
           />
-        </Popover>
+        </Popover> */}
         <DragIndicatorOutlined
           color="action"
           className="drag-handle"

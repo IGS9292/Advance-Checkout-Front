@@ -21,10 +21,15 @@ import DateFilter, {
   type DateFilterState
 } from "../../../shared/components/DateFilter";
 
+interface SeriesData {
+  name: string;
+  data: number[];
+}
+
 export default function OrdersPerDayChart() {
   const { user } = useAuth();
   const [xData, setXData] = useState<string[]>([]);
-  const [yData, setYData] = useState<number[]>([]);
+  const [yData, setYData] = useState<SeriesData[]>([]);
   const [loading, setLoading] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [dateFilter, setDateFilter] = useState<DateFilterState>({
@@ -46,23 +51,61 @@ export default function OrdersPerDayChart() {
   const handleFilterClose = () => {
     setAnchorEl(null);
   };
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const res = await getOrdersPerDay(user?.token || "", dateFilter);
-        const x = res.map((r: any) => {
+
+        // 1. Generate all days of selected month
+        const now = new Date();
+        const year = dateFilter?.startDate
+          ? new Date(dateFilter.startDate).getFullYear()
+          : now.getFullYear();
+        const month = dateFilter?.startDate
+          ? new Date(dateFilter.startDate).getMonth()
+          : now.getMonth();
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const allDays: string[] = Array.from(
+          { length: daysInMonth },
+          (_, i) => {
+            const d = new Date(year, month, i + 1);
+            return `${String(d.getDate()).padStart(2, "0")}-${String(
+              d.getMonth() + 1
+            ).padStart(2, "0")}-${d.getFullYear()}`;
+          }
+        );
+
+        // 2. Group data shop-wise
+        const shopMap: Record<number, Record<string, number>> = {};
+
+        res.forEach((r: any) => {
           const date = new Date(r.day);
-          const day = String(date.getDate()).padStart(2, "0");
-          const month = String(date.getMonth() + 1).padStart(2, "0");
-          const year = String(date.getFullYear());
-          return `${day}-${month}-${year}`;
+          const key = `${String(date.getDate()).padStart(2, "0")}-${String(
+            date.getMonth() + 1
+          ).padStart(2, "0")}-${date.getFullYear()}`;
+
+          if (!shopMap[r.shopId]) shopMap[r.shopId] = {};
+          shopMap[r.shopId][key] = Number(r.total_orders);
         });
 
-        const y = res.map((r: any) => r.total_orders);
-        setXData(x);
-        setYData(y);
+        // 3. Build single "Total Orders" series
+        const totalOrdersPerDay = allDays.map((d) => {
+          return Object.values(shopMap).reduce((sum, dayOrders) => {
+            return sum + (dayOrders[d] || 0);
+          }, 0);
+        });
+
+        const totalSeries: SeriesData[] = [
+          {
+            name: "Total Orders", // ✅ only one label
+            data: totalOrdersPerDay
+          }
+        ];
+
+        setXData(allDays);
+        setYData(totalSeries); // ✅ single-line chart
       } catch (err) {
         console.error("Failed to fetch orders per day", err);
       } finally {

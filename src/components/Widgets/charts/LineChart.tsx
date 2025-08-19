@@ -1,48 +1,49 @@
+import React from "react";
 import ReactECharts from "echarts-for-react";
 
-interface LineChartProps {
-
-  xData: string[];
-  yData: number[];
-  label?: string;
+interface SeriesData {
+  name: string; // shop name or label
+  data: number[];
 }
 
-export default function LineChart({
+interface LineChartProps {
+  xData: string[];
+  yData: SeriesData[]; // multiple shops
+}
 
-  xData,
-  yData,
-  label = "Value"
-}: LineChartProps) {
+export default function LineChart({ xData, yData }: LineChartProps) {
   const option = {
-  
     tooltip: { trigger: "axis" },
+    legend: {
+      top: 0,
+      left: "center"
+    },
     xAxis: { type: "category", data: xData },
     yAxis: { type: "value" },
-     toolbox: {
-    show: true,
-    orient: "horizontal",
-    top: 0,
-    right: 0,
-    itemSize: 16,
-    feature: {
-      saveAsImage: {
-        title: "Save",
-        type: "png",
-        name: "chart",
-        pixelRatio: 2
+    toolbox: {
+      show: true,
+      orient: "horizontal",
+      top: 0,
+      right: 0,
+      itemSize: 16,
+      feature: {
+        saveAsImage: {
+          title: "Save",
+          type: "png",
+          name: "orders-per-day",
+          pixelRatio: 2
+        }
       }
-    }
-  },
-    series: [
-      {
-        name: label,
-        data: yData,
-        type: "line",
-        smooth: true,
-        areaStyle: {}
-      }
-    ]
+    },
+    series: yData.map((s) => ({
+      name: s.name,
+      type: "line",
+      smooth: true,
+      areaStyle: {}, // keep filled style
+      data: s.data
+    }))
   };
-  console.log("LineChart Dta:", option.series);
+
+  console.log("LineChart Series:", option.series);
   return <ReactECharts option={option} style={{ height: 300 }} />;
 }

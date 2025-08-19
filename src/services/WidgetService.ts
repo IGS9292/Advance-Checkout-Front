@@ -47,7 +47,6 @@ export const getOrdersPerDay = async (
   return res.data;
 };
 
-
 export const getOrdersByShop = async (token?: string) => {
   if (!token) throw new Error("No token available");
   const response = await axios.get(`${baseURL}/v1/orders-by-shop`, {
@@ -59,6 +58,15 @@ export const getOrdersByShop = async (token?: string) => {
 export const getCouponUsageStats = async (token: string) => {
   const res = await axios.get(`${baseURL}/v1/coupons-usage`, {
     headers: { Authorization: `Bearer ${token}` }
+  });
+  return res.data;
+};
+
+export const getRevenueInsights = async (token?: string, dateFilter?: any) => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const res = await axios.get(`${baseURL}/v1/revenue-insights`, {
+    headers,
+    params: dateFilter
   });
   return res.data;
 };

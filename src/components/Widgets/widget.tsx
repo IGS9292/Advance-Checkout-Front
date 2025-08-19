@@ -25,6 +25,7 @@ import {
 import { useState } from "react";
 import type { DateFilterState } from "../../shared/components/DateFilter";
 import DateFilter from "../../shared/components/DateFilter";
+import RevenueInsights from "./components/RevenueInsightsChart";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -56,6 +57,7 @@ export default function DashboardGrid() {
       { i: "totalOrders", x: 6, y: 0, w: 6, h: 2 },
       { i: "ordersPerDay", x: 0, y: 2, w: 6, h: 5 },
       { i: "ordersByShop", x: 6, y: 2, w: 6, h: 5 },
+      { i: "revenueInsights", x: 0, y: 11, w: 12, h: 5 },
       { i: "shopStatus", x: 0, y: 6, w: 6, h: 5 },
       { i: "couponUsage", x: 6, y: 6, w: 6, h: 5 },
       { i: "revenueTrend", x: 0, y: 6, w: 6, h: 5 }
@@ -87,6 +89,10 @@ export default function DashboardGrid() {
         <div key="ordersByShop">
           <OrdersByShopChart />
         </div>
+        {/* <div key="revenueInsights"> */}
+        {/* <RevenueInsightsChart /> */}
+        {/* </div> */}
+
         <div key="shopStatus">
           <ShopStatusChart />
         </div>
@@ -94,9 +100,12 @@ export default function DashboardGrid() {
         <div key="couponUsage">
           <CouponUsageBarChart />
         </div>
+        <div key="revenueInsights">
+          <RevenueInsights />
+        </div>
 
-        <div key="revenueTrend">
-          <Card
+        {/* <div key="revenueTrend"> */}
+        {/* <Card
             sx={{
               p: 2,
               height: "100%",
@@ -104,16 +113,16 @@ export default function DashboardGrid() {
               flexDirection: "column",
               position: "relative"
             }}
-          >
-            {/* Title center aligned */}
-            <Box sx={{ textAlign: "center", mb: 2 }}>
+          > */}
+        {/* Title center aligned */}
+        {/* <Box sx={{ textAlign: "center", mb: 2 }}>
               <Typography variant="h6" color="textSecondary">
                 Revenue Trend
               </Typography>
-            </Box>
+            </Box> */}
 
-            {/* Icons top-right absolutely positioned */}
-            <Stack
+        {/* Icons top-right absolutely positioned */}
+        {/* <Stack
               direction="row"
               sx={{
                 position: "absolute",
@@ -186,15 +195,25 @@ export default function DashboardGrid() {
                 className="drag-handle"
                 sx={{ cursor: "grab" }}
               />
-            </Stack>
+            </Stack> */}
 
-            <LineChart
+        {/* <LineChart
               xData={["Jan", "Feb", "Mar", "Apr", "May"]}
               yData={[5000, 7000, 6000, 9000, 8500]}
               label="Revenue ($)"
+            /> */}
+
+        {/* <LineChart
+              xData={["Jan", "Feb", "Mar", "Apr", "May"]}
+              yData={[
+                {
+                  name: "Revenue ($)", // ✅ Series name
+                  data: [5000, 7000, 6000, 9000, 8500] // ✅ Series values
+                }
+              ]}
             />
-          </Card>
-        </div>
+          </Card> */}
+        {/* </div> */}
       </ResponsiveGridLayout>
     </Box>
   );
