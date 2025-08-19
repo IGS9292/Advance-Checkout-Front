@@ -39,11 +39,40 @@ export default function CardAlert({ shopId }: CardAlertProps) {
   }, [shopId]);
 
   const handleUpgrade = () => {
-    navigate(`/upgrade-plan/${plan?.id ?? ""}`);
+    const targetId = plan ? `plan-${plan.id}` : "pricing";
+    window.location.href = `http://localhost:5173#${targetId}`;
+    // const landingPageURL = `http://localhost:5173#${targetId}`;
+    // window.open(landingPageURL, "_blank");
+    // navigate(` ${landingPageURL}`);
+  };
+  const handleBuyPlan = () => {
+    const landingPageURL = `http://localhost:5173#pricing`;
+    window.open(landingPageURL, "_blank");
   };
 
   if (!plan) {
-    return null; // No active plan, hide card
+    return (
+      <Card variant="outlined" sx={{ m: 1.5, flexShrink: 0 }}>
+        <CardContent>
+          <AutoAwesomeRoundedIcon fontSize="small" />
+          <Typography gutterBottom sx={{ fontWeight: 600 }}>
+            No Plan Active
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ mb: 2, color: "text.secondary" }}
+          ></Typography>
+          <Button
+            variant="contained"
+            size="small"
+            fullWidth
+            onClick={handleBuyPlan}
+          >
+            Buy Plan
+          </Button>
+        </CardContent>
+      </Card>
+    ); // No active plan, hide card
   }
 
   return (

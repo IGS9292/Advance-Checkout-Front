@@ -85,7 +85,7 @@ interface MenuContentProps {
 
 export default function MenuContent({ drawerOpen = true }: MenuContentProps) {
   const { role } = useAuth(); // "0" = superadmin, "1" = admin
-  // const {  shopId } = useAuth();
+  const { shopId } = useAuth();
 
   const location = useLocation();
   const basePath = role === "0" ? "/superadmin-dashboard" : "/admin-dashboard";
@@ -94,7 +94,7 @@ export default function MenuContent({ drawerOpen = true }: MenuContentProps) {
     if (item.role && item.role !== role) return false;
     return true;
   });
-  // console.log("shopId", shopId);
+  console.log("shopId", shopId);
   const renderMenuItem = (item: any, index: number) => {
     const fullPath = `${basePath}${item.path}`;
     const selected = location.pathname === fullPath;
@@ -151,7 +151,7 @@ export default function MenuContent({ drawerOpen = true }: MenuContentProps) {
         <List dense>{secondaryListItems.map(renderMenuItem)}</List>
       </Stack>
 
-      {/* {role === "1" && shopId && <CardAlert shopId={shopId} />} */}
+      {role === "1" && shopId && <CardAlert shopId={shopId} />}
       {/* {role === "1" && <CardAlert />} */}
     </>
   );

@@ -41,13 +41,14 @@ export default function PlanCards() {
         {plans.map((plan) => (
           <Grid size={{ xs: 12, sm: 6, md: 3 }} key={plan.id}>
             <Card
+              id={`plan-${plan.id}`}
               sx={{
                 height: "100%",
                 borderRadius: 4,
                 boxShadow: 3,
                 display: "flex",
                 flexDirection: "column",
-                justifyContent: "space-between", 
+                justifyContent: "space-between",
                 p: 2
               }}
             >

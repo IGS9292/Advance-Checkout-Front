@@ -7,8 +7,8 @@ interface User {
   role: string;
   token: string;
   email: string;
-  
   shopName?: string;
+  shopId: number;
 }
 
 // Define context value shape
@@ -16,6 +16,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   role: string | null;
+  shopId?: number | null;
   login: (userData: User) => void;
   logout: () => void;
   loading: boolean;
@@ -47,6 +48,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // console.log("userData:", userData);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", userData.token);
+    localStorage.setItem("shopId", userData.shopId.toString());
   };
 
   const logout = () => {
@@ -59,6 +61,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     user,
     isAuthenticated: !!user,
     role: user?.role?.toString() || null,
+    shopId: user?.shopId || null,
     login,
     logout,
     loading

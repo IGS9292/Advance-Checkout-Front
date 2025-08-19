@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import AppTheme from "../../shared/shared-theme/AppTheme";
@@ -33,6 +33,17 @@ export default function LandingPage(props: { disableCustomTheme?: boolean }) {
       sectionRefs.current[key] = React.createRef<HTMLDivElement>();
     }
   });
+
+  useEffect(() => {
+    // Scroll to hash if present
+    const hash = window.location.hash;
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
+  // ... rest of your LandingPage
 
   return (
     <AppTheme {...props}>

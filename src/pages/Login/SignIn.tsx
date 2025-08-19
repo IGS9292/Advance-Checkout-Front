@@ -125,7 +125,8 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
         email: data.user.email,
         role: data.user.role,
         token: data.token,
-        shopName: data.user.shopName
+        shopName: data.user.shopName,
+        shopId: data.user.shopId
       };
 
       login(userData);
