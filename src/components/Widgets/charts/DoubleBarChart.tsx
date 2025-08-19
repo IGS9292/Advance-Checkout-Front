@@ -62,12 +62,24 @@ const DoubleBarChart: React.FC<DoubleBarChartProps> = ({ data }) => {
       trigger: "axis",
       axisPointer: { type: "shadow" },
       formatter: (params: any) => {
-        let content = `${params[0].axisValue}<br/>`;
+        if (!params || !params.length) return "";
+
+        const month = params[0].axisValue;
+        let content = `<div style="min-width:150px; ">
+        <strong>${month}</strong>
+        <ul style=" margin:5px 0;">`;
+
         params.forEach((p: any) => {
           if (p.data?.value > 0) {
-            content += `${p.seriesName} (${p.data.shop}): $${p.data.value}<br/>`;
+            const color = p.color || "#000";
+            content += `<li style="margin-bottom:4px; list-style:none;">
+            <span style="color:${color}; font-weight:bold;">${p.seriesName}</span><br/>
+            <span>${p.data.shop}</span>: <b>$${p.data.value}</b>
+          </li>`;
           }
         });
+
+        content += "</ul></div>";
         return content;
       }
     },
@@ -80,12 +92,14 @@ const DoubleBarChart: React.FC<DoubleBarChartProps> = ({ data }) => {
         type: "bar",
         data: highestSeries,
         itemStyle: { color: "#4caf50" }
+        //  itemStyle: { color: "#5470c6" }
       },
       {
         name: "Lowest Revenue",
         type: "bar",
         data: lowestSeries,
         itemStyle: { color: "#f44336" }
+        //  itemStyle: { color: "#91cc75" }
       }
     ]
   };
