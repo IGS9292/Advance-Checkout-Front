@@ -13,10 +13,10 @@ import {
   FormControl,
   FormLabel
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { LoadingButton } from "@mui/lab";
+import { useState, useEffect, useRef } from "react";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
 import SyncIcon from "@mui/icons-material/Sync";
-import Search from "../../shared/components/Search";
 import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "../../contexts/AuthContext";
 import { UseOrderColumns } from "../orders/components/UseOrderColumns";
@@ -25,18 +25,27 @@ import {
   deleteOrder,
   updateOrder
 } from "../../services/OrderService";
+import type { DateFilterState } from "../../shared/components/DateFilter";
+import TableFilter from "../../shared/components/TableFilter";
+import DownloadMenu from "../../shared/components/DownloadMenu";
+import Search from "../../shared/components/Search";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
 export default function OrderListView() {
+  const { user, role } = useAuth();
   const [rows, setRows] = useState<any[]>([]);
   const [editingRow, setEditingRow] = useState<any>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredRows, setFilteredRows] = useState<any[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { user, role } = useAuth();
+  const [originalRows, setOriginalRows] = useState<any[]>([]); // <- always raw API
+  const [filteredRows, setFilteredRows] = useState<any[]>([]); // <- what grid shows
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState<DateFilterState>({
+    range: "all"
+  });
 
+  const gridRef = useRef<HTMLDivElement>(null);
   const {
     control,
     handleSubmit,
@@ -78,13 +87,13 @@ export default function OrderListView() {
   );
 
   useEffect(() => {
-    fetchOrderDetails(setRows, setFilteredRows, baseURL);
+    fetchOrderDetails(setOriginalRows, setFilteredRows, baseURL);
   }, []);
 
   const handleSync = async () => {
     setLoading(true);
     try {
-      await fetchOrderDetails(setRows, setFilteredRows, baseURL);
+      await fetchOrderDetails(setOriginalRows, setFilteredRows, baseURL);
     } catch (err) {
       console.error("Sync failed:", err);
     } finally {
@@ -126,7 +135,7 @@ export default function OrderListView() {
       order_qty: data.order_qty,
       total_amount: data.total_amount
     };
-
+    setLoading(true);
     try {
       if (editingRow) {
         await updateOrder(editingRow.id, payload, user?.token);
@@ -140,6 +149,8 @@ export default function OrderListView() {
       await fetchOrderDetails(setRows, setFilteredRows, baseURL);
     } catch (err) {
       console.error("Save failed:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -160,7 +171,17 @@ export default function OrderListView() {
         </Typography>
 
         <Stack direction="row" spacing={2}>
-          <Search onSearch={(value) => setSearchTerm(value)} />
+          <Search onSearch={setSearchTerm} />
+          <TableFilter
+            rows={originalRows}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            dateFilter={dateFilter}
+            setDateFilter={setDateFilter}
+            onFilter={setFilteredRows}
+            dateField="createdAt"
+          />
+          <DownloadMenu rows={filteredRows} columns={dynamicCols} />
           {role == "1" && (
             <Button variant="contained" onClick={handleOpenDialog}>
               Add Order
@@ -180,8 +201,8 @@ export default function OrderListView() {
 
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
-          <Box sx={{ width: "100%", overflowX: "auto" }}>
-            <CustomizedDataGrid rows={rows} columns={columns} />
+          <Box sx={{ width: "100%", overflowX: "auto" }} ref={gridRef}>
+            <CustomizedDataGrid rows={filteredRows} columns={dynamicCols} />
           </Box>
         </Grid>
       </Grid>
@@ -261,10 +282,16 @@ export default function OrderListView() {
             </Stack>
 
             <DialogActions sx={{ mt: 2 }}>
-              <Button onClick={handleCloseDialog}  variant="outlined">Cancel</Button>
-              <Button variant="contained" type="submit">
-                {editingRow ? "Update" : "Save"}
+              <Button onClick={handleCloseDialog} variant="outlined">
+                Cancel
               </Button>
+              <LoadingButton
+                variant="contained"
+                type="submit"
+                loading={loading} // 👈 spinner
+              >
+                {editingRow ? "Update" : "Save"}
+              </LoadingButton>
             </DialogActions>
           </form>
         </DialogContent>

@@ -25,6 +25,8 @@ import {
   updatePaymentMethodStatus
 } from "../../services/PaymentGatewayService";
 import { FileUpload } from "../../shared/components/FileUpload"; // ← adjust path if needed
+import DownloadMenu from "../../shared/components/DownloadMenu";
+import { LoadingButton } from "@mui/lab";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
@@ -34,6 +36,7 @@ const PaymentGatewayList = () => {
   const [editingRow, setEditingRow] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const {
     control,
@@ -126,6 +129,7 @@ const PaymentGatewayList = () => {
       gatewayImageUrl: data.gatewayImageUrl,
       status: data.status as "active" | "inactive"
     };
+    setLoading(true);
 
     try {
       if (editingRow) {
@@ -139,6 +143,8 @@ const PaymentGatewayList = () => {
       await fetchPaymentColumnsAndData(setRows, setFilteredRows, baseURL);
     } catch (err) {
       console.error("Save failed:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -165,6 +171,8 @@ const PaymentGatewayList = () => {
           </Typography>
           <Stack direction="row" spacing={2}>
             <Search onSearch={(value) => setSearchTerm(value)} />
+            {/* <DownloadMenu rows={filteredRows} columns={columns} /> */}
+
             <Button
               variant="contained"
               color="primary"
@@ -218,27 +226,9 @@ const PaymentGatewayList = () => {
                 {/* Upload Button */}
                 <FileUpload
                   onUploadSuccess={(url: any) => {
-                    setValue("gatewayImageUrl", url); // Update form value
-                    // trigger("gatewayImageUrl"); // Optional: trigger validation if needed
+                    setValue("gatewayImageUrl", url);
                   }}
                 />
-
-                {/* Image URL Field */}
-                {/* <Controller
-                  name="gatewayImageUrl"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Image URL"
-                      fullWidth
-                      margin="normal"
-                      InputProps={{
-                        readOnly: true
-                      }}
-                    />
-                  )}
-                /> */}
 
                 {/* Optional image preview */}
                 {watchImage && (
@@ -269,10 +259,16 @@ const PaymentGatewayList = () => {
             </Stack>
 
             <DialogActions sx={{ mt: 2 }}>
-              <Button onClick={handleCloseDialog}  variant="outlined">Cancel</Button>
-              <Button variant="contained" type="submit">
-                {editingRow ? "Update" : "Save"}
+              <Button onClick={handleCloseDialog} variant="outlined">
+                Cancel
               </Button>
+              <LoadingButton
+                variant="contained"
+                type="submit"
+                loading={loading}
+              >
+                {editingRow ? "Update" : "Save"}
+              </LoadingButton>
             </DialogActions>
           </form>
         </DialogContent>

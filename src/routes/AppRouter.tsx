@@ -1,16 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // import Login from "../pages/Login";
 import Dashboard from "../pages/dashboard/Dashboard";
-import AnalyticsView from "../pages/view/AnalyticsView";
-import ClientsView from "../pages/view/ClientsView.tsx";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../auth/useAuth";
-import TasksView from "../pages/view/TasksView.tsx";
 import SettingsView from "../pages/view/Settings.tsx";
 import AboutView from "../pages/view/AboutView.tsx";
 import FeedBackView from "../pages/view/FeedBackView.tsx";
 import Checkout from "../pages/checkout/Checkout.tsx";
-import ShopsListView from "../pages/view/ShopsListView.tsx";
 import EmailVerified from "../components/EmailVerifiedView.tsx";
 import LandingPage from "../pages/LandingPage/LandingPage.tsx";
 import SignIn from "../pages/Login/SignIn.tsx";
@@ -77,9 +73,6 @@ const AppRouter = () => {
         >
           <Route index element={<DashboardView />} />
           <Route path="dashboard" element={<DashboardView />} />
-          <Route path="analytics" element={<AnalyticsView />} />
-          <Route path="clients" element={<ClientsView />} />
-          <Route path="tasks" element={<TasksView />} />
           <Route path="orders" element={<Orders />} />
           <Route path="coupons" element={<CouponsListView />} />
           <Route path="checkout" element={<Checkout />} />
@@ -102,12 +95,10 @@ const AppRouter = () => {
         >
           <Route index element={<DashboardView />} />
           <Route path="dashboard" element={<DashboardView />} />
-          <Route path="analytics" element={<AnalyticsView />} />
-          <Route path="clients" element={<ClientsView />} />
-          <Route path="tasks" element={<TasksView />} />
+
           <Route path="orders" element={<Orders />} />
           <Route path="shops" element={<Shops />} />
-           <Route path="plan" element={<Plan />} />
+          <Route path="plan" element={<Plan />} />
           <Route path="payment-gateway" element={<PaymentGateway />} />
           <Route path="chatSupport" element={<ChatSupport />} />
           <Route path="settings" element={<SettingsView />} />

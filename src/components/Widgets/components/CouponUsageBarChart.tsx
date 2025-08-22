@@ -20,6 +20,7 @@ import {
 } from "@mui/icons-material";
 import type { DateFilterState } from "../../../shared/components/DateFilter";
 import DateFilter from "../../../shared/components/DateFilter";
+import FilterView from "../../../shared/components/FilterView";
 
 export default function CouponUsageBarChart() {
   const { user } = useAuth();
@@ -90,7 +91,9 @@ export default function CouponUsageBarChart() {
           alignItems: "center"
         }}
       >
-        <Tooltip title={"Filter by date"}>
+        <FilterView dateFilter={dateFilter} setDateFilter={setDateFilter} />
+
+        {/* <Tooltip title={"Filter by date"}>
           <IconButton
             sx={{
               borderColor: "transparent",
@@ -148,7 +151,7 @@ export default function CouponUsageBarChart() {
               handleFilterClose();
             }}
           />
-        </Popover>
+        </Popover> */}
         <DragIndicatorOutlined
           color="action"
           className="drag-handle"

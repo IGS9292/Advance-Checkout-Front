@@ -48,7 +48,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // console.log("userData:", userData);
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", userData.token);
-    localStorage.setItem("shopId", userData.shopId.toString());
+
+    if (userData.shopId != null) {
+      localStorage.setItem("shopId", userData.shopId.toString());
+    } else {
+      localStorage.removeItem("shopId");
+    }
   };
 
   const logout = () => {

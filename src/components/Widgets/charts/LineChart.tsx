@@ -1,4 +1,4 @@
-import React from "react";
+
 import ReactECharts from "echarts-for-react";
 
 interface SeriesData {
@@ -17,9 +17,9 @@ export default function LineChart({ xData, yData }: LineChartProps) {
     legend: {
       top: 0,
       left: "center",
-         textStyle: {
-        color: "#808080", 
-        fontSize: 12 
+      textStyle: {
+        color: "#808080",
+        fontSize: 12
       }
     },
     xAxis: { type: "category", data: xData },
@@ -48,6 +48,6 @@ export default function LineChart({ xData, yData }: LineChartProps) {
     }))
   };
 
-  console.log("LineChart Series:", option.series);
+  // console.log("LineChart Series:", option.series);
   return <ReactECharts option={option} style={{ height: 300 }} />;
 }

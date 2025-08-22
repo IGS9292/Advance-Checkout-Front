@@ -27,8 +27,7 @@ import CardAlert from "./CardAlert";
 
 const mainListItems = [
   { text: "Home", icon: <HomeRoundedIcon />, path: "/dashboard" },
-  // { text: "Analytics", icon: <AnalyticsRoundedIcon />, path: "/analytics" },
-  // { text: "Clients", icon: <PeopleRoundedIcon />, path: "/clients" },
+
   { text: "Orders", icon: <ShoppingCartRoundedIcon />, path: "/orders" },
   {
     text: "Coupons",

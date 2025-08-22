@@ -20,6 +20,7 @@ const presetOptions = [
 ];
 
 type DateFilterRange =
+  | "all"
   | "today"
   | "yesterday"
   | "this_week"
@@ -28,7 +29,7 @@ type DateFilterRange =
   | "custom";
 
 export interface DateFilterState {
-  range: DateFilterRange;
+  range?: DateFilterRange;
   startDate?: string;
   endDate?: string;
 }
@@ -40,9 +41,9 @@ interface Props {
 }
 
 export default function DateFilter({ filter, setFilter, onClear }: Props) {
-  const [localFilter, setLocalFilter] = useState<DateFilterState>(
-    filter || { range: "today" }
-  );
+  const [localFilter, setLocalFilter] = useState<DateFilterState>({
+    range: filter?.range && filter.range !== "all" ? filter.range : "today"
+  });
 
   const handleClear = () => {
     setLocalFilter({ range: "today" });

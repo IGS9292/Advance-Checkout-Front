@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { loginUser } from "../../services/AuthService";
 import ReCAPTCHA from "react-google-recaptcha";
+import { Shop } from "@mui/icons-material";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -130,14 +131,23 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       };
 
       login(userData);
-      console.log("userData", userData);
+      console.log("userData", {
+        id: data.user.id,
+        email: data.user.email,
+        role: data.user.role,
+        shopName: data.user.shopName,
+        shopId: data.user.shopId
+      });
+
       if (userData.role === SUPERADMIN) {
         navigate("/superadmin-dashboard");
-      } else {
+      }
+      if (userData.role === ADMIN) {
         navigate("/admin-dashboard");
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || "Login failed");
+      alert(err);
+      console.log("(err?.message)----", err);
     }
   };
 

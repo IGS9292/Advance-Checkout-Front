@@ -1,7 +1,7 @@
-import type { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { Tooltip, Box, Chip } from "@mui/material";
+import { Tooltip, Box } from "@mui/material";
 import { getOrders } from "../../../services/OrderService";
 import { useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";

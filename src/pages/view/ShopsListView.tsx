@@ -13,10 +13,12 @@ import {
   FormControl,
   FormLabel
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { LoadingButton } from "@mui/lab"; // 👈 import here
+import { useEffect, useState, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
-import Search from "../../shared/components/Search";
+import TableFilter from "../../shared/components/TableFilter";
+import DownloadMenu from "../../shared/components/DownloadMenu";
 import { useShopColumns } from "../shops/components/useShopColumns";
 import {
   createShop,
@@ -25,32 +27,36 @@ import {
   updateShopStatus
 } from "../../services/ShopService";
 import { getAllPlans } from "../../services/PlanService";
+import type { DateFilterState } from "../../shared/components/DateFilter";
+import Search from "../../shared/components/Search";
 
-type Plan = {
-  id: number;
-  order_range: string;
-};
+type Plan = { id: number; order_range: string };
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
 const mapOrdersToRange = (value: number | string): string => {
   const num = typeof value === "string" ? parseInt(value) : value;
-
   if (num >= 0 && num < 500) return "0-500";
   if (num >= 500 && num < 2000) return "500-2000";
   if (num >= 2000 && num < 10000) return "2000-10000";
   if (num >= 10000) return "10000+";
-
   return "0-500";
 };
 
 const ShopsListView = () => {
   const [rows, setRows] = useState<any[]>([]);
+  const [originalRows, setOriginalRows] = useState<any[]>([]);
+  const [filteredRows, setFilteredRows] = useState<any[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingRow, setEditingRow] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredRows, setFilteredRows] = useState<any[]>([]);
+  const [dateFilter, setDateFilter] = useState<DateFilterState>({
+    range: "all"
+  });
   const [orderRanges, setOrderRanges] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false); // 👈 add loading state
+
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const {
     control,
@@ -70,30 +76,13 @@ const ShopsListView = () => {
     }
   });
 
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const data = await getAllPlans();
-        const plans = Array.isArray(data) ? data : data?.plans || [];
-        const ranges = plans.map((plan: Plan) => plan.order_range);
-        console.log("order ranges->>>>", ranges);
-        setOrderRanges(ranges);
-      } catch (error) {
-        console.error("Error fetching plans:", error);
-      }
-    };
-    fetchPlans();
-  }, []);
-
   const handleEdit = (row: any) => {
     setEditingRow(row);
     setValue("shopName", row.shopName);
     setValue("shopUrl", row.shopUrl);
     setValue("shopContactNo", row.shopContactNo);
-    // setValue("ordersPerMonth", row.ordersPerMonth);
     setValue("ordersPerMonth", mapOrdersToRange(row.ordersPerMonth));
-    const email = row.users;
-    setValue("email", email);
+    setValue("email", row.users);
     setValue("status", row.status);
     setValue("shopAccessToken", row.shopAccessToken || "");
     setOpenDialog(true);
@@ -101,33 +90,20 @@ const ShopsListView = () => {
 
   const handleDelete = async (row: any) => {
     if (window.confirm("Delete this shop?")) {
-      try {
-        await deleteShop(row.id);
-        await fetchColumnsAndData(setRows, setFilteredRows, baseURL);
-      } catch (err) {
-        console.error("Delete failed:", err);
-      }
+      await deleteShop(row.id);
+      fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
     }
   };
 
   const handleApprove = async (id: number) => {
-    try {
-      await updateShopStatus(id, "approved");
-      alert("✅ Request approved and email sent successfully");
-      await fetchColumnsAndData(setRows, setFilteredRows, baseURL);
-      await getAllPlans();
-    } catch (err) {
-      console.error("Approval failed", err);
-    }
+    await updateShopStatus(id, "approved");
+    alert("✅ Request approved and email sent successfully");
+    fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
   };
 
   const handleReject = async (id: number) => {
-    try {
-      await updateShopStatus(id, "rejected");
-      await fetchColumnsAndData(setRows, setFilteredRows, baseURL);
-    } catch (err) {
-      console.error("Rejection failed", err);
-    }
+    await updateShopStatus(id, "rejected");
+    fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
   };
 
   const { columnsMeta: dynamicCols, fetchColumnsAndData } = useShopColumns(
@@ -138,10 +114,15 @@ const ShopsListView = () => {
   );
 
   useEffect(() => {
-    fetchColumnsAndData(setRows, setFilteredRows, baseURL);
+    fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
+    const fetchPlans = async () => {
+      const data = await getAllPlans();
+      const plans = Array.isArray(data) ? data : data?.plans || [];
+      setOrderRanges(plans.map((p: Plan) => p.order_range));
+    };
+    fetchPlans();
   }, []);
 
-  // Filter rows based on searchTerm
   useEffect(() => {
     const filtered = filteredRows.filter((row) => {
       const shopNameMatch = row.shopName
@@ -154,13 +135,11 @@ const ShopsListView = () => {
       const statusMatch = row.status
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase());
+
       return shopNameMatch || userMatch || contactNoMatch || statusMatch;
     });
     setRows(filtered);
   }, [searchTerm, filteredRows]);
-
-  const columns = dynamicCols;
-  //  const handleOpenDialog = () => setOpenDialog(true);
 
   const handleOpenDialog = () => {
     reset();
@@ -175,89 +154,82 @@ const ShopsListView = () => {
   };
 
   const onSubmit = async (data: any) => {
-    console.log("🟢 onSubmit triggered", data);
-    if (!data.email) {
-      alert("❌ Email is required");
-      return;
-    }
-    const payload = {
-      shopName: data.shopName,
-      shopUrl: data.shopUrl,
-      shopContactNo: data.shopContactNo,
-      ordersPerMonth: data.ordersPerMonth,
-      status: data.status as "pending" | "approved" | "rejected",
-      shopAccessToken: data.shopAccessToken
-    };
-
+    setLoading(true); // start loading
     try {
+      const payload = {
+        shopName: data.shopName,
+        shopUrl: data.shopUrl,
+        shopContactNo: data.shopContactNo,
+        ordersPerMonth: data.ordersPerMonth,
+        status: data.status,
+        shopAccessToken: data.shopAccessToken
+      };
       if (editingRow) {
-        // console.log("edit FORM SUBMITTED", data);
-
         await updateShop(editingRow.id, payload);
         alert("✅ shop details updated ");
-        // console.log("Updated shop with:", payload);
       } else {
-        // await createShop(payload);
-        console.log("Email:", data.email); // This should NOT be undefined
-
-        console.log("Final Payload:", { ...payload, email: data.email });
         await createShop({ ...payload, email: data.email });
         alert("✅ shop added and email sent successfully");
       }
       handleCloseDialog();
-      await fetchColumnsAndData(setRows, setFilteredRows, baseURL);
+      fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
     } catch (err) {
-      console.error("Save failed:", err);
+      console.error(err);
+    } finally {
+      setLoading(false); // stop loading
     }
   };
 
   return (
-    <>
+    <Box sx={{ width: "100%", maxWidth: { sm: "100%", lg: "100%" } }}>
+      {/* Top bar */}
       <Box
         sx={{
-          width: "100%",
-          maxWidth: { sm: "100%", lg: "100%" }
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2
-          }}
-        >
-          <Typography component="h2" variant="h6">
-            Shops
-          </Typography>
-          <Stack direction="row" spacing={2}>
-            <Search onSearch={(value) => setSearchTerm(value)} />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleOpenDialog}
-            >
-              Add Shop
-            </Button>
-          </Stack>
-        </Box>
-
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12 }}>
-            <Box sx={{ width: "100%", overflowX: "auto" }}>
-              <CustomizedDataGrid rows={rows} columns={columns} />
-            </Box>
-          </Grid>
-        </Grid>
+        <Typography component="h2" variant="h6">
+          Shops
+        </Typography>
+        <Stack direction="row" spacing={2}>
+          <Search onSearch={setSearchTerm} />
+          <TableFilter
+            rows={originalRows}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            dateFilter={dateFilter}
+            setDateFilter={setDateFilter}
+            onFilter={setFilteredRows}
+            dateField="createdAt"
+          />
+          <DownloadMenu rows={filteredRows} columns={dynamicCols} />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenDialog}
+          >
+            Add Shop
+          </Button>
+        </Stack>
       </Box>
 
+      {/* DataGrid */}
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12 }}>
+          <Box sx={{ width: "100%", overflowX: "auto" }} ref={gridRef}>
+            <CustomizedDataGrid rows={rows} columns={dynamicCols} />
+          </Box>
+        </Grid>
+      </Grid>
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
         maxWidth="sm"
         fullWidth
       >
-        {/* {errors.shopName && <span>{errors.shopName.message}</span>} */}
         <DialogTitle>{editingRow ? "Edit Shop" : "Add New Shop"}</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -339,28 +311,6 @@ const ShopsListView = () => {
                 />
               </FormControl>
 
-              {/* <FormControl fullWidth required>
-                <FormLabel>Orders per month</FormLabel>
-                <Controller
-                  name="ordersPerMonth"
-                  control={control}
-                  rules={{ required: "Orders Per Month " }}
-                  render={({ field }) => (
-                    <TextField
-                      select
-                      {...field}
-                      // error={!!errors.ordersPerMonth}
-                      // helperText={errors.ordersPerMonth?.message}
-                    >
-                      <MenuItem value="0-500">0 - 500</MenuItem>
-                      <MenuItem value="500-2000">500 - 2000</MenuItem>
-                      <MenuItem value="2000-10000">2000 - 10000</MenuItem>
-                      <MenuItem value="10000+">10000+</MenuItem>
-                    </TextField>
-                  )}
-                />
-              </FormControl> */}
-
               <FormControl fullWidth required>
                 <FormLabel htmlFor="ordersPerMonth">Orders per month</FormLabel>
                 <Controller
@@ -410,14 +360,19 @@ const ShopsListView = () => {
               <Button onClick={handleCloseDialog} variant="outlined">
                 Cancel
               </Button>
-              <Button variant="contained" type="submit">
+
+              <LoadingButton
+                variant="contained"
+                type="submit"
+                loading={loading} // 👈 spinner
+              >
                 {editingRow ? "Update" : "Save"}
-              </Button>
+              </LoadingButton>
             </DialogActions>
           </form>
         </DialogContent>
       </Dialog>
-    </>
+    </Box>
   );
 };
 

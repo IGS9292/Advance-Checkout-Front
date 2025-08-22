@@ -2,24 +2,12 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 import CountChart from "./charts/CountChart";
-import LineChart from "../../components/Widgets/charts/LineChart";
-import {
-  Box,
-  Card,
-  IconButton,
-  Popover,
-  Stack,
-  Tooltip,
-  Typography
-} from "@mui/material";
+import { Box } from "@mui/material";
 import { useAuth } from "../../contexts/AuthContext";
 import OrdersPerDayChart from "./components/OrdersPerDayChart";
 import OrdersByShopChart from "./components/OrdersByShopChart";
 import ShopStatusChart from "./components/ShopStatusChart";
 import CouponUsageBarChart from "./components/CouponUsageBarChart";
-
-import { useState } from "react";
-import type { DateFilterState } from "../../shared/components/DateFilter";
 
 import RevenueInsights from "./components/RevenueInsightsChart";
 
@@ -66,9 +54,9 @@ export default function DashboardGrid() {
         <div key="ordersByShop">
           <OrdersByShopChart />
         </div>
-        {/* <div key="revenueInsights"> */}
-        {/* <RevenueInsightsChart /> */}
-        {/* </div> */}
+        <div key="revenueInsights">
+          <RevenueInsights />
+        </div>
 
         <div key="shopStatus">
           <ShopStatusChart />
@@ -76,9 +64,6 @@ export default function DashboardGrid() {
 
         <div key="couponUsage">
           <CouponUsageBarChart />
-        </div>
-        <div key="revenueInsights">
-          <RevenueInsights />
         </div>
       </ResponsiveGridLayout>
     </Box>

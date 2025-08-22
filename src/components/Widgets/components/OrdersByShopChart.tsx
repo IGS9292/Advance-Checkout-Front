@@ -2,23 +2,10 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { getOrdersByShop } from "../../../services/WidgetService";
 import BarChart from "../charts/BarChart";
-import {
-  Box,
-  Card,
-  CircularProgress,
-  IconButton,
-  Popover,
-  Stack,
-  Tooltip,
-  Typography
-} from "@mui/material";
-import {
-  DragIndicatorOutlined,
-  FilterAltOffOutlined,
-  FilterAltOutlined
-} from "@mui/icons-material";
+import { Box, Card, CircularProgress, Stack, Typography } from "@mui/material";
+import { DragIndicatorOutlined } from "@mui/icons-material";
 import type { DateFilterState } from "../../../shared/components/DateFilter";
-import DateFilter from "../../../shared/components/DateFilter";
+import FilterView from "../../../shared/components/FilterView";
 
 export default function OrdersByShopChart() {
   const { user } = useAuth();
@@ -26,26 +13,9 @@ export default function OrdersByShopChart() {
   const [values, setValues] = useState<number[]>([]);
 
   const [loading, setLoading] = useState(true);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [dateFilter, setDateFilter] = useState<DateFilterState>({
     range: "today"
   });
-  const open = Boolean(anchorEl);
-
-  const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const isFilterApplied =
-    dateFilter.range !== "today" &&
-    !(
-      dateFilter.range === "custom" &&
-      !dateFilter.startDate &&
-      !dateFilter.endDate
-    );
-
-  const handleFilterClose = () => {
-    setAnchorEl(null);
-  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -73,7 +43,6 @@ export default function OrdersByShopChart() {
         position: "relative"
       }}
     >
-      {/* Title center aligned */}
       <Box sx={{ textAlign: "center", mb: 2 }}>
         <Typography variant="h6" color="textSecondary">
           Orders by shop
@@ -90,65 +59,8 @@ export default function OrdersByShopChart() {
           alignItems: "center"
         }}
       >
-        <Tooltip title={"Filter by date"}>
-          <IconButton
-            sx={{
-              borderColor: "transparent",
-              outline: "none",
-              border: "none",
-              boxShadow: "none",
-              "&:focus": {
-                outline: "none"
-              }
-            }}
-            onClick={(event) => {
-              handleFilterClick(event);
-            }}
-          >
-            <FilterAltOutlined color="primary" />
-          </IconButton>
-        </Tooltip>
+        <FilterView dateFilter={dateFilter} setDateFilter={setDateFilter} />
 
-        {isFilterApplied && (
-          <Tooltip title={"Clear filter"}>
-            <IconButton
-              sx={{
-                borderColor: "transparent",
-                outline: "none",
-                border: "none",
-                boxShadow: "none",
-                "&:focus": {
-                  outline: "none"
-                }
-              }}
-              onClick={(event) => {
-                setDateFilter({ range: "today" });
-              }}
-            >
-              <FilterAltOffOutlined color="primary" />
-            </IconButton>
-          </Tooltip>
-        )}
-        <Popover
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleFilterClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          transformOrigin={{ vertical: "top", horizontal: "right" }}
-          PaperProps={{ sx: { p: 2, minWidth: 300 } }}
-        >
-          <DateFilter
-            filter={dateFilter}
-            setFilter={(f) => {
-              setDateFilter(f);
-              handleFilterClose();
-            }}
-            onClear={() => {
-              setDateFilter({ range: "today" });
-              handleFilterClose();
-            }}
-          />
-        </Popover>
         <DragIndicatorOutlined
           color="action"
           className="drag-handle"

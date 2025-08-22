@@ -5,23 +5,27 @@ import {
   Grid,
   Modal,
   Paper,
-  ListItem,
-  ListItemText,
-  List
+  Button
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
 import Search from "../../shared/components/Search";
+import TableFilter from "../../shared/components/TableFilter";
+import DownloadMenu from "../../shared/components/DownloadMenu";
+import type { DateFilterState } from "../../shared/components/DateFilter";
 import { useAuth } from "../../contexts/AuthContext";
 import { UseCustomerCols } from "../customers/components/useCustomerCols";
 
 export default function CustomersListView() {
   const [rows, setRows] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [originalRows, setOriginalRows] = useState<any[]>([]);
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState<DateFilterState>({ range: "all" });
   const { user } = useAuth();
 
   const [viewData, setViewData] = useState<any>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const handleView = (row: any) => {
     setViewData(row);
@@ -30,8 +34,9 @@ export default function CustomersListView() {
   const { columnsMeta: dynamicCols, fetchCustomerDetails } =
     UseCustomerCols(handleView);
 
+  // Fetch data
   useEffect(() => {
-    fetchCustomerDetails(setRows, setFilteredRows);
+    fetchCustomerDetails(setOriginalRows, setFilteredRows);
   }, []);
 
   // ✅ filter by name or mobile number
@@ -63,15 +68,28 @@ export default function CustomersListView() {
         </Typography>
         <Stack direction="row" spacing={2}>
           <Search onSearch={(value) => setSearchTerm(value)} />
+          <TableFilter
+            rows={originalRows}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            dateFilter={dateFilter}
+            setDateFilter={setDateFilter}
+            onFilter={setFilteredRows}
+            dateField="createdAt" // ensure API returns createdAt for customers
+          />
+          <DownloadMenu rows={filteredRows} columns={dynamicCols} />
         </Stack>
       </Box>
 
       {/* Table */}
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
-          <CustomizedDataGrid rows={rows} columns={dynamicCols} />
+          <Box sx={{ width: "100%", overflowX: "auto" }} ref={gridRef}>
+            <CustomizedDataGrid rows={rows} columns={dynamicCols} />
+          </Box>
         </Grid>
       </Grid>
+
       {/* View Modal */}
       <Modal
         open={!!viewData}

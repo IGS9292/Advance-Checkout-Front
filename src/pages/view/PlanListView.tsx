@@ -13,19 +13,30 @@ import {
   FormControl,
   FormLabel
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
 import Search from "../../shared/components/Search";
+import DownloadMenu from "../../shared/components/DownloadMenu";
 import { usePlanColumns } from "../plan/components/usePlanColumns";
-import { createPlan, updatePlan, deletePlan } from "../../services/PlanService"; // <-- you’ll need this
+import { createPlan, updatePlan, deletePlan } from "../../services/PlanService";
+import { LoadingButton } from "@mui/lab";
+
+const baseURL = import.meta.env.VITE_API_BASE as string;
 
 export default function PlanListView() {
   const [rows, setRows] = useState<any[]>([]);
+  const [originalRows, setOriginalRows] = useState<any[]>([]);
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  // const [dateFilter, setDateFilter] = useState<DateFilterState>({
+  //   range: "all"
+  // });
   const [openDialog, setOpenDialog] = useState(false);
   const [editingRow, setEditingRow] = useState<any>(null);
+
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const {
     control,
@@ -53,7 +64,7 @@ export default function PlanListView() {
     if (window.confirm(`Delete plan: ${row.plan_name}?`)) {
       try {
         await deletePlan(row.id);
-        await fetchPlans(setRows, setFilteredRows);
+        await fetchPlans(setOriginalRows, setFilteredRows);
       } catch (err) {
         console.error("Delete failed:", err);
       }
@@ -62,10 +73,12 @@ export default function PlanListView() {
 
   const { columnsMeta, fetchPlans } = usePlanColumns(handleEdit, handleDelete);
 
+  // Initial fetch
   useEffect(() => {
-    fetchPlans(setRows, setFilteredRows);
+    fetchPlans(setOriginalRows, setFilteredRows);
   }, []);
 
+  // Search filter
   useEffect(() => {
     const filtered = filteredRows.filter((row) =>
       row.plan_name?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -91,7 +104,7 @@ export default function PlanListView() {
       order_range: data.order_range,
       sales_fee: data.sales_fee
     };
-
+    setLoading(true);
     try {
       if (editingRow) {
         await updatePlan(editingRow.id, payload);
@@ -101,9 +114,11 @@ export default function PlanListView() {
         alert("✅ Plan created successfully");
       }
       handleCloseDialog();
-      await fetchPlans(setRows, setFilteredRows);
+      await fetchPlans(setOriginalRows, setFilteredRows);
     } catch (err) {
       console.error("Save failed:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -121,8 +136,17 @@ export default function PlanListView() {
           Plans
         </Typography>
         <Stack direction="row" spacing={2}>
-          <Search onSearch={(value) => setSearchTerm(value)} />
-
+          <Search onSearch={setSearchTerm} />
+          {/* <TableFilter
+            rows={originalRows}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            dateFilter={dateFilter}
+            setDateFilter={setDateFilter}
+            onFilter={setFilteredRows}
+            dateField="createdAt" // make sure API returns createdAt for plans
+          /> */}
+          <DownloadMenu rows={filteredRows} columns={columnsMeta} />
           <Button variant="contained" onClick={handleOpenDialog}>
             Add Plan
           </Button>
@@ -132,7 +156,9 @@ export default function PlanListView() {
       {/* Table */}
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
-          <CustomizedDataGrid rows={rows} columns={columnsMeta} />
+          <Box sx={{ width: "100%", overflowX: "auto" }} ref={gridRef}>
+            <CustomizedDataGrid rows={rows} columns={columnsMeta} />
+          </Box>
         </Grid>
       </Grid>
 
@@ -208,9 +234,13 @@ export default function PlanListView() {
               <Button onClick={handleCloseDialog} variant="outlined">
                 Cancel
               </Button>
-              <Button variant="contained" type="submit">
+              <LoadingButton
+                variant="contained"
+                type="submit"
+                loading={loading}
+              >
                 {editingRow ? "Update" : "Save"}
-              </Button>
+              </LoadingButton>
             </DialogActions>
           </form>
         </DialogContent>

@@ -1,25 +1,11 @@
 import { useEffect, useState } from "react";
-import {
-  Box,
-  Card,
-  CircularProgress,
-  IconButton,
-  Popover,
-  Stack,
-  Tooltip,
-  Typography
-} from "@mui/material";
+import { Box, Card, CircularProgress, Stack, Typography } from "@mui/material";
 import LineChart from "../charts/LineChart";
 import { getOrdersPerDay } from "../../../services/WidgetService";
 import { useAuth } from "../../../contexts/AuthContext";
-import {
-  DragIndicatorOutlined,
-  FilterAltOffOutlined,
-  FilterAltOutlined
-} from "@mui/icons-material";
-import DateFilter, {
-  type DateFilterState
-} from "../../../shared/components/DateFilter";
+import { DragIndicatorOutlined } from "@mui/icons-material";
+import { type DateFilterState } from "../../../shared/components/DateFilter";
+import FilterView from "../../../shared/components/FilterView";
 
 interface SeriesData {
   name: string;
@@ -31,26 +17,9 @@ export default function OrdersPerDayChart() {
   const [xData, setXData] = useState<string[]>([]);
   const [yData, setYData] = useState<SeriesData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [dateFilter, setDateFilter] = useState<DateFilterState>({
     range: "today"
   });
-  const open = Boolean(anchorEl);
-
-  const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const isFilterApplied =
-    dateFilter.range !== "today" &&
-    !(
-      dateFilter.range === "custom" &&
-      !dateFilter.startDate &&
-      !dateFilter.endDate
-    );
-
-  const handleFilterClose = () => {
-    setAnchorEl(null);
-  };
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -99,13 +68,13 @@ export default function OrdersPerDayChart() {
 
         const totalSeries: SeriesData[] = [
           {
-            name: "Total Orders", // ✅ only one label
+            name: "Total Orders",
             data: totalOrdersPerDay
           }
         ];
 
         setXData(allDays);
-        setYData(totalSeries); // ✅ single-line chart
+        setYData(totalSeries);
       } catch (err) {
         console.error("Failed to fetch orders per day", err);
       } finally {
@@ -142,65 +111,8 @@ export default function OrdersPerDayChart() {
           alignItems: "center"
         }}
       >
-        <Tooltip title={"Filter by date"}>
-          <IconButton
-            sx={{
-              borderColor: "transparent",
-              outline: "none",
-              border: "none",
-              boxShadow: "none",
-              "&:focus": {
-                outline: "none"
-              }
-            }}
-            onClick={(event) => {
-              handleFilterClick(event);
-            }}
-          >
-            <FilterAltOutlined color="primary" />
-          </IconButton>
-        </Tooltip>
+        <FilterView dateFilter={dateFilter} setDateFilter={setDateFilter} />
 
-        {isFilterApplied && (
-          <Tooltip title={"Clear filter"}>
-            <IconButton
-              sx={{
-                borderColor: "transparent",
-                outline: "none",
-                border: "none",
-                boxShadow: "none",
-                "&:focus": {
-                  outline: "none"
-                }
-              }}
-              onClick={(event) => {
-                setDateFilter({ range: "today" });
-              }}
-            >
-              <FilterAltOffOutlined color="primary" />
-            </IconButton>
-          </Tooltip>
-        )}
-        <Popover
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleFilterClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          transformOrigin={{ vertical: "top", horizontal: "right" }}
-          PaperProps={{ sx: { p: 2, minWidth: 300 } }}
-        >
-          <DateFilter
-            filter={dateFilter}
-            setFilter={(f) => {
-              setDateFilter(f);
-              handleFilterClose();
-            }}
-            onClear={() => {
-              setDateFilter({ range: "today" });
-              handleFilterClose();
-            }}
-          />
-        </Popover>
         <DragIndicatorOutlined
           color="action"
           className="drag-handle"
