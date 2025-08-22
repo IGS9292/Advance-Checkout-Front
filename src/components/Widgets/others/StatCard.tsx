@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -111,7 +110,7 @@ export default function StatCard({
               showTooltip
               xAxis={{
                 scaleType: "band",
-                data: daysInWeek // Use the correct property 'data' for xAxis
+                data: daysInWeek
               }}
               sx={{
                 [`& .${areaElementClasses.root}`]: {

@@ -16,8 +16,8 @@ export const UseCustomerCols = (onView: (row: any) => void) => {
   ) => {
     try {
       const data = await getAllCustomers(user?.token);
-      // console.log("customers token :::----", user?.token);
-      // ✅ Expecting { defaultAddresses: [], otherAddresses: [] }
+   
+
       const defaultAddresses = Array.isArray(data?.defaultAddresses)
         ? data.defaultAddresses
         : [];
@@ -25,7 +25,7 @@ export const UseCustomerCols = (onView: (row: any) => void) => {
         ? data.otherAddresses
         : [];
 
-      // ✅ Add a srNo and link other addresses to their customer_id
+
       const flattened = defaultAddresses.map((cust: any, index: any) => ({
         ...cust,
         srNo: index + 1,

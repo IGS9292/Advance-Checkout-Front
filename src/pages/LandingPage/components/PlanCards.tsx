@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -7,8 +7,7 @@ import {
   CardContent,
   Button
 } from "@mui/material";
-import { getAllPlans } from "../../../services/PlanService"; // ✅ use your planService
-
+import { getAllPlans } from "../../../services/PlanService";
 type Plan = {
   id: number;
   plan_name: string;

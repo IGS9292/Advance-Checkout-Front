@@ -4,8 +4,6 @@ import axios from "axios";
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
 export const getAvailablePaymentMethods = async (token?: string) => {
-  // console.log("Shop ID : ", token);
-
   if (!token) throw new Error("No token available");
   try {
     const response = await axios.get(`${baseURL}/v1/payment-method-shop`, {

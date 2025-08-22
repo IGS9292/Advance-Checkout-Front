@@ -20,7 +20,6 @@ export default function DownloadMenu({ rows, columns }: DownloadMenuProps) {
     setAnchorEl(null);
   };
 
-  // Export as Excel
   const handleExportExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(
       rows.map((row) => {
@@ -37,7 +36,6 @@ export default function DownloadMenu({ rows, columns }: DownloadMenuProps) {
     handleCloseMenu();
   };
 
-  // Export as Image (full table)
   const handleExportImage = async () => {
     // 1. Build a full HTML table string with forced light colors
     let tableHTML = `

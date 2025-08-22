@@ -10,13 +10,13 @@ const COLOR_MODE_KEY = "color-mode";
 export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
   const { mode, setMode } = useColorScheme();
 
-  // On mount, set initial mode from localStorage or system
+
   React.useEffect(() => {
     const savedMode = localStorage.getItem(COLOR_MODE_KEY);
     if (savedMode === "light" || savedMode === "dark") {
       setMode(savedMode);
     } else {
-      // Default to system mode
+  
       const prefersDark = window.matchMedia(
         "(prefers-color-scheme: dark)"
       ).matches;

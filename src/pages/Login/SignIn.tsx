@@ -19,7 +19,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { loginUser } from "../../services/AuthService";
 import ReCAPTCHA from "react-google-recaptcha";
-import { Shop } from "@mui/icons-material";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",

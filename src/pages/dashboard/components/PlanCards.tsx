@@ -17,7 +17,7 @@ interface Plan {
 }
 
 interface CardAlertProps {
-  shopId: number; // Logged-in shop ID
+  shopId: number; 
 }
 
 export default function CardAlert({ shopId }: CardAlertProps) {
@@ -34,20 +34,21 @@ export default function CardAlert({ shopId }: CardAlertProps) {
         console.error("Error fetching active plan:", err);
       }
     };
-    // if (shopId)
+
     fetchActivePlan();
   }, [shopId]);
 
   const handleUpgrade = () => {
     const targetId = plan ? `plan-${plan.id}` : "pricing";
-    window.location.href = `http://localhost:5173#${targetId}`;
-    // const landingPageURL = `http://localhost:5173#${targetId}`;
-    // window.open(landingPageURL, "_blank");
+    // window.location.href = `http://localhost:5173#${targetId}`;
+    const landingPageURL = `http://localhost:5173#${targetId}`;
+    window.open(landingPageURL, "_blank");
     // navigate(` ${landingPageURL}`);
   };
   const handleBuyPlan = () => {
     const landingPageURL = `http://localhost:5173#pricing`;
     window.open(landingPageURL, "_blank");
+    // window.location.href = `http://localhost:5173#pricing`;
   };
 
   if (!plan) {

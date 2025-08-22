@@ -34,12 +34,12 @@ export default function CustomersListView() {
   const { columnsMeta: dynamicCols, fetchCustomerDetails } =
     UseCustomerCols(handleView);
 
-  // Fetch data
+
   useEffect(() => {
     fetchCustomerDetails(setOriginalRows, setFilteredRows);
   }, []);
 
-  // ✅ filter by name or mobile number
+
   useEffect(() => {
     const filtered = filteredRows.filter((row) => {
       const nameMatch = row.fullname
@@ -55,7 +55,7 @@ export default function CustomersListView() {
 
   return (
     <Box sx={{ width: "100%" }}>
-      {/* Header */}
+
       <Box
         sx={{
           display: "flex",
@@ -81,7 +81,7 @@ export default function CustomersListView() {
         </Stack>
       </Box>
 
-      {/* Table */}
+
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
           <Box sx={{ width: "100%", overflowX: "auto" }} ref={gridRef}>

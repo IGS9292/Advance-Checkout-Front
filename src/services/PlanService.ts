@@ -15,8 +15,8 @@ export const getPlanById = async (id: number) => {
 
 export const createPlan = async (planData: {
   plan_name: string;
-  order_range: string; // e.g. "0-500"
-  sales_fee: number; // e.g. 2
+  order_range: string; 
+  sales_fee: number; 
 }) => {
   const res = await axios.post(`${baseURL}/v1/plans`, planData);
   return res.data;

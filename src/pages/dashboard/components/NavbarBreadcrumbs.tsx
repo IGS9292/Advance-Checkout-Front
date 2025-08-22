@@ -17,14 +17,14 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
   }
 }));
 
-// Map routes to readable titles
+
 const PATH_TITLES: { [key: string]: string } = {
   dashboard: "Dashboard",
   analytics: "Analytics",
   clients: "Clients",
   bargraph: "Bar Graph View",
   linechart: "Line Chart View"
-  // Add more as needed
+
 };
 
 export default function NavbarBreadcrumbs() {

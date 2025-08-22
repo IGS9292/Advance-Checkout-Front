@@ -26,7 +26,7 @@ const RevenueInsights = () => {
   const [loading, setLoading] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  // Default filter: this_year
+
   const [dateFilter, setDateFilter] = useState<DateFilterState>({
     range: "this_year"
   });

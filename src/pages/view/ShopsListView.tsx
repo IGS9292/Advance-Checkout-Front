@@ -13,7 +13,7 @@ import {
   FormControl,
   FormLabel
 } from "@mui/material";
-import { LoadingButton } from "@mui/lab"; // 👈 import here
+import { LoadingButton } from "@mui/lab";
 import { useEffect, useState, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import CustomizedDataGrid from "../dashboard/components/CustomizedDataGrid";
@@ -54,7 +54,7 @@ const ShopsListView = () => {
     range: "all"
   });
   const [orderRanges, setOrderRanges] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false); // 👈 add loading state
+  const [loading, setLoading] = useState(false);
 
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -154,7 +154,7 @@ const ShopsListView = () => {
   };
 
   const onSubmit = async (data: any) => {
-    setLoading(true); // start loading
+    setLoading(true);
     try {
       const payload = {
         shopName: data.shopName,
@@ -176,13 +176,12 @@ const ShopsListView = () => {
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false); // stop loading
+      setLoading(false);
     }
   };
 
   return (
     <Box sx={{ width: "100%", maxWidth: { sm: "100%", lg: "100%" } }}>
-      {/* Top bar */}
       <Box
         sx={{
           display: "flex",
@@ -216,7 +215,6 @@ const ShopsListView = () => {
         </Stack>
       </Box>
 
-      {/* DataGrid */}
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
           <Box sx={{ width: "100%", overflowX: "auto" }} ref={gridRef}>
@@ -364,7 +362,7 @@ const ShopsListView = () => {
               <LoadingButton
                 variant="contained"
                 type="submit"
-                loading={loading} // 👈 spinner
+                loading={loading}
               >
                 {editingRow ? "Update" : "Save"}
               </LoadingButton>

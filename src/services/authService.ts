@@ -23,18 +23,15 @@ export const signupUser = async ({
   email,
   password,
   shopName
-}: // user_type
-{
+}: {
   email: string;
   password: string;
   shopName: string | null;
-  // user_type: number;
 }) => {
   const res = await axios.post(`${baseURL}/auth/signup`, {
     email,
     password,
     shopName
-    // user_type
   });
   return res.data;
 };

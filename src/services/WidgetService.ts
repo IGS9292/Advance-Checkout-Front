@@ -3,16 +3,7 @@ import { getAllShops } from "./ShopService";
 import { getOrders } from "./OrderService";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
-// export const fetchDashboardData = async (
-//   { startDate, endDate },
-//   token: string
-// ) => {
-//   const response = await axios.get(`${baseURL}/dashboard-data`, {
-//     params: { startDate, endDate },
-//     headers: { Authorization: `Bearer ${token}` }
-//   });
-//   return response.data;
-// };
+
 
 export const fetchDashboardCounts = async (token: string) => {
   try {
@@ -42,7 +33,7 @@ export const getOrdersPerDay = async (
     headers: {
       Authorization: `Bearer ${token}`
     },
-    params: dateFilter // this adds ?range=this_week etc.
+    params: dateFilter 
   });
   return res.data;
 };

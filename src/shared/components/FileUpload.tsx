@@ -11,8 +11,6 @@ export const FileUpload: React.FC<{
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
-    // console.log("file console -",file)
-    // return;
     if (!file) return;
 
     setLoading(true);

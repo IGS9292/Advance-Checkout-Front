@@ -8,7 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const ChatSupportView = () => {
   const { user, role } = useAuth(); // role = "0" for superadmin, "1" for admin
-  const [userId] = useState(user?.id || ""); // fallback
+  const [userId] = useState(user?.id || "");
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
 
   if (role === "0") {
@@ -52,7 +52,7 @@ const ChatSupportView = () => {
     );
   }
 
-  return null; // Fallback if no valid role
+  return null;
 };
 
 export default ChatSupportView;

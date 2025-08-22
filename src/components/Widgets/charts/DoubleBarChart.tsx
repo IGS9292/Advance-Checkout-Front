@@ -2,7 +2,7 @@ import React from "react";
 import ReactECharts from "echarts-for-react";
 
 export interface RevenueMonth {
-  month: string; // "2025-07"
+  month: string;
   maxRevenue: number;
   minRevenue: number;
   maxShop: string;
@@ -13,7 +13,6 @@ interface DoubleBarChartProps {
   data: RevenueMonth[];
 }
 
-// Fixed month names for display
 const monthNames = [
   "Jan",
   "Feb",
@@ -32,14 +31,12 @@ const monthNames = [
 const DoubleBarChart: React.FC<DoubleBarChartProps> = ({ data }) => {
   if (!data || data.length === 0) return <div>No data available</div>;
 
-  // Initialize series arrays for all months
   const highestSeries: any[] = Array(12).fill({ value: 0, shop: "" });
   const lowestSeries: any[] = Array(12).fill({ value: 0, shop: "" });
 
-  // Map actual data into correct month slot
   data.forEach((item) => {
     const date = new Date(item.month + "-01");
-    const monthIndex = date.getMonth(); // 0 = Jan
+    const monthIndex = date.getMonth();
     highestSeries[monthIndex] = {
       value: item.maxRevenue,
       shop: item.maxShop
@@ -50,7 +47,7 @@ const DoubleBarChart: React.FC<DoubleBarChartProps> = ({ data }) => {
     };
   });
 
-  // Dynamic Y-axis
+
   const allValues = [
     ...highestSeries.map((d) => d.value),
     ...lowestSeries.map((d) => d.value)

@@ -288,7 +288,7 @@ export default function OrderListView() {
               <LoadingButton
                 variant="contained"
                 type="submit"
-                loading={loading} // 👈 spinner
+                loading={loading} 
               >
                 {editingRow ? "Update" : "Save"}
               </LoadingButton>

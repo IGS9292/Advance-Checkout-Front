@@ -81,9 +81,9 @@ export const useDynamicColumns = (
                   src={params.value || ""}
                   sx={{
                     width: 40,
-                    height: 50, // Change this for vertical rectangle (e.g. 50), or keep same as width for square
+                    height: 50,
                     objectFit: "contain",
-                    borderRadius: 1 // Optional: 0 for sharp, 1 for slight rounding
+                    borderRadius: 1 
                   }}
                 />
               )

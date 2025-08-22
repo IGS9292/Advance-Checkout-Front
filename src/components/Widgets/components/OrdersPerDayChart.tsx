@@ -94,14 +94,12 @@ export default function OrdersPerDayChart() {
         position: "relative"
       }}
     >
-      {/* Title center aligned */}
       <Box sx={{ textAlign: "center", mb: 2 }}>
         <Typography variant="h6" color="textSecondary">
           Orders per Day
         </Typography>
       </Box>
 
-      {/* Icons top-right absolutely positioned */}
       <Stack
         direction="row"
         sx={{
@@ -120,7 +118,6 @@ export default function OrdersPerDayChart() {
         />
       </Stack>
 
-      {/* Content */}
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", flexGrow: 1 }}>
           <CircularProgress />

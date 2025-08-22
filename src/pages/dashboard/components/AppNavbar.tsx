@@ -6,12 +6,10 @@ import Stack from "@mui/material/Stack";
 import MuiToolbar from "@mui/material/Toolbar";
 import { tabsClasses } from "@mui/material/Tabs";
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
-// import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import SideMenuMobile from "./SideMenuMobile";
 import MenuButton from "./MenuButton";
 import ColorModeIconDropdown from "../../../shared/shared-theme/ColorModeIconDropdown";
 import advanceCheckoutLogo from "../../../assets/advanceCheckoutLogo.png";
-// import { IconButton } from "@mui/material";
 
 const Toolbar = styled(MuiToolbar)({
   width: "100%",

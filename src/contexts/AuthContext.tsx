@@ -22,7 +22,6 @@ interface AuthContextType {
   loading: boolean;
 }
 
-// Create context with undefined initially
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Provider props
@@ -33,14 +32,14 @@ interface AuthProviderProps {
 // Auth provider
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // NEW
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
-    setLoading(false); // Done loading
+    setLoading(false);
   }, []);
 
   const login = (userData: User) => {

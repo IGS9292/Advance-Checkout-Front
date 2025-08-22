@@ -1,4 +1,4 @@
-import { color } from "echarts";
+
 import ReactECharts from "echarts-for-react";
 interface PieChartProps {
   data: { name: string; value: number }[];

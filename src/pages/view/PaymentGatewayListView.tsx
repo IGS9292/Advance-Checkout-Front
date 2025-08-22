@@ -24,8 +24,7 @@ import {
   updatePaymentMethod,
   updatePaymentMethodStatus
 } from "../../services/PaymentGatewayService";
-import { FileUpload } from "../../shared/components/FileUpload"; // ← adjust path if needed
-import DownloadMenu from "../../shared/components/DownloadMenu";
+import { FileUpload } from "../../shared/components/FileUpload";
 import { LoadingButton } from "@mui/lab";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;

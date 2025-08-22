@@ -15,7 +15,7 @@ import {
   deleteChatMessages,
   fetchChatMessages
 } from "../../../services/ChatSupportService";
-import { format, isThisWeek, isToday, isYesterday, parseISO } from "date-fns";
+import { format, isThisWeek, isToday, isYesterday } from "date-fns";
 import { GridDeleteIcon } from "@mui/x-data-grid";
 
 interface Props {
@@ -38,7 +38,7 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
   const endRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
 
-  // Group messages by date
+
 
   const groupByDate = (msgs: ChatMessage[]) => {
     return msgs.reduce((acc: Record<string, ChatMessage[]>, msg) => {
@@ -63,7 +63,7 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
     }, {});
   };
 
-  // Load chat on user change
+
   useEffect(() => {
     const loadChat = async () => {
       if (!userId || !selectedUser) return;
@@ -88,7 +88,7 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
     loadChat();
   }, [selectedUser, userId, user?.token]);
 
-  // Listen for incoming messages
+
   useEffect(() => {
     if (!selectedUser) return;
     const handler = (msg: any) => {
@@ -145,7 +145,7 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
 
     try {
       await deleteChatMessages(userId, selectedUser.id, user?.token);
-      setMessages([]); // clear from UI
+      setMessages([]); 
     } catch (error) {
       console.error("Failed to delete messages:", error);
     }
@@ -220,7 +220,7 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
             {Object.entries(grouped).map(([date, msgs], index) => (
               <Box key={date} sx={{ mt: index !== 0 ? 3 : 0 }}>
                 {" "}
-                {/* 24px spacing between date groups */}
+    
                 <Box sx={{ display: "flex", justifyContent: "center", my: 1 }}>
                   <Typography
                     variant="caption"
@@ -248,7 +248,7 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
                           px: 2,
                           pt: 1,
                           pb: 2.5, // space for timestamp
-                          borderRadius: "24px", // Capsule effect
+                          borderRadius: "24px", 
                           minWidth: "10%",
                           maxWidth: "70%",
                           width: "fit-content",

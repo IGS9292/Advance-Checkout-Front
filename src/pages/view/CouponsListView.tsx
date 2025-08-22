@@ -127,7 +127,7 @@ export default function CouponsListView() {
     }
   };
 
-  // 🔎 Apply search on filteredRows
+
   useEffect(() => {
     const filtered = filteredRows.filter((row) => {
       const couponTitleMatch = row.title

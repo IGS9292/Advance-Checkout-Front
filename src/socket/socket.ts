@@ -1,4 +1,4 @@
-// // // socket.ts
+// socket.ts
 
 import { io } from "socket.io-client";
 

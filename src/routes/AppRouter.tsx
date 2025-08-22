@@ -26,7 +26,6 @@ const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Root Route: decides based on authentication */}
         <Route
           path="/"
           element={
@@ -58,7 +57,6 @@ const AppRouter = () => {
           }
         />
 
-        {/* Email Verification and Password Reset */}
         <Route path="/email-verified" element={<EmailVerified />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 

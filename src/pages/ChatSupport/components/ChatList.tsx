@@ -244,7 +244,7 @@ const ChatList: React.FC<Props> = ({ userId, setSelectedUser, socket }) => {
                             color="text.secondary"
                             noWrap
                             sx={{
-                              maxWidth: "160px", // Adjust width for truncation
+                              maxWidth: "160px", 
                               overflow: "hidden",
                               textOverflow: "ellipsis"
                             }}

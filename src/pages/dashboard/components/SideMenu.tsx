@@ -19,25 +19,6 @@ interface StyledDrawerProps {
   open: boolean;
 }
 const drawerWidth = 230;
-const collapsedDrawerWidth = 64;
-
-// const openedMixin = (theme: Theme) => ({
-//   width: drawerWidth,
-//   transition: theme.transitions.create("width", {
-//     easing: theme.transitions.easing.sharp,
-//     duration: theme.transitions.duration.enteringScreen
-//   }),
-//   overflowX: "hidden"
-// });
-
-// const closedMixin = (theme: Theme) => ({
-//   width: 64,
-//   transition: theme.transitions.create("width", {
-//     easing: theme.transitions.easing.sharp,
-//     duration: theme.transitions.duration.leavingScreen
-//   }),
-//   overflowX: "hidden"
-// });
 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -54,7 +35,7 @@ const Drawer = styled(MuiDrawer, {
   whiteSpace: "nowrap",
   boxSizing: "border-box",
   overflowX: "hidden",
-  width: open ? drawerWidth : 60, // Use one `width` based on `open`
+  width: open ? drawerWidth : 60,
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: open
@@ -84,7 +65,6 @@ export default function SideMenu() {
 
   return (
     <Drawer variant="permanent" open={open}>
-      {/* Logo & Toggle Button */}
       <DrawerHeader>
         {open ? (
           <img
@@ -114,7 +94,6 @@ export default function SideMenu() {
 
       <Divider />
 
-      {/* Menu Content */}
       <Box
         sx={{
           flexGrow: 1,
@@ -126,7 +105,6 @@ export default function SideMenu() {
         <MenuContent drawerOpen={open} />
       </Box>
 
-      {/* Bottom Footer */}
       <Stack
         direction="row"
         spacing={1}

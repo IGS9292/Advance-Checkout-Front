@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Stack, Tooltip, IconButton, Popover } from "@mui/material";
 import { FilterAltOutlined, FilterAltOffOutlined } from "@mui/icons-material";
 import DateFilter from "./DateFilter";
-import Search from "../../shared/components/Search";
 import type { DateFilterState } from "../../shared/components/DateFilter";
 
 interface TableFilterProps {

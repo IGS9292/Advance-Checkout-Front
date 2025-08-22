@@ -11,38 +11,9 @@ import {
   FormLabel,
   FormControl
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { useForm, Controller } from "react-hook-form";
 import { requestShop } from "../../../services/ShopService";
 import { getAllPlans } from "../../../services/PlanService";
-
-const StyledBox = styled("div")(({ theme }) => ({
-  alignSelf: "center",
-  width: "100%",
-  height: 400,
-  marginTop: theme.spacing(8),
-  borderRadius: theme.shape.borderRadius,
-  outline: "6px solid",
-  outlineColor: "hsla(220, 25%, 80%, 0.2)",
-  border: "1px solid",
-  borderColor: theme.palette.grey[200],
-  boxShadow: "0 0 12px 8px hsla(220, 25%, 80%, 0.2)",
-  backgroundImage: `url(${
-    import.meta.env.VITE_TEMPLATE_IMAGE_URL || "https://mui.com"
-  }/static/screenshots/material-ui/getting-started/templates/dashboard.jpg)`,
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  [theme.breakpoints.up("sm")]: {
-    marginTop: theme.spacing(10),
-    height: 700
-  },
-  ...theme.applyStyles?.("dark", {
-    boxShadow: "0 0 24px 12px hsla(210, 100%, 25%, 0.2)",
-    backgroundImage: `url(${
-      import.meta.env.VITE_TEMPLATE_IMAGE_URL || "https://mui.com"
-    }/static/screenshots/material-ui/getting-started/templates/dashboard-dark.jpg)`
-  })
-}));
 
 type Plan = {
   id: number;
@@ -246,31 +217,6 @@ const AddShop: React.FC = () => {
                     )}
                   />
                 </FormControl>
-
-                {/* <FormControl fullWidth required>
-                  <FormLabel htmlFor="ordersPerMonth">
-                    Orders per month
-                  </FormLabel>
-                  <Controller
-                    name="ordersPerMonth"
-                    control={control}
-                    rules={{ required: "Please select an option" }}
-                    render={({ field }) => (
-                      <TextField
-                        select
-                        {...field}
-                        id="ordersPerMonth"
-                        error={!!errors.ordersPerMonth}
-                        helperText={errors.ordersPerMonth?.message}
-                      >
-                        <MenuItem value="0-500">0 - 500</MenuItem>
-                        <MenuItem value="500-2000">500 - 2000</MenuItem>
-                        <MenuItem value="2000-10000">2000 - 10000</MenuItem>
-                        <MenuItem value="10000+">10000+</MenuItem>
-                      </TextField>
-                    )}
-                  />
-                </FormControl> */}
 
                 <FormControl fullWidth required>
                   <FormLabel htmlFor="ordersPerMonth">

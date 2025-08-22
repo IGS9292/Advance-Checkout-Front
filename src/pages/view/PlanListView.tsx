@@ -22,7 +22,6 @@ import { usePlanColumns } from "../plan/components/usePlanColumns";
 import { createPlan, updatePlan, deletePlan } from "../../services/PlanService";
 import { LoadingButton } from "@mui/lab";
 
-const baseURL = import.meta.env.VITE_API_BASE as string;
 
 export default function PlanListView() {
   const [rows, setRows] = useState<any[]>([]);
@@ -30,9 +29,6 @@ export default function PlanListView() {
   const [filteredRows, setFilteredRows] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
-  // const [dateFilter, setDateFilter] = useState<DateFilterState>({
-  //   range: "all"
-  // });
   const [openDialog, setOpenDialog] = useState(false);
   const [editingRow, setEditingRow] = useState<any>(null);
 
@@ -73,12 +69,10 @@ export default function PlanListView() {
 
   const { columnsMeta, fetchPlans } = usePlanColumns(handleEdit, handleDelete);
 
-  // Initial fetch
   useEffect(() => {
     fetchPlans(setOriginalRows, setFilteredRows);
   }, []);
 
-  // Search filter
   useEffect(() => {
     const filtered = filteredRows.filter((row) =>
       row.plan_name?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -173,7 +167,6 @@ export default function PlanListView() {
         <DialogContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={2} mt={1}>
-              {/* Plan Name */}
               <FormControl fullWidth required>
                 <FormLabel>Plan Name</FormLabel>
                 <Controller
@@ -190,7 +183,6 @@ export default function PlanListView() {
                 />
               </FormControl>
 
-              {/* Order Range */}
               <FormControl fullWidth required>
                 <FormLabel>Order Range</FormLabel>
                 <Controller
@@ -207,7 +199,6 @@ export default function PlanListView() {
                 />
               </FormControl>
 
-              {/* Sales Fee */}
               <FormControl fullWidth required>
                 <FormLabel>Sales Fee (%)</FormLabel>
                 <Controller

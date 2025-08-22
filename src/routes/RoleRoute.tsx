@@ -15,7 +15,6 @@ const RoleRoute = ({
   requiredRole,
   children
 }: RoleRouteProps) => {
-  // if (!isAuthenticated || role === null) return <Navigate to="/login" />;
   if (!isAuthenticated) return <Navigate to="/login" />;
   if (role !== requiredRole) return <Navigate to="/dashboard" />;
   return <>{children}</>;

@@ -25,14 +25,13 @@ export const useCouponColumns = (
   ) => {
     try {
       const data = await getCoupons(user?.token);
-      // const data = await getCoupons();
+
       console.log("✅ Fetched coupons:", data);
 
       let coupons = Array.isArray(data.coupons) ? data.coupons : [];
 
-      // 🔹 Flatten couponDetails & add srNo
       coupons = coupons.map((c: any, index: number) => {
-        const { couponDetail = {}, shop = {} } = c;
+        const { couponDetail = {} } = c;
         const rawDiscount = couponDetail.value;
         const valueType = couponDetail.value_type;
 
@@ -111,7 +110,7 @@ export const useCouponColumns = (
         })
         .filter(Boolean) as GridColDef[];
 
-      // 🔹 Add Status Column
+
       mappedColumns.push({
         field: "status",
         headerName: "Status",
@@ -139,7 +138,7 @@ export const useCouponColumns = (
         )
       });
 
-      // 🔹 Add Actions Column
+
       mappedColumns.push({
         field: "actions",
         headerName: "Actions",

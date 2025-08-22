@@ -23,20 +23,17 @@ export const UseOrderColumns = (
       const data = await getOrders(user?.token);
       let orders = Array.isArray(data) ? data : [];
 
-      // Add SrNo and flatten shopName (for superadmin)
       orders = orders.map((order: any, index: number) => ({
         ...order,
         srNo: index + 1,
         shopName: order?.shop?.shopName || undefined
       }));
 
-      // Select fields based on role
       const orderedFields =
         role === "0"
           ? ["srNo", "shopName", "order_id", "order_qty", "total_amount"] // Superadmin
           : ["srNo", "order_id", "order_qty", "total_amount"]; // Admin
 
-      // Dynamically infer columns from the first row
       const inferredColumns = Object.keys(orders[0] || {}).map((key) => ({
         field: key,
         headerName:
@@ -81,8 +78,6 @@ export const UseOrderColumns = (
           };
         })
         .filter(Boolean) as GridColDef[];
-
-      // Add action buttons column
 
       if (role === "1") {
         mappedColumns.push({

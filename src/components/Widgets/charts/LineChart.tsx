@@ -43,11 +43,11 @@ export default function LineChart({ xData, yData }: LineChartProps) {
       name: s.name,
       type: "line",
       smooth: true,
-      areaStyle: {}, // keep filled style
+      areaStyle: {}, 
       data: s.data
     }))
   };
 
-  // console.log("LineChart Series:", option.series);
+
   return <ReactECharts option={option} style={{ height: 300 }} />;
 }

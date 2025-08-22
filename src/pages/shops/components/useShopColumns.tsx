@@ -24,14 +24,14 @@ export const useShopColumns = (
       const data = await getAllShops();
       let rawShops = Array.isArray(data.shops) ? data.shops : [];
 
-      // 👉 Inject srNo into each row
+
       rawShops = rawShops.map((shop: any, index: any) => ({
         ...shop,
         srNo: index + 1
       }));
 
       const sampleRow = rawShops[0] || {};
-      // console.log("Shops Data:", rawShops);
+
 
       const orderedFields = [
         "srNo",
@@ -139,7 +139,7 @@ export const useShopColumns = (
         })
         .filter(Boolean) as GridColDef[];
 
-      //  Action column
+
       mappedColumns.push({
         field: "actions",
         headerName: "Actions",
@@ -159,7 +159,7 @@ export const useShopColumns = (
                 alignItems: "center",
                 gap: isPending ? 1 : 0.5,
                 justifyContent: "center"
-                // width: isPending ? 180 : 120
+   
               }}
             >
               <Tooltip title="Edit">

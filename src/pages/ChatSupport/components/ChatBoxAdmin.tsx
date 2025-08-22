@@ -29,11 +29,11 @@ const ChatBoxAdmin = ({ userId, socket }: Props) => {
   useEffect(() => {
     if (user?.token && userId) {
       if (!socket.connected) {
-        socket.connect(); // ✅ Connect if not already
+        socket.connect(); //  Connect if not already
       }
 
       socket.emit("join", { userId });
-      // ✅ Join with object format
+      //  Join with object format
       fetchSuperadmin();
     }
   }, [user?.token, userId]);

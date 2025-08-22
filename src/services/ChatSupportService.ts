@@ -1,8 +1,8 @@
+// services/ChatSupportService.ts
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
-// 🔹 Get Superadmin Email
 export const getSuperadminEmail = async (token?: string) => {
   if (!token) throw new Error("No token available");
   const response = await axios.get(`${baseURL}/v1/superadmin-email`, {
@@ -10,17 +10,14 @@ export const getSuperadminEmail = async (token?: string) => {
       Authorization: `Bearer ${token}`
     }
   });
-  return response.data; // { id, email }
+  return response.data;
 };
 
-// 🔹 Get Admin Users (with shopName)
 export const getAdminUsers = async () => {
-  // if (!token) throw new Error("No token provided");
   const response = await axios.get(`${baseURL}/v1/get-admin-users`);
-  return response.data; // [{ id, email, shop: { shopName } }]
+  return response.data;
 };
 
-// 🔹 Get Chat History by path param (for socket-based history or deep load)
 export const getChatHistory = async (
   user1: string,
   user2: string,
@@ -37,7 +34,6 @@ export const getChatHistory = async (
   return allMessages.filter((msg: any) => msg.visible !== false);
 };
 
-// 🔹 Get Messages (query-based for real-time polling/chat)
 export const fetchChatMessages = async (
   from: string,
   to: string,
@@ -52,7 +48,6 @@ export const fetchChatMessages = async (
   });
   const allMessages = response.data;
 
-  // ✅ Only return messages that are marked visible
   const visibleMessages = allMessages.filter(
     (msg: any) => msg.visible !== false
   );
@@ -60,8 +55,6 @@ export const fetchChatMessages = async (
   return visibleMessages;
 };
 
-// 🔹 Get Last Messages per user (for chat list view)
-// services/ChatSupportService.ts
 export const fetchLastChatMessage = async (
   from: string,
   to: string,
@@ -77,16 +70,14 @@ export const fetchLastChatMessage = async (
 
   const allMessages = response.data;
 
-  // Sort descending (latest first) just in case
   const sorted = allMessages.sort(
-    (a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    (a: any, b: any) =>
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
   );
 
-  return sorted[0]; // last message
+  return sorted[0];
 };
 
-
-// 🔹 Fetch Unread Counts
 export const fetchUnreadCounts = async (token: string) => {
   const res = await axios.get(`${baseURL}/v1/unread-counts`, {
     headers: { Authorization: `Bearer ${token}` }
@@ -99,7 +90,6 @@ export const fetchUnreadCounts = async (token: string) => {
   return countMap;
 };
 
-// 🔹 Mark Messages As Read
 export const markMessagesAsRead = async (fromUserId: string, token: string) => {
   const res = await axios.post(
     `${baseURL}/v1/mark-read`,
