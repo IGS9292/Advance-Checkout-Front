@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { loginUser } from "../../services/AuthService";
 import ReCAPTCHA from "react-google-recaptcha";
+import { showToast } from "../../helper/toastHelper";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -115,7 +116,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       // Call login from AuthContext with credentials
       const data = await loginUser({ email, password, token: captchaToken });
       if (!data.status) {
-        alert(data.message || "Invalid login");
+        showToast.error(data.message || "Invalid login");
         return;
       }
 
@@ -140,12 +141,11 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
 
       if (userData.role === SUPERADMIN) {
         navigate("/superadmin-dashboard");
-      }
-      if (userData.role === ADMIN) {
+      } else {
         navigate("/admin-dashboard");
       }
     } catch (err: any) {
-      alert(err);
+      showToast.error(err);
       console.log("(err?.message)----", err);
     }
   };

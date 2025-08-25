@@ -3,16 +3,15 @@ import { getAllShops } from "../../../services/ShopService";
 import PieChart from "../charts/PieChart";
 import { Box, Card, CircularProgress, Stack, Typography } from "@mui/material";
 import { DragIndicatorOutlined } from "@mui/icons-material";
-import type { DateFilterState } from "../../../shared/components/DateFilter";
-import FilterView from "../../../shared/components/FilterView";
+// import type { DateFilterState } from "../../../shared/components/DateFilter";
 
 const ShopStatusChart = () => {
   const [data, setData] = useState([]);
 
   const [loading, setLoading] = useState(true);
-  const [dateFilter, setDateFilter] = useState<DateFilterState>({
-    range: "today"
-  });
+  // const [dateFilter, setDateFilter] = useState<DateFilterState>({
+  //   range: "today"
+  // });
 
   useEffect(() => {
     const fetchStatusCounts = async () => {

@@ -6,9 +6,10 @@ import type { AxiosError } from "axios";
 import { Box, Tooltip } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { showToast } from "../../../helper/toastHelper";
 
 export const usePlanColumns = (
-//   onView: (row: any) => void,
+  //   onView: (row: any) => void,
   onEdit: (row: any) => void,
   onDelete: (row: any) => void
 ) => {
@@ -100,11 +101,13 @@ export const usePlanColumns = (
     } catch (error) {
       const err = error as AxiosError;
       if (err.response?.status === 401) {
-        alert("Session expired. Please log in again.");
+        showToast.error("Session expired. Please log in again.");
         logout();
       } else {
         console.error("❌ Failed to fetch plans", err);
-        alert("❌ Failed to load plans. Please check your server logs.");
+        showToast.error(
+          "❌ Failed to load plans. Please check your server logs."
+        );
       }
     }
   };

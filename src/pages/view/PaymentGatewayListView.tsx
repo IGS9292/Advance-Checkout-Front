@@ -26,6 +26,7 @@ import {
 } from "../../services/PaymentGatewayService";
 import { FileUpload } from "../../shared/components/FileUpload";
 import { LoadingButton } from "@mui/lab";
+import { showToast } from "../../helper/toastHelper";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
@@ -73,7 +74,7 @@ const PaymentGatewayList = () => {
   const handleApprove = async (id: number) => {
     try {
       await updatePaymentMethodStatus(id, "active");
-      alert(`Payment method activated successfully`);
+      showToast.success(`Payment method activated successfully`);
       await fetchPaymentColumnsAndData(setRows, setFilteredRows, baseURL);
     } catch (err) {
       console.error("Approval failed", err);
@@ -133,10 +134,10 @@ const PaymentGatewayList = () => {
     try {
       if (editingRow) {
         await updatePaymentMethod(editingRow.id, payload);
-        alert("Payment method updated");
+        showToast.success("Payment method updated");
       } else {
         await createPaymentMethod(payload);
-        alert("Payment method added successfully");
+        showToast.success("Payment method added successfully");
       }
       handleCloseDialog();
       await fetchPaymentColumnsAndData(setRows, setFilteredRows, baseURL);

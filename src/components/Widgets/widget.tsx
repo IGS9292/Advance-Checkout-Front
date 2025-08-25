@@ -4,12 +4,12 @@ import "react-resizable/css/styles.css";
 import CountChart from "./charts/CountChart";
 import { Box } from "@mui/material";
 import { useAuth } from "../../contexts/AuthContext";
-import OrdersPerDayChart from "./components/OrdersPerDayChart";
-import OrdersByShopChart from "./components/OrdersByShopChart";
-import ShopStatusChart from "./components/ShopStatusChart";
-import CouponUsageBarChart from "./components/CouponUsageBarChart";
+import OrdersPerDayChart from "./components/ordersPerDayChart";
+import OrdersByShopChart from "./components/ordersByShopChart";
+import ShopStatusChart from "./components/shopStatusChart";
+import CouponUsageBarChart from "./components/couponUsageBarChart";
 
-import RevenueInsights from "./components/RevenueInsightsChart";
+import RevenueInsights from "./components/revenueInsightsChart";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 

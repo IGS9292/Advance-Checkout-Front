@@ -5,6 +5,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import type { AxiosError } from "axios";
 import { Box, Tooltip } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import { showToast } from "../../../helper/toastHelper";
 
 export const UseCustomerCols = (onView: (row: any) => void) => {
   const [columnsMeta, setColumnsMeta] = useState<GridColDef[]>([]);
@@ -16,7 +17,6 @@ export const UseCustomerCols = (onView: (row: any) => void) => {
   ) => {
     try {
       const data = await getAllCustomers(user?.token);
-   
 
       const defaultAddresses = Array.isArray(data?.defaultAddresses)
         ? data.defaultAddresses
@@ -24,7 +24,6 @@ export const UseCustomerCols = (onView: (row: any) => void) => {
       const otherAddresses = Array.isArray(data?.otherAddresses)
         ? data.otherAddresses
         : [];
-
 
       const flattened = defaultAddresses.map((cust: any, index: any) => ({
         ...cust,
@@ -80,12 +79,15 @@ export const UseCustomerCols = (onView: (row: any) => void) => {
       setColumnsMeta(mappedColumns);
     } catch (error) {
       const err = error as AxiosError;
+
       if (err.response?.status === 401) {
-        alert("Session expired. Please log in again.");
+        showToast.error("⚠️ Session expired. Please log in again.");
         logout();
       } else {
         console.error("❌ Failed to fetch customers", err);
-        alert("❌ Failed to load customers. Please check your server logs.");
+        showToast.error(
+          "❌ Failed to load customers. Please check your server logs.."
+        );
       }
     }
   };

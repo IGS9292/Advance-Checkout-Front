@@ -31,6 +31,7 @@ import DownloadMenu from "../../shared/components/DownloadMenu";
 import { Controller, useForm } from "react-hook-form";
 import { useAuth } from "../../contexts/AuthContext";
 import type { DateFilterState } from "../../shared/components/DateFilter";
+import { showToast } from "../../helper/toastHelper";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
@@ -89,7 +90,7 @@ export default function CouponsListView() {
   const handleApprove = async (id: number) => {
     try {
       await updateCouponStatus(id, "approved", user?.token);
-      alert("✅ Request approved and email sent successfully");
+      showToast.success("Request approved and email sent successfully");
       fetchCouponsDetails(setOriginalRows, setFilteredRows, baseURL);
     } catch (err) {
       console.error("Approval failed", err);
@@ -126,7 +127,6 @@ export default function CouponsListView() {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     const filtered = filteredRows.filter((row) => {
@@ -170,7 +170,7 @@ export default function CouponsListView() {
           status: data.status
         };
         await updateCoupon(editingRow.id, payload, user?.token);
-        alert("✅ Coupon details updated ");
+        showToast.success("Coupon details updated ");
       } else {
         const payload = {
           title: data.title,
@@ -178,7 +178,7 @@ export default function CouponsListView() {
           status: data.status
         };
         await createCoupon(payload, user?.token);
-        alert("✅ Coupon created successfully");
+        showToast.success("Coupon created successfully");
       }
 
       handleCloseDialog();

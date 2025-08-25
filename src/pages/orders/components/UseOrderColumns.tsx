@@ -6,6 +6,7 @@ import { getOrders } from "../../../services/OrderService";
 import { useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import type { AxiosError } from "axios";
+import { showToast } from "../../../helper/toastHelper";
 
 export const UseOrderColumns = (
   handleEdit: (row: any) => void,
@@ -130,11 +131,14 @@ export const UseOrderColumns = (
     } catch (error) {
       const err = error as AxiosError;
       if (err.response?.status === 401) {
-        alert("Session expired. Please log in again.");
+        showToast.error("Session expired. Please log in again.");
         logout();
       } else {
         console.error("❌ Failed to fetch orders", err);
-        alert("❌ Failed to load orders. Please check your server logs.");
+        const errorMsg =
+          err?.message ||
+          "❌ Failed to load orders. Please check your server logs.";
+        showToast.error(errorMsg);
       }
     }
   };

@@ -8,6 +8,7 @@ import { getCoupons } from "../../services/CouponService";
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import type { AxiosError } from "axios";
+import { showToast } from "../../helper/toastHelper";
 
 export const useCouponColumns = (
   handleEdit: (row: any) => void,
@@ -110,7 +111,6 @@ export const useCouponColumns = (
         })
         .filter(Boolean) as GridColDef[];
 
-
       mappedColumns.push({
         field: "status",
         headerName: "Status",
@@ -137,7 +137,6 @@ export const useCouponColumns = (
           />
         )
       });
-
 
       mappedColumns.push({
         field: "actions",
@@ -214,11 +213,13 @@ export const useCouponColumns = (
       const err = error as AxiosError;
 
       if (err.response?.status === 401) {
-        alert("Session expired. Please log in again.");
+        showToast.error("⚠️ Session expired. Please log in again.");
         logout();
       } else {
         console.error("❌ Failed to fetch coupons", err);
-        alert("❌ Failed to load coupons. Please check your server logs.");
+        showToast.error(
+          "❌ Failed to load coupons. Please check your server logs."
+        );
       }
     }
   };

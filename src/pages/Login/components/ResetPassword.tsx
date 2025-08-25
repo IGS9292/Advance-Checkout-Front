@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { showToast } from "../../../helper/toastHelper";
 
 interface ResetFormInputs {
   newPassword: string;
@@ -35,12 +36,15 @@ export default function ResetPassword() {
     try {
       const res = await resetPassword(token, data.newPassword);
       setAlertType("success");
-      alert("✅ Password changed successfully.");
-      setMessage(res.message || "✅ Password changed successfully.");
+      showToast.success(" Password changed successfully");
+      setMessage(res.message || " Password changed successfully.");
       setTimeout(() => navigate("/signin"), 2000);
     } catch (err: any) {
-      setAlertType("error");
-      setMessage(err.response?.data?.message || "❌ Invalid or expired link.");
+      const errorMsg =
+        err.response?.data?.message || "❌ Invalid or expired link.";
+      showToast.error(errorMsg);
+
+      setMessage(errorMsg);
     } finally {
       setLoading(false);
     }

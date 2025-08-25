@@ -8,6 +8,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import { requestPasswordReset } from "../../../services/AuthService";
+import { showToast } from "../../../helper/toastHelper";
 
 interface ForgotPasswordProps {
   open: boolean;
@@ -35,10 +36,13 @@ export default function ForgotPassword({
     setLoading(true);
     try {
       const response = await requestPasswordReset(data.email);
-      alert("Reset link sent to your email !!");
+      showToast.success("📧 Reset link sent to your email!");
       setMessage(response.message || "Reset link sent!");
     } catch (err: any) {
-      setMessage(err.response?.data?.message || "Something went wrong.");
+      const errorMessage =
+        err.response?.data?.message || "Something went wrong.";
+      showToast.error(errorMessage);
+      setMessage(errorMessage);
     } finally {
       setLoading(false);
     }

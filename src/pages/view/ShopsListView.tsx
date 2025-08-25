@@ -29,6 +29,7 @@ import {
 import { getAllPlans } from "../../services/PlanService";
 import type { DateFilterState } from "../../shared/components/DateFilter";
 import Search from "../../shared/components/Search";
+import { showToast } from "../../helper/toastHelper";
 
 type Plan = { id: number; order_range: string };
 
@@ -97,7 +98,7 @@ const ShopsListView = () => {
 
   const handleApprove = async (id: number) => {
     await updateShopStatus(id, "approved");
-    alert("✅ Request approved and email sent successfully");
+    showToast.success(" Request approved and email sent successfully");
     fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
   };
 
@@ -166,10 +167,10 @@ const ShopsListView = () => {
       };
       if (editingRow) {
         await updateShop(editingRow.id, payload);
-        alert("✅ shop details updated ");
+        showToast.success("shop details updated ");
       } else {
         await createShop({ ...payload, email: data.email });
-        alert("✅ shop added and email sent successfully");
+        showToast.success("shop added and email sent successfully");
       }
       handleCloseDialog();
       fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);

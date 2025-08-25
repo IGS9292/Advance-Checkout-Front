@@ -6,12 +6,14 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import type { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { getAllShops } from "../../../services/ShopService";
+import { showToast } from "../../../helper/toastHelper";
 
 export const useShopColumns = (
   handleEdit: (row: any) => void,
   handleDelete: (row: any) => void,
   handleApprove: (id: number) => void,
-  handleReject: (id: number) => void
+  handleReject: (id: number) => void,
+  
 ) => {
   const [columnsMeta, setColumnsMeta] = React.useState<GridColDef[]>([]);
 
@@ -24,14 +26,12 @@ export const useShopColumns = (
       const data = await getAllShops();
       let rawShops = Array.isArray(data.shops) ? data.shops : [];
 
-
       rawShops = rawShops.map((shop: any, index: any) => ({
         ...shop,
         srNo: index + 1
       }));
 
       const sampleRow = rawShops[0] || {};
-
 
       const orderedFields = [
         "srNo",
@@ -139,7 +139,6 @@ export const useShopColumns = (
         })
         .filter(Boolean) as GridColDef[];
 
-
       mappedColumns.push({
         field: "actions",
         headerName: "Actions",
@@ -159,7 +158,6 @@ export const useShopColumns = (
                 alignItems: "center",
                 gap: isPending ? 1 : 0.5,
                 justifyContent: "center"
-   
               }}
             >
               <Tooltip title="Edit">
@@ -214,7 +212,9 @@ export const useShopColumns = (
       setColumnsMeta(mappedColumns);
     } catch (err) {
       console.error("Failed to fetch shops", err);
-      alert("❌ Failed to load shops. Please check your server logs.");
+      showToast.error(
+        "❌ Failed to load shops. Please check your server logs."
+      );
     }
   };
 

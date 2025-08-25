@@ -29,6 +29,7 @@ import type { DateFilterState } from "../../shared/components/DateFilter";
 import TableFilter from "../../shared/components/TableFilter";
 import DownloadMenu from "../../shared/components/DownloadMenu";
 import Search from "../../shared/components/Search";
+import { showToast } from "../../helper/toastHelper";
 
 const baseURL = import.meta.env.VITE_API_BASE as string;
 
@@ -139,10 +140,10 @@ export default function OrderListView() {
     try {
       if (editingRow) {
         await updateOrder(editingRow.id, payload, user?.token);
-        alert("✅ Order details updated");
+        showToast.success("Order details updated");
       } else {
         await createOrder(payload, user?.token);
-        alert("✅ Order created successfully");
+        showToast.success("Order created successfully");
       }
 
       handleCloseDialog();
@@ -288,7 +289,7 @@ export default function OrderListView() {
               <LoadingButton
                 variant="contained"
                 type="submit"
-                loading={loading} 
+                loading={loading}
               >
                 {editingRow ? "Update" : "Save"}
               </LoadingButton>

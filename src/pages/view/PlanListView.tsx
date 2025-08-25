@@ -21,7 +21,7 @@ import DownloadMenu from "../../shared/components/DownloadMenu";
 import { usePlanColumns } from "../plan/components/usePlanColumns";
 import { createPlan, updatePlan, deletePlan } from "../../services/PlanService";
 import { LoadingButton } from "@mui/lab";
-
+import { showToast } from "../../helper/toastHelper";
 
 export default function PlanListView() {
   const [rows, setRows] = useState<any[]>([]);
@@ -102,10 +102,10 @@ export default function PlanListView() {
     try {
       if (editingRow) {
         await updatePlan(editingRow.id, payload);
-        alert("✅ Plan updated");
+        showToast.success("Plan updated");
       } else {
         await createPlan(payload);
-        alert("✅ Plan created successfully");
+        showToast.success("Plan created successfully");
       }
       handleCloseDialog();
       await fetchPlans(setOriginalRows, setFilteredRows);

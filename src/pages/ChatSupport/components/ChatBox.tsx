@@ -38,8 +38,6 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
   const endRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
 
-
-
   const groupByDate = (msgs: ChatMessage[]) => {
     return msgs.reduce((acc: Record<string, ChatMessage[]>, msg) => {
       const date = new Date(msg.timestamp);
@@ -62,7 +60,6 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
       return acc;
     }, {});
   };
-
 
   useEffect(() => {
     const loadChat = async () => {
@@ -87,7 +84,6 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
     };
     loadChat();
   }, [selectedUser, userId, user?.token]);
-
 
   useEffect(() => {
     if (!selectedUser) return;
@@ -145,7 +141,7 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
 
     try {
       await deleteChatMessages(userId, selectedUser.id, user?.token);
-      setMessages([]); 
+      setMessages([]);
     } catch (error) {
       console.error("Failed to delete messages:", error);
     }
@@ -220,7 +216,6 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
             {Object.entries(grouped).map(([date, msgs], index) => (
               <Box key={date} sx={{ mt: index !== 0 ? 3 : 0 }}>
                 {" "}
-    
                 <Box sx={{ display: "flex", justifyContent: "center", my: 1 }}>
                   <Typography
                     variant="caption"
@@ -248,7 +243,7 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
                           px: 2,
                           pt: 1,
                           pb: 2.5, // space for timestamp
-                          borderRadius: "24px", 
+                          borderRadius: "24px",
                           minWidth: "10%",
                           maxWidth: "70%",
                           width: "fit-content",

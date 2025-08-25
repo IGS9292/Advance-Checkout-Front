@@ -11,6 +11,7 @@ import {
   ToggleOnOutlined,
   ToggleOnRounded
 } from "@mui/icons-material";
+import { showToast } from "../../../helper/toastHelper";
 
 export const useDynamicColumns = (
   handleEdit: (row: any) => void,
@@ -83,7 +84,7 @@ export const useDynamicColumns = (
                     width: 40,
                     height: 50,
                     objectFit: "contain",
-                    borderRadius: 1 
+                    borderRadius: 1
                   }}
                 />
               )
@@ -190,7 +191,7 @@ export const useDynamicColumns = (
       setColumnsMeta(mappedColumns);
     } catch (err) {
       console.error("Failed to fetch payment methods", err);
-      alert(
+      showToast.error(
         "❌ Failed to load payment methods. Please check your server logs."
       );
     }

@@ -14,6 +14,7 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { requestShop } from "../../../services/ShopService";
 import { getAllPlans } from "../../../services/PlanService";
+import { showToast } from "../../../helper/toastHelper";
 
 type Plan = {
   id: number;
@@ -66,7 +67,7 @@ const AddShop: React.FC = () => {
 
     try {
       await requestShop(payload);
-      alert("✅ Request submitted. Await approval.");
+      showToast.success("Request submitted. Await approval.");
       reset();
     } catch (err) {
       console.error("❌ Error submitting shop request:", err);
