@@ -6,8 +6,8 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { getActivePlanByShop } from "../../../services/PlanService";
+import { useAuth } from "../../../contexts/AuthContext";
 
 interface Plan {
   id: number;
@@ -17,13 +17,16 @@ interface Plan {
 }
 
 interface CardAlertProps {
-  shopId: number; 
+  shopId: number;
 }
 
 export default function CardAlert({ shopId }: CardAlertProps) {
   if (!shopId) return null;
   const [plan, setPlan] = useState<Plan | null>(null);
   const navigate = useNavigate();
+  const { role } = useAuth();
+
+  const basePath = role === "0" ? "/superadmin-dashboard" : "/admin-dashboard";
 
   useEffect(() => {
     const fetchActivePlan = async () => {
@@ -39,16 +42,13 @@ export default function CardAlert({ shopId }: CardAlertProps) {
   }, [shopId]);
 
   const handleUpgrade = () => {
-    const targetId = plan ? `plan-${plan.id}` : "pricing";
-    // window.location.href = `http://localhost:5173#${targetId}`;
-    const landingPageURL = `http://localhost:5173#${targetId}`;
-    window.open(landingPageURL, "_blank");
-    // navigate(` ${landingPageURL}`);
+    navigate(`${basePath}/plans-view`, {
+      state: { currentPlanId: plan?.id, shopId }
+    });
   };
+
   const handleBuyPlan = () => {
-    const landingPageURL = `http://localhost:5173#pricing`;
-    window.open(landingPageURL, "_blank");
-    // window.location.href = `http://localhost:5173#pricing`;
+    navigate(`${basePath}/plans-view`, { state: { shopId } });
   };
 
   if (!plan) {
@@ -59,10 +59,9 @@ export default function CardAlert({ shopId }: CardAlertProps) {
           <Typography gutterBottom sx={{ fontWeight: 600 }}>
             No Plan Active
           </Typography>
-          <Typography
-            variant="body2"
-            sx={{ mb: 2, color: "text.secondary" }}
-          ></Typography>
+          <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
+            Select a plan to get started.
+          </Typography>
           <Button
             variant="contained"
             size="small"
@@ -73,7 +72,7 @@ export default function CardAlert({ shopId }: CardAlertProps) {
           </Button>
         </CardContent>
       </Card>
-    ); // No active plan, hide card
+    );
   }
 
   return (
@@ -83,7 +82,10 @@ export default function CardAlert({ shopId }: CardAlertProps) {
         <Typography gutterBottom sx={{ fontWeight: 600 }}>
           Current Plan: {plan.name}
         </Typography>
-        <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
+        <Typography
+          variant="body2"
+          sx={{ mb: 2, color: "text.secondary", textWrap: "wrap" }}
+        >
           Orders per month: {plan.order_range}
         </Typography>
         <Button

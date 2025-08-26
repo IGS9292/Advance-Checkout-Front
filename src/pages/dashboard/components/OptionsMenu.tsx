@@ -17,9 +17,16 @@ const MenuItem = styled(MuiMenuItem)({
   margin: "2px 0"
 });
 
-export default function OptionsMenu() {
+type OptionsMenuProps = {
+  trigger?: React.ReactElement<{
+    onClick?: React.MouseEventHandler<HTMLElement>;
+  }>;
+};
+
+export default function OptionsMenu({ trigger }: OptionsMenuProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -31,45 +38,45 @@ export default function OptionsMenu() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    handleClose();
     console.log("Logging out...");
     logout();
     navigate("/");
   };
+
   return (
-    <React.Fragment>
-      <MenuButton
-        aria-label="Open menu"
-        onClick={handleClick}
-        sx={{
-          borderColor: "transparent",
-          outline: "none",
-          border: "none",
-          boxShadow: "none",
-          "&:focus": {
-            outline: "none"
-          }
-        }}
-      >
-        <MoreVertRoundedIcon />
-      </MenuButton>
+    <>
+      {trigger ? (
+        React.cloneElement(trigger, {
+          onClick: handleClick
+        })
+      ) : (
+        <MenuButton
+          aria-label="Open menu"
+          onClick={handleClick}
+          sx={{
+            borderColor: "transparent",
+            outline: "none",
+            border: "none",
+            boxShadow: "none",
+            "&:focus": { outline: "none" }
+          }}
+        >
+          <MoreVertRoundedIcon />
+        </MenuButton>
+      )}
+
       <Menu
         anchorEl={anchorEl}
         id="menu"
         open={open}
         onClose={handleClose}
-        onClick={handleClose}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         sx={{
-          [`& .${listClasses.root}`]: {
-            padding: "4px"
-          },
-          [`& .${paperClasses.root}`]: {
-            padding: 0
-          },
-          [`& .${dividerClasses.root}`]: {
-            margin: "4px -4px"
-          }
+          [`& .${listClasses.root}`]: { padding: "4px" },
+          [`& .${paperClasses.root}`]: { padding: 0 },
+          [`& .${dividerClasses.root}`]: { margin: "4px -4px" }
         }}
       >
         <MenuItem onClick={handleClose}>Profile</MenuItem>
@@ -79,7 +86,7 @@ export default function OptionsMenu() {
         <MenuItem onClick={handleClose}>Settings</MenuItem>
         <Divider />
         <MenuItem
-          onClick={handleClose}
+          onClick={handleLogout}
           sx={{
             [`& .${listItemIconClasses.root}`]: {
               ml: "auto",
@@ -87,12 +94,12 @@ export default function OptionsMenu() {
             }
           }}
         >
-          <ListItemText onClick={handleLogout}>Logout</ListItemText>
+          <ListItemText>Logout</ListItemText>
           <ListItemIcon>
             <LogoutRoundedIcon fontSize="small" />
           </ListItemIcon>
         </MenuItem>
       </Menu>
-    </React.Fragment>
+    </>
   );
 }

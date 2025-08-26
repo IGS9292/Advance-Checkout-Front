@@ -1,4 +1,3 @@
-import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import Breadcrumbs, { breadcrumbsClasses } from "@mui/material/Breadcrumbs";
@@ -17,14 +16,12 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
   }
 }));
 
-
 const PATH_TITLES: { [key: string]: string } = {
   dashboard: "Dashboard",
   analytics: "Analytics",
   clients: "Clients",
   bargraph: "Bar Graph View",
   linechart: "Line Chart View"
-
 };
 
 export default function NavbarBreadcrumbs() {

@@ -23,7 +23,6 @@ import PaymentRoundedIcon from "@mui/icons-material/PaymentRounded";
 import SmsRoundedIcon from "@mui/icons-material/SmsRounded";
 import StoreRoundedIcon from "@mui/icons-material/StoreRounded";
 import { CurrencyRupeeRounded } from "@mui/icons-material";
-import CardAlert from "./PlanCards";
 
 const mainListItems = [
   { text: "Home", icon: <HomeRoundedIcon />, path: "/dashboard" },
@@ -150,7 +149,7 @@ export default function MenuContent({ drawerOpen = true }: MenuContentProps) {
         <List dense>{secondaryListItems.map(renderMenuItem)}</List>
       </Stack>
 
-      {role === "1" && shopId && <CardAlert shopId={shopId} />}
+      {/* {role === "1" && shopId && <CardAlert shopId={shopId} />} */}
       {/* {role === "1" && <CardAlert />} */}
     </>
   );

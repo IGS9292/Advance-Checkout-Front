@@ -1,4 +1,3 @@
-import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
@@ -9,7 +8,7 @@ import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 import MenuButton from "./MenuButton";
 import MenuContent from "./MenuContent";
-import CardAlert from "./PlanCards";
+import CardAlert from "./CardAlert";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Tooltip } from "@mui/material";
@@ -23,7 +22,7 @@ export default function SideMenuMobile({
   open,
   toggleDrawer
 }: SideMenuMobileProps) {
-  const { logout, user, shopId ,role} = useAuth();
+  const { logout, user, shopId, role } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -91,7 +90,7 @@ export default function SideMenuMobile({
         <Divider />
         <Stack sx={{ flexGrow: 1 }}>
           <MenuContent />
-          <Divider />
+          {/* <Divider /> */}
         </Stack>
         {role === "1" && shopId && <CardAlert shopId={shopId} />}
         <Stack sx={{ p: 2 }}>

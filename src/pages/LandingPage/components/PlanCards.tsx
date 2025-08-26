@@ -7,16 +7,19 @@ import {
   CardContent,
   Button
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { getAllPlans } from "../../../services/PlanService";
+
 type Plan = {
   id: number;
   plan_name: string;
   order_range: string;
-  sales_fee: string; // stored as string from API, will format as %
+  sales_fee: string; // stored as string from API
 };
 
-export default function PlanCards() {
+export default function LandingPlanCards() {
   const [plans, setPlans] = useState<Plan[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -77,8 +80,12 @@ export default function PlanCards() {
               </CardContent>
 
               <Box sx={{ textAlign: "center", mb: 1 }}>
-                <Button variant="outlined" fullWidth>
-                  Upgrade now
+                <Button
+                  variant="outlined"
+                  fullWidth
+                  onClick={() => navigate("/signin")}
+                >
+                  Buy Now
                 </Button>
               </Box>
             </Card>

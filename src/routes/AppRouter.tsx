@@ -19,6 +19,7 @@ import PaymentGateway from "../pages/paymentGateway/PaymentGateway.tsx";
 import Customers from "../pages/customers/Customers.tsx";
 import Plan from "../pages/plan/Plan.tsx";
 import Shops from "../pages/shops/Shops.tsx";
+import PlanCardsView from "../pages/view/planCardsView.tsx";
 
 const AppRouter = () => {
   const { isAuthenticated, role } = useAuth();
@@ -80,6 +81,7 @@ const AppRouter = () => {
           <Route path="settings" element={<SettingsView />} />
           <Route path="about" element={<AboutView />} />
           <Route path="feedback" element={<FeedBackView />} />
+          <Route path="plans-view" element={<PlanCardsView />} />
         </Route>
 
         {/* Superadmin Dashboard (Protected) */}
@@ -93,7 +95,6 @@ const AppRouter = () => {
         >
           <Route index element={<DashboardView />} />
           <Route path="dashboard" element={<DashboardView />} />
-
           <Route path="orders" element={<Orders />} />
           <Route path="shops" element={<Shops />} />
           <Route path="plan" element={<Plan />} />
