@@ -13,8 +13,8 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import {
   deleteChatMessages,
-  fetchChatMessages,
-  getChatHistory
+  fetchChatMessages
+  // getChatHistory
 } from "../../../services/ChatSupportService";
 import { format, isThisWeek, isToday, isYesterday } from "date-fns";
 import { GridDeleteIcon } from "@mui/x-data-grid";

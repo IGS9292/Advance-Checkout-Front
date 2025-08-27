@@ -18,18 +18,18 @@ export const getAdminUsers = async () => {
   return response.data;
 };
 
-export const getChatHistory = async (
-  user1: string,
-  user2: string,
-  token?: string
-) => {
-  if (!token) throw new Error("No token provided");
-  const response = await axios.get(`${baseURL}/v1/history/${user1}/${user2}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
+// export const getChatHistory = async (
+//   user1: string,
+//   user2: string,
+//   token?: string
+// ) => {
+//   if (!token) throw new Error("No token provided");
+//   const response = await axios.get(`${baseURL}/v1/history/${user1}/${user2}`, {
+//     headers: { Authorization: `Bearer ${token}` }
+//   });
 
-  return response.data;
-};
+//   return response.data;
+// };
 
 export const fetchChatMessages = async (
   from: string,
