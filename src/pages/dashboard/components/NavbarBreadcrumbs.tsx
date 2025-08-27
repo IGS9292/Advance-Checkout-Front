@@ -17,11 +17,7 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
 }));
 
 const PATH_TITLES: { [key: string]: string } = {
-  dashboard: "Dashboard",
-  analytics: "Analytics",
-  clients: "Clients",
-  bargraph: "Bar Graph View",
-  linechart: "Line Chart View"
+  // dashboard: "Dashboard"
 };
 
 export default function NavbarBreadcrumbs() {

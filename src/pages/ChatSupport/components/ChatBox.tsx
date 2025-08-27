@@ -13,7 +13,8 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import {
   deleteChatMessages,
-  fetchChatMessages
+  fetchChatMessages,
+  getChatHistory
 } from "../../../services/ChatSupportService";
 import { format, isThisWeek, isToday, isYesterday } from "date-fns";
 import { GridDeleteIcon } from "@mui/x-data-grid";
@@ -141,7 +142,12 @@ const ChatBox: React.FC<Props> = ({ userId, selectedUser, socket }) => {
 
     try {
       await deleteChatMessages(userId, selectedUser.id, user?.token);
-      setMessages([]);
+      const updated = await fetchChatMessages(
+        userId,
+        selectedUser.id,
+        user?.token
+      );
+      setMessages(updated);
     } catch (error) {
       console.error("Failed to delete messages:", error);
     }

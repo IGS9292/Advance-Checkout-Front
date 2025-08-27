@@ -25,13 +25,10 @@ export const getChatHistory = async (
 ) => {
   if (!token) throw new Error("No token provided");
   const response = await axios.get(`${baseURL}/v1/history/${user1}/${user2}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
-  const allMessages = response.data;
 
-  return allMessages.filter((msg: any) => msg.visible !== false);
+  return response.data;
 };
 
 export const fetchChatMessages = async (
@@ -42,17 +39,10 @@ export const fetchChatMessages = async (
   if (!token) throw new Error("No token provided");
   const response = await axios.get(`${baseURL}/v1/messages`, {
     params: { from, to },
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
-  const allMessages = response.data;
 
-  const visibleMessages = allMessages.filter(
-    (msg: any) => msg.visible !== false
-  );
-
-  return visibleMessages;
+  return response.data;
 };
 
 export const fetchLastChatMessage = async (

@@ -126,7 +126,7 @@ const PlanCardsView = () => {
                   </Typography>
 
                   <Typography
-                    variant="h3"
+                    variant="h2"
                     fontWeight="bold"
                     color="text.primary"
                   >
@@ -136,7 +136,8 @@ const PlanCardsView = () => {
                   <Divider sx={{ my: 2 }} />
 
                   <Typography variant="body2" color="text.secondary">
-                    Growth based fee (% of your sales).
+                    Growth based fee <br />
+                    (% of your sales).
                   </Typography>
 
                   <Typography
@@ -147,16 +148,20 @@ const PlanCardsView = () => {
                   >
                     Best suited for <b>{plan.order_range}</b>
                   </Typography>
+                  <Divider sx={{ my: 1 }} />
                 </Box>
 
                 <Box mt={3}>
                   {isActive ? (
-                    <Chip
-                      label="Active"
-                      color="success"
-                      variant="outlined"
-                      sx={{ fontWeight: 600, width: "100%" }}
-                    />
+                    // <Chip
+                    //   label="Active"
+                    //   color="success"
+                    //   variant="outlined"
+                    //   sx={{ fontWeight: 600, width: "100%" }}
+                    // />
+                    <Button variant="outlined" fullWidth disabled={isActive}>
+                      Current Plan
+                    </Button>
                   ) : (
                     <Button
                       variant="contained"

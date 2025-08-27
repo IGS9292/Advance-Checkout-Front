@@ -41,7 +41,7 @@ export default function LandingPlanCards() {
 
       <Grid container spacing={3} justifyContent="center" sx={{ mt: 3 }}>
         {plans.map((plan) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={plan.id}>
+          <Grid size={{ xs: 12, sm: 9, md: 5.5, lg: 2.5 }} key={plan.id}>
             <Card
               id={`plan-${plan.id}`}
               sx={{
@@ -56,7 +56,8 @@ export default function LandingPlanCards() {
             >
               <CardContent sx={{ textAlign: "left" }}>
                 <Typography
-                  variant="h6"
+                  variant="h5"
+                  fontSize="24px"
                   color="secondary"
                   fontWeight="bold"
                   gutterBottom
@@ -64,16 +65,19 @@ export default function LandingPlanCards() {
                   {plan.plan_name}
                 </Typography>
 
-                <Typography variant="h3" fontWeight="bold">
+                <Typography variant="h1" fontWeight="bold" fontSize="64px">
                   {parseFloat(plan.sales_fee).toFixed(1)}%
                 </Typography>
 
                 <Typography
                   variant="body2"
                   color="text.secondary"
+                  fontSize="16px"
                   sx={{ mt: 1, mb: 2 }}
                 >
-                  Growth based fee (% of your sales).
+                  Growth based fee <br />
+                  (% of your sales).
+                  <br />
                   <br />
                   Best suited for brands doing <b>{plan.order_range}</b>
                 </Typography>

@@ -60,7 +60,7 @@ export default async function RazorpayCheckout({
       currency: "INR",
       description: "Plan Upgrade",
       order_id: data.order.id,
-      prefill: { email: "customer@example.com", contact: "9999999999" },
+      prefill: { email: "kartik.iglobe@gmail.com", contact: "8003982663" },
       theme: { color: "#3399cc" },
       config: {
         display: {
