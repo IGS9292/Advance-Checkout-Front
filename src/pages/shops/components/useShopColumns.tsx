@@ -1,38 +1,62 @@
 import * as React from "react";
-import { Avatar, Chip, Tooltip, Box } from "@mui/material";
+import {
+  Chip,
+  Tooltip,
+  Box,
+  MenuItem,
+  Menu,
+  ListItemText,
+  ListItemIcon,
+  Divider
+} from "@mui/material";
+
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import { MoreHorizRounded } from "@mui/icons-material";
+
 import type { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { getAllShops } from "../../../services/ShopService";
 import { showToast } from "../../../helper/toastHelper";
+import MenuButton from "../../dashboard/components/MenuButton";
 
 export const useShopColumns = (
   handleEdit: (row: any) => void,
   handleDelete: (row: any) => void,
   handleApprove: (id: number) => void,
   handleReject: (id: number) => void,
-  
+  handleProcessedRequest: (id: number) => void
 ) => {
   const [columnsMeta, setColumnsMeta] = React.useState<GridColDef[]>([]);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [menuRowId, setMenuRowId] = React.useState<number | null>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>, rowId: number) => {
+    setAnchorEl(event.currentTarget);
+    setMenuRowId(rowId);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+    setMenuRowId(null);
+  };
 
   const fetchColumnsAndData = async (
-    setRows: React.Dispatch<any[]>,
-    setFilteredRows: React.Dispatch<any[]>,
+    setRows: React.Dispatch<React.SetStateAction<any[]>>,
+    setFilteredRows: React.Dispatch<React.SetStateAction<any[]>>,
     baseURL: string
   ) => {
     try {
       const data = await getAllShops();
       let rawShops = Array.isArray(data.shops) ? data.shops : [];
 
-      rawShops = rawShops.map((shop: any, index: any) => ({
+      rawShops = rawShops.map((shop: any, index: number) => ({
         ...shop,
         srNo: index + 1
       }));
 
       const sampleRow = rawShops[0] || {};
-
       const orderedFields = [
         "srNo",
         "shopName",
@@ -60,6 +84,7 @@ export const useShopColumns = (
         .map((field) => {
           const col = inferredColumns.find((c: any) => c.field === field);
           if (!col) return null;
+
           if (field === "srNo") {
             return {
               ...col,
@@ -71,6 +96,7 @@ export const useShopColumns = (
               headerAlign: "center"
             };
           }
+
           if (field === "planName") {
             return {
               ...col,
@@ -88,40 +114,44 @@ export const useShopColumns = (
             };
           }
 
-          if (field === "shopAccessToken") {
-            return {
-              ...col,
-              headerName: "Shop Access Token",
-              editable: true
-            };
-          }
-
           if (field === "status") {
             return {
               ...col,
               headerName: "Status",
               minWidth: 120,
               flex: 1,
-              renderCell: (params: GridRenderCellParams) => (
-                <Chip
-                  variant="outlined"
-                  label={
-                    params.value === "approved"
-                      ? "Approved"
-                      : params.value === "rejected"
-                      ? "Rejected"
-                      : "Pending"
-                  }
-                  color={
-                    params.value === "approved"
-                      ? "success"
-                      : params.value === "rejected"
-                      ? "error"
-                      : "warning"
-                  }
-                  size="small"
-                />
-              )
+              renderCell: (params: GridRenderCellParams) => {
+                let color:
+                  | "default"
+                  | "success"
+                  | "error"
+                  | "warning"
+                  | "info" = "default";
+                let label = "Pending";
+
+                if (params.value === "approved") {
+                  color = "success";
+                  label = "Approved";
+                } else if (params.value === "rejected") {
+                  color = "error";
+                  label = "Rejected";
+                } else if (params.value === "processed") {
+                  color = "info";
+                  label = "Processed";
+                } else if (params.value === "pending") {
+                  color = "warning";
+                  label = "Pending";
+                }
+
+                return (
+                  <Chip
+                    label={label}
+                    color={color}
+                    size="small"
+                    variant="outlined"
+                  />
+                );
+              }
             };
           }
 
@@ -147,17 +177,17 @@ export const useShopColumns = (
         align: "center",
         headerAlign: "center",
         minWidth: 140,
-        flex: 0.5,
+        flex: 0.6,
         renderCell: (params) => {
           const isPending = params.row.status === "pending";
-
           return (
             <Box
               sx={{
                 display: "flex",
                 alignItems: "center",
-                gap: isPending ? 1 : 0.5,
-                justifyContent: "center"
+                justifyContent: "center",
+                width: "100%",
+                gap: 1
               }}
             >
               <Tooltip title="Edit">
@@ -179,29 +209,21 @@ export const useShopColumns = (
                   <DeleteOutlineIcon fontSize="small" />
                 </Box>
               </Tooltip>
-
-              {isPending && (
-                <>
-                  <Tooltip title="Approve">
-                    <Box
-                      component="span"
-                      sx={{ cursor: "pointer", color: "green" }}
-                      onClick={() => handleApprove(params.row.id)}
-                    >
-                      <CheckCircleOutlineIcon fontSize="small" />
-                    </Box>
-                  </Tooltip>
-                  <Tooltip title="Reject">
-                    <Box
-                      component="span"
-                      sx={{ cursor: "pointer", color: "red" }}
-                      onClick={() => handleReject(params.row.id)}
-                    >
-                      <CancelOutlinedIcon fontSize="small" />
-                    </Box>
-                  </Tooltip>
-                </>
-              )}
+              <Tooltip title="More">
+                <Box>
+                  <MenuButton
+                    aria-label="Open menu"
+                    onClick={(e) => handleClick(e, params.row.id)}
+                    sx={{
+                      border: "none",
+                      boxShadow: "none",
+                      borderRadius: "50%"
+                    }}
+                  >
+                    <MoreHorizRounded />
+                  </MenuButton>
+                </Box>
+              </Tooltip>
             </Box>
           );
         }
@@ -218,5 +240,15 @@ export const useShopColumns = (
     }
   };
 
-  return { columnsMeta, fetchColumnsAndData };
+  return {
+    columnsMeta,
+    fetchColumnsAndData,
+    anchorEl,
+    open,
+    menuRowId,
+    handleClose,
+    handleProcessedRequest,
+    handleApprove,
+    handleReject
+  };
 };

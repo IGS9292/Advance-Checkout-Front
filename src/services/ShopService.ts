@@ -35,7 +35,7 @@ export const createShop = async (data: {
     ...data,
     shop_access_token: data.shopAccessToken
   });
-  
+
   return res.data;
 };
 
@@ -68,4 +68,21 @@ export const updateShopStatus = async (
 export const deleteShop = async (shopId: string | number) => {
   const res = await axios.delete(`${baseURL}/v1/shops/${shopId}`);
   return res.data;
+};
+
+export const processShopRequest = async (
+  id: number,
+  status: "processed"
+  // | "approved"
+) => {
+  try {
+    const response = await axios.patch(
+      `${baseURL}/v1/shops/process-request/${id}`,
+      { status }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error processing shop request:", error);
+    throw error;
+  }
 };

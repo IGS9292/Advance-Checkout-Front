@@ -17,6 +17,7 @@ export const createPlan = async (planData: {
   plan_name: string;
   order_range: string; 
   sales_fee: number; 
+  charges?: number;  
 }) => {
   const res = await axios.post(`${baseURL}/v1/plans`, planData);
   return res.data;
@@ -28,6 +29,7 @@ export const updatePlan = async (
     plan_name?: string;
     order_range?: string;
     sales_fee?: number;
+    charges?: number;  
   }
 ) => {
   const res = await axios.put(`${baseURL}/v1/plans/${id}`, planData);

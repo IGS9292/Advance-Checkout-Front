@@ -3,13 +3,12 @@ import { getAllPlans } from "../../../services/PlanService";
 import { useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import type { AxiosError } from "axios";
-import { Box, Tooltip } from "@mui/material";
+import { Box, Tooltip, Typography } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { showToast } from "../../../helper/toastHelper";
 
 export const usePlanColumns = (
-  //   onView: (row: any) => void,
   onEdit: (row: any) => void,
   onDelete: (row: any) => void
 ) => {
@@ -32,17 +31,46 @@ export const usePlanColumns = (
         { field: "srNo", header: "Sr No." },
         { field: "plan_name", header: "Plan Name" },
         { field: "order_range", header: "Order Range" },
-        { field: "sales_fee", header: "Sales Fee (%)" }
+        { field: "sales_fee", header: "Sales Fee (%)" },
+        { field: "charges", header: "Charges (₹)" }
       ];
 
-      const mappedColumns: GridColDef[] = orderedFields.map((f) => ({
-        field: f.field,
-        headerName: f.header,
-        flex: 1,
-        minWidth: 120,
-        align: f.field === "srNo" ? "center" : "left",
-        headerAlign: f.field === "srNo" ? "center" : "left"
-      }));
+      const mappedColumns: GridColDef[] = orderedFields.map((f) => {
+        if (f.field === "charges") {
+          return {
+            field: f.field,
+            headerName: f.header,
+            flex: 1,
+            minWidth: 120,
+            align: "left",
+            headerAlign: "left",
+            renderCell: (params) => (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  height: "100%",
+                  pl: 0,
+                  pr: 0
+                }}
+              >
+                <Typography variant="body2">
+                  {params.value ? `₹${params.value}` : "-"}
+                </Typography>
+              </Box>
+            )
+          };
+        }
+
+        return {
+          field: f.field,
+          headerName: f.header,
+          flex: 1,
+          minWidth: 120,
+          align: f.field === "srNo" ? "center" : "left",
+          headerAlign: f.field === "srNo" ? "center" : "left"
+        };
+      });
 
       mappedColumns.push({
         field: "actions",
@@ -62,16 +90,6 @@ export const usePlanColumns = (
               justifyContent: "center"
             }}
           >
-            {/* <Tooltip title="View">
-              <Box
-                component="span"
-                sx={{ cursor: "pointer", color: "info.main" }}
-                onClick={() => onView(params.row)}
-              >
-                <VisibilityIcon fontSize="small" />
-              </Box>
-            </Tooltip> */}
-
             <Tooltip title="Edit">
               <Box
                 component="span"

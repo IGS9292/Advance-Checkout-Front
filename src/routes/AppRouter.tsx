@@ -20,6 +20,7 @@ import Customers from "../pages/customers/Customers.tsx";
 import Plan from "../pages/plan/Plan.tsx";
 import Shops from "../pages/shops/Shops.tsx";
 import PlanCardsView from "../pages/view/planCardsView.tsx";
+import Billing from "../pages/billing/billing.tsx";
 
 const AppRouter = () => {
   const { isAuthenticated, role } = useAuth();
@@ -76,6 +77,7 @@ const AppRouter = () => {
           <Route path="coupons" element={<CouponsListView />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="payment-gateway" element={<PaymentGateway />} />
+          <Route path="billing" element={<Billing />} />
           <Route path="chatSupport" element={<ChatSupport />} />
           <Route path="customers" element={<Customers />} />
           <Route path="settings" element={<SettingsView />} />
@@ -99,6 +101,7 @@ const AppRouter = () => {
           <Route path="shops" element={<Shops />} />
           <Route path="plan" element={<Plan />} />
           <Route path="payment-gateway" element={<PaymentGateway />} />
+          <Route path="billing" element={<Billing />} />
           <Route path="chatSupport" element={<ChatSupport />} />
           <Route path="settings" element={<SettingsView />} />
           <Route path="about" element={<AboutView />} />

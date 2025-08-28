@@ -11,8 +11,15 @@ import {
   TextField,
   MenuItem,
   FormControl,
-  FormLabel
+  FormLabel,
+  Menu,
+  ListItemText,
+  ListItemIcon,
+  Divider
 } from "@mui/material";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+
 import { LoadingButton } from "@mui/lab";
 import { useEffect, useState, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -23,6 +30,7 @@ import { useShopColumns } from "../shops/components/useShopColumns";
 import {
   createShop,
   deleteShop,
+  processShopRequest,
   updateShop,
   updateShopStatus
 } from "../../services/ShopService";
@@ -98,7 +106,7 @@ const ShopsListView = () => {
 
   const handleApprove = async (id: number) => {
     await updateShopStatus(id, "approved");
-    showToast.success(" Request approved and email sent successfully");
+    showToast.success("Request approved and email sent successfully");
     fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
   };
 
@@ -107,11 +115,25 @@ const ShopsListView = () => {
     fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
   };
 
-  const { columnsMeta: dynamicCols, fetchColumnsAndData } = useShopColumns(
+  const handleProcessedRequest = async (id: number) => {
+    await processShopRequest(id, "processed");
+    showToast.success("Request marked as processed");
+    fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
+  };
+
+  const {
+    columnsMeta: dynamicCols,
+    fetchColumnsAndData,
+    anchorEl,
+    open,
+    menuRowId,
+    handleClose
+  } = useShopColumns(
     handleEdit,
     handleDelete,
     handleApprove,
-    handleReject
+    handleReject,
+    handleProcessedRequest
   );
 
   useEffect(() => {
@@ -167,10 +189,10 @@ const ShopsListView = () => {
       };
       if (editingRow) {
         await updateShop(editingRow.id, payload);
-        showToast.success("shop details updated ");
+        showToast.success("Shop details updated");
       } else {
         await createShop({ ...payload, email: data.email });
-        showToast.success("shop added and email sent successfully");
+        showToast.success("Shop added and email sent successfully");
       }
       handleCloseDialog();
       fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
@@ -182,15 +204,8 @@ const ShopsListView = () => {
   };
 
   return (
-    <Box sx={{ width: "100%", maxWidth: { sm: "100%", lg: "100%" } }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 2
-        }}
-      >
+    <Box sx={{ width: "100%", maxWidth: "100%" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
         <Typography component="h2" variant="h6">
           Shops
         </Typography>
@@ -223,6 +238,54 @@ const ShopsListView = () => {
           </Box>
         </Grid>
       </Grid>
+
+      {/* Context Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        id="menu"
+        open={open}
+        onClose={handleClose}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <MenuItem
+          onClick={() => {
+            if (menuRowId) handleProcessedRequest(menuRowId);
+            handleClose();
+          }}
+        >
+          <ListItemText>Process Request</ListItemText>
+        </MenuItem>
+
+        <Divider />
+        <MenuItem
+          onClick={() => {
+            if (menuRowId) handleReject(menuRowId);
+            handleClose();
+          }}
+        >
+          {" "}
+          <ListItemIcon>
+            <CancelOutlinedIcon fontSize="small" />{" "}
+          </ListItemIcon>
+          <ListItemText>Reject</ListItemText>
+        </MenuItem>
+
+        <Divider />
+        <MenuItem
+          onClick={() => {
+            if (menuRowId) handleApprove(menuRowId);
+            handleClose();
+          }}
+        >
+          <ListItemIcon>
+            <CheckCircleOutlineIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText>Approve</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      {/* Add/Edit Shop Dialog */}
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
@@ -233,6 +296,7 @@ const ShopsListView = () => {
         <DialogContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={2} mt={1}>
+              {/* Shop Name */}
               <FormControl fullWidth required>
                 <FormLabel>Shop Name</FormLabel>
                 <Controller
@@ -249,6 +313,7 @@ const ShopsListView = () => {
                 />
               </FormControl>
 
+              {/* Email */}
               <FormControl fullWidth required>
                 <FormLabel>User Email</FormLabel>
                 <Controller
@@ -271,6 +336,8 @@ const ShopsListView = () => {
                   )}
                 />
               </FormControl>
+
+              {/* Token */}
               <FormControl fullWidth>
                 <FormLabel>Shop Access Token</FormLabel>
                 <Controller

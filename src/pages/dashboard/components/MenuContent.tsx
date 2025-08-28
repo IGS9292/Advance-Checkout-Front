@@ -59,6 +59,11 @@ const mainListItems = [
     path: "/payment-gateway"
   },
   {
+    text: "Billing",
+    icon: <PeopleRoundedIcon />,
+    path: "/billing"
+  },
+  {
     text: "Chat Support",
     icon: <SmsRoundedIcon />,
     path: "/chatsupport"

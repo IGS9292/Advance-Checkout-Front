@@ -69,7 +69,7 @@ export default function LandingPage(props: { disableCustomTheme?: boolean }) {
           <FAQ />
         </div>
         <Divider />
-        <div ref={sectionRefs.current["add-shop"]}>
+        <div ref={sectionRefs.current["add-shop"]} id="add-shop">
           <AddShop />
         </div>
         <Divider />

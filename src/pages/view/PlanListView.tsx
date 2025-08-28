@@ -44,7 +44,8 @@ export default function PlanListView() {
     defaultValues: {
       plan_name: "",
       order_range: "",
-      sales_fee: ""
+      sales_fee: "",
+      charges: ""
     }
   });
 
@@ -53,6 +54,7 @@ export default function PlanListView() {
     setValue("plan_name", row.plan_name || "");
     setValue("order_range", row.order_range || "");
     setValue("sales_fee", row.sales_fee || "");
+    setValue("charges", row.charges || "");
     setOpenDialog(true);
   };
 
@@ -96,7 +98,8 @@ export default function PlanListView() {
     const payload = {
       plan_name: data.plan_name,
       order_range: data.order_range,
-      sales_fee: data.sales_fee
+      sales_fee: data.sales_fee,
+      charges: data.charges
     };
     setLoading(true);
     try {
@@ -131,15 +134,6 @@ export default function PlanListView() {
         </Typography>
         <Stack direction="row" spacing={2}>
           <Search onSearch={setSearchTerm} />
-          {/* <TableFilter
-            rows={originalRows}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            dateFilter={dateFilter}
-            setDateFilter={setDateFilter}
-            onFilter={setFilteredRows}
-            dateField="createdAt" // make sure API returns createdAt for plans
-          /> */}
           <DownloadMenu rows={filteredRows} columns={columnsMeta} />
           <Button variant="contained" onClick={handleOpenDialog}>
             Add Plan
@@ -215,6 +209,28 @@ export default function PlanListView() {
                       type="number"
                       error={!!errors.sales_fee}
                       helperText={errors.sales_fee?.message}
+                    />
+                  )}
+                />
+              </FormControl>
+
+              <FormControl fullWidth>
+                <FormLabel>Charges (₹)</FormLabel>
+                <Controller
+                  name="charges"
+                  control={control}
+                  rules={{
+                    validate: (value) =>
+                      value === "" ||
+                      !isNaN(Number(value)) ||
+                      "Charges must be a number"
+                  }}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      type="number"
+                      error={!!errors.charges}
+                      helperText={errors.charges?.message}
                     />
                   )}
                 />

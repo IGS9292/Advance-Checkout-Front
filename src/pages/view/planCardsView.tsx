@@ -19,6 +19,7 @@ type Plan = {
   plan_name: string;
   order_range: string;
   sales_fee: string;
+  charges?: string;
 };
 
 const PlanCardsView = () => {
@@ -149,6 +150,42 @@ const PlanCardsView = () => {
                     Best suited for <b>{plan.order_range}</b>
                   </Typography>
                   <Divider sx={{ my: 1 }} />
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mt={1}
+                  >
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontSize="15px"
+                      fontWeight={500}
+                    >
+                      Starting from
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      fontSize="15px"
+                      fontWeight={600}
+                    >
+                      ₹{plan.charges ?? "0.00"}
+                    </Typography>
+                  </Box>
+
+                  <Divider sx={{ my: 1 }} />
+                  <Typography
+                    variant="body2"
+                    fontSize="15px"
+                    align="center"
+                    fontWeight={600}
+                    color="grey.400"
+                    sx={{ mt: 3 }}
+                  >
+                    Billed Monthly
+                  </Typography>
                 </Box>
 
                 <Box mt={3}>
