@@ -6,8 +6,9 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import AutoAwesomeRoundedIcon from "@mui/icons-material/AutoAwesomeRounded";
 import { useNavigate } from "react-router-dom";
-import { getActivePlanByShop } from "../../../services/PlanService";
+
 import { useAuth } from "../../../contexts/AuthContext";
+import { getActivePlanByShop } from "../../../services/planCardsService";
 
 interface Plan {
   id: number;

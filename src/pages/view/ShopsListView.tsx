@@ -38,6 +38,7 @@ import { getAllPlans } from "../../services/PlanService";
 import type { DateFilterState } from "../../shared/components/DateFilter";
 import Search from "../../shared/components/Search";
 import { showToast } from "../../helper/toastHelper";
+import { AccountTreeOutlined } from "@mui/icons-material";
 
 type Plan = { id: number; order_range: string };
 
@@ -254,6 +255,9 @@ const ShopsListView = () => {
             handleClose();
           }}
         >
+          <ListItemIcon>
+            <AccountTreeOutlined fontSize="small" />
+          </ListItemIcon>
           <ListItemText>Process Request</ListItemText>
         </MenuItem>
 
@@ -268,7 +272,7 @@ const ShopsListView = () => {
           <ListItemIcon>
             <CancelOutlinedIcon fontSize="small" />{" "}
           </ListItemIcon>
-          <ListItemText>Reject</ListItemText>
+          <ListItemText>Deny Request</ListItemText>
         </MenuItem>
 
         <Divider />
@@ -281,7 +285,7 @@ const ShopsListView = () => {
           <ListItemIcon>
             <CheckCircleOutlineIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Approve</ListItemText>
+          <ListItemText>Approve Request</ListItemText>
         </MenuItem>
       </Menu>
 

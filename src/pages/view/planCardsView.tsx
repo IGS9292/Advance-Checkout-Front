@@ -6,13 +6,24 @@ import {
   Paper,
   Button,
   Divider,
-  Chip
+  Chip,
+  Tooltip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { getActivePlanByShop, getAllPlans } from "../../services/PlanService";
+import { getAllPlans } from "../../services/PlanService";
 import { showToast } from "../../helper/toastHelper";
 import RazorpayCheckout from "../../components/razorpay/razorpayCheckout";
+import { CancelOutlined, MoreVertRounded } from "@mui/icons-material";
+import MenuButton from "../dashboard/components/MenuButton";
+import {
+  getActivePlanByShop,
+  renewShopPlan
+} from "../../services/planCardsService";
 
 type Plan = {
   id: number;
@@ -30,6 +41,11 @@ const PlanCardsView = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
   const { shopId, user } = useAuth();
+
+  // 🔹 menu state
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuRowId, setMenuRowId] = useState<number | null>(null);
+  const open = Boolean(anchorEl);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -77,6 +93,46 @@ const PlanCardsView = () => {
     });
   };
 
+  // 🔹 menu handlers
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    rowId: number
+  ) => {
+    setAnchorEl(event.currentTarget);
+    setMenuRowId(rowId);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setMenuRowId(null);
+  };
+
+  const handleCancelPlan = (planId: number) => {
+    // TODO: call API here
+    showToast.info(`Cancel request for plan ${planId} submitted`);
+  };
+  const handleRenewPlan = async (planId: number) => {
+    if (!shopId) {
+      showToast.error("⚠️ Shop not found, please login again.");
+      return;
+    }
+
+    try {
+      const response = await renewShopPlan(shopId, planId);
+
+      showToast.success(
+        response?.message || `Plan ${planId} renewed successfully ✅`
+      );
+
+      // refresh active plan after renewal
+      const updatedActive = await getActivePlanByShop(shopId);
+      setActivePlan(updatedActive || null);
+    } catch (err: any) {
+      console.error("Failed to renew plan:", err);
+      showToast.error(err?.response?.data?.message || "Plan renewal failed ❌");
+    }
+  };
+
   return (
     <Box width="100%">
       <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
@@ -97,9 +153,8 @@ const PlanCardsView = () => {
           const isActive = activePlan && activePlan.id === plan.id;
 
           return (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={plan.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 5, lg: 3 }} key={plan.id}>
               <Paper
-                // elevation={1}
                 sx={{
                   p: 3,
                   borderRadius: 3,
@@ -107,9 +162,8 @@ const PlanCardsView = () => {
                   height: "100%",
                   display: "flex",
                   flexDirection: "column",
-                  flexGrow: "1",
                   justifyContent: "space-between",
-                  border: isActive ? "1px solid #4caf50" : "0px solid #eee",
+                  border: isActive ? "1px solid #4caf50" : "1px solid #eee",
                   "&:hover": {
                     transform: "translateY(-5px)",
                     boxShadow: 1
@@ -117,14 +171,75 @@ const PlanCardsView = () => {
                 }}
               >
                 <Box>
-                  <Typography
-                    variant="h6"
-                    fontWeight={600}
-                    color="primary"
-                    gutterBottom
+                  {isActive ? (
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography
+                        variant="h6"
+                        fontWeight={600}
+                        color="primary"
+                        gutterBottom
+                      >
+                        {plan.plan_name}
+                        <Typography
+                          component="span"
+                          variant="h6"
+                          fontWeight={500}
+                          color="text.secondary"
+                          sx={{ ml: 1 }}
+                        >
+                          (Current Plan)
+                        </Typography>
+                      </Typography>
+                      <Tooltip title="More">
+                        <MenuButton
+                          aria-label="Open menu"
+                          onClick={(e) => handleClick(e, plan.id)}
+                          sx={{
+                            border: "none",
+                            boxShadow: "none",
+                            borderRadius: "50%"
+                          }}
+                        >
+                          <MoreVertRounded />
+                        </MenuButton>
+                      </Tooltip>
+                    </Box>
+                  ) : (
+                    <Typography
+                      variant="h6"
+                      fontWeight={600}
+                      color="primary"
+                      gutterBottom
+                    >
+                      {plan.plan_name}
+                    </Typography>
+                  )}
+
+                  {/* Menu for cancel */}
+                  <Menu
+                    anchorEl={anchorEl}
+                    id="menu"
+                    open={open}
+                    onClose={handleClose}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                    {plan.plan_name}
-                  </Typography>
+                    <MenuItem
+                      onClick={() => {
+                        if (menuRowId) handleCancelPlan(menuRowId);
+                        handleClose();
+                      }}
+                    >
+                      <ListItemIcon>
+                        <CancelOutlined fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Cancel Plan</ListItemText>
+                    </MenuItem>
+                  </Menu>
 
                   <Typography
                     variant="h2"
@@ -190,15 +305,23 @@ const PlanCardsView = () => {
 
                 <Box mt={3}>
                   {isActive ? (
-                    // <Chip
-                    //   label="Active"
-                    //   color="success"
-                    //   variant="outlined"
-                    //   sx={{ fontWeight: 600, width: "100%" }}
-                    // />
-                    <Button variant="outlined" fullWidth disabled={isActive}>
-                      Current Plan
-                    </Button>
+                    <>
+                      {/* <Chip
+                       label="Active"
+                       color="success"
+                      variant="outlined"
+                      sx={{ fontWeight: 600, width: "100%" }}
+                     /> */}
+                      <Tooltip title="Renew Plan">
+                        <Button
+                          variant="outlined"
+                          fullWidth
+                          onClick={() => handleRenewPlan(plan.id)}
+                        >
+                          Renew Plan
+                        </Button>
+                      </Tooltip>
+                    </>
                   ) : (
                     <Button
                       variant="contained"

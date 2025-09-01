@@ -214,6 +214,11 @@ const AddShop: React.FC = () => {
                         id="shopContactNo"
                         error={!!errors.shopContactNo}
                         helperText={errors.shopContactNo?.message}
+                        inputProps={{
+                          maxLength: 10,
+                          inputMode: "numeric",
+                          pattern: "\\d{10}"
+                        }}
                       />
                     )}
                   />
