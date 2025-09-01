@@ -34,3 +34,21 @@ export const renewShopPlan = async (shopId: number, planId: number) => {
     throw err;
   }
 };
+
+export const upgradeShopPlan = async (shopId: number, planId: number) => {
+  try {
+    const res = await axios.post(`${baseURL}/v1/shopPlanCards/upgrade-plan`, {
+      shopId,
+      planId
+    });
+
+    if (res.data.success) {
+      return res.data;
+    } else {
+      throw new Error(res.data.message || "Plan upgradation failed");
+    }
+  } catch (err: any) {
+    console.error("Error upgrading shop plan:", err);
+    throw err;
+  }
+};

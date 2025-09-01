@@ -17,12 +17,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { getAllPlans } from "../../services/PlanService";
 import { showToast } from "../../helper/toastHelper";
-import RazorpayCheckout from "../../components/razorpay/razorpayCheckout";
+// import RazorpayCheckout from "../../components/razorpay/razorpayCheckout";
 import { CancelOutlined, MoreVertRounded } from "@mui/icons-material";
 import MenuButton from "../dashboard/components/MenuButton";
 import {
   getActivePlanByShop,
-  renewShopPlan
+  renewShopPlan,
+  upgradeShopPlan
 } from "../../services/planCardsService";
 
 type Plan = {
@@ -34,9 +35,9 @@ type Plan = {
 };
 
 const PlanCardsView = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { currentPlanId } = location.state || {};
+  // const location = useLocation();
+  // const navigate = useNavigate();
+  // const { currentPlanId } = location.state || {};
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [activePlan, setActivePlan] = useState<Plan | null>(null);
@@ -72,28 +73,29 @@ const PlanCardsView = () => {
     fetchActivePlan();
   }, [shopId]);
 
-  const handleCheckout = (plan: Plan) => {
-    if (!user) {
-      navigate("/signin");
-      return;
-    }
+  // const handleCheckout = (plan: Plan) => {
+  //   if (!user) {
+  //     navigate("/signin");
+  //     return;
+  //   }
 
-    if (!shopId) {
-      showToast.error("⚠️ Please connect your shop first");
-      return;
-    }
+  //   if (!shopId) {
+  //     showToast.error("⚠️ Please connect your shop first");
+  //     return;
+  //   }
 
-    RazorpayCheckout({
-      planId: plan.id,
-      shopId,
-      amount: Number(plan.sales_fee) * 1000,
-      onSuccess: () =>
-        showToast.success(`Upgraded to ${plan.plan_name} successfully!`),
-      onFailure: () => showToast.error("Payment failed")
-    });
-  };
+  //   RazorpayCheckout({
+  //     planId: plan.id,
+  //     shopId,
+  //     amount: Number(plan.sales_fee) * 1000,
+  //     onSuccess: () =>
+  //       showToast.success(`Upgraded to ${plan.plan_name} successfully!`),
+  //     onFailure: () => showToast.error("Payment failed")
+  //   });
+  // };
 
   // 🔹 menu handlers
+
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement>,
     rowId: number
@@ -124,6 +126,26 @@ const PlanCardsView = () => {
         response?.message || `Plan ${planId} renewed successfully ✅`
       );
 
+      // refresh active plan after renewal
+      const updatedActive = await getActivePlanByShop(shopId);
+      setActivePlan(updatedActive || null);
+    } catch (err: any) {
+      console.error("Failed to renew plan:", err);
+      showToast.error(err?.response?.data?.message || "Plan renewal failed ❌");
+    }
+  };
+  const handleUpgradePlan = async (planId: number) => {
+    if (!shopId) {
+      showToast.error("⚠️ Shop not found, please login again.");
+      return;
+    }
+
+    try {
+      const response = await upgradeShopPlan(shopId, planId);
+
+      showToast.success(
+        response?.message || `Plan ${planId} upgraded successfully `
+      );
       // refresh active plan after renewal
       const updatedActive = await getActivePlanByShop(shopId);
       setActivePlan(updatedActive || null);
@@ -326,7 +348,8 @@ const PlanCardsView = () => {
                     <Button
                       variant="contained"
                       fullWidth
-                      onClick={() => handleCheckout(plan)}
+                      // onClick={() => handleCheckout(plan)}
+                      onClick={() => handleUpgradePlan(plan.id)}
                     >
                       {user
                         ? activePlan

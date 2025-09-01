@@ -121,7 +121,7 @@ const ShopsListView = () => {
     showToast.success("Request marked as processed");
     fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
   };
-
+// upgradeShopPlan
   const {
     columnsMeta: dynamicCols,
     fetchColumnsAndData,
