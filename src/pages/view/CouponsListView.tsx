@@ -207,7 +207,7 @@ export default function CouponsListView() {
           Coupons
         </Typography>
 
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={0.5}>
           <Search onSearch={(value) => setSearchTerm(value)} />
           <TableFilter
             rows={originalRows}

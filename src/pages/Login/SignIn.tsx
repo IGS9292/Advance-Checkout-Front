@@ -127,7 +127,8 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
         role: data.user.role,
         token: data.token,
         shopName: data.user.shopName,
-        shopId: data.user.shopId
+        shopId: data.user.shopId,
+        activePlanId: data.user.activePlanId
       };
 
       login(userData);
@@ -136,13 +137,19 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
         email: data.user.email,
         role: data.user.role,
         shopName: data.user.shopName,
-        shopId: data.user.shopId
+        shopId: data.user.shopId,
+        activePlanId: data.user.activePlanId
       });
 
       if (userData.role === SUPERADMIN) {
         navigate("/superadmin-dashboard");
-      } else {
-        navigate("/admin-dashboard");
+      } else if (userData.role === ADMIN) {
+        if (!userData.activePlanId) {
+          showToast.warning("⚠️ Please purchase a plan to continue.");
+          navigate("/plans-view");
+        } else {
+          navigate("/admin-dashboard");
+        }
       }
     } catch (err: any) {
       showToast.error(err);

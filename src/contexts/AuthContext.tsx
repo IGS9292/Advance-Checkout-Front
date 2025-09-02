@@ -9,6 +9,7 @@ interface User {
   email: string;
   shopName?: string;
   shopId: number;
+    activePlanId?: number | null;
 }
 
 // Define context value shape

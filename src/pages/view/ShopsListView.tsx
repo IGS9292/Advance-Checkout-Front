@@ -121,7 +121,7 @@ const ShopsListView = () => {
     showToast.success("Request marked as processed");
     fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
   };
-// upgradeShopPlan
+  // upgradeShopPlan
   const {
     columnsMeta: dynamicCols,
     fetchColumnsAndData,
@@ -249,28 +249,38 @@ const ShopsListView = () => {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem
-          onClick={() => {
-            if (menuRowId) handleProcessedRequest(menuRowId);
-            handleClose();
-          }}
-        >
-          <ListItemIcon>
-            <AccountTreeOutlined fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Process Request</ListItemText>
-        </MenuItem>
+        {menuRowId &&
+          (() => {
+            const row = originalRows.find((r) => r.id === menuRowId);
+            if (row && row.status !== "approved") {
+              return (
+                <>
+                  <MenuItem
+                    onClick={() => {
+                      handleProcessedRequest(menuRowId);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <AccountTreeOutlined fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Process Request</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                </>
+              );
+            }
+            return null;
+          })()}
 
-        <Divider />
         <MenuItem
           onClick={() => {
             if (menuRowId) handleReject(menuRowId);
             handleClose();
           }}
         >
-          {" "}
           <ListItemIcon>
-            <CancelOutlinedIcon fontSize="small" />{" "}
+            <CancelOutlinedIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Deny Request</ListItemText>
         </MenuItem>

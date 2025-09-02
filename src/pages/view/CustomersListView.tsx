@@ -66,7 +66,7 @@ export default function CustomersListView() {
         <Typography component="h2" variant="h6">
           Customers
         </Typography>
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={0.5}>
           <Search onSearch={(value) => setSearchTerm(value)} />
           <TableFilter
             rows={originalRows}

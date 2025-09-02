@@ -47,116 +47,125 @@ export const useShopColumns = (
 
       const sampleRow = rawShops[0] || {};
       const orderedFields = [
-        "srNo",
-        "shopName",
-        "users",
-        "planName",
-        "shopAccessToken",
-        "shopUrl",
-        "shopContactNo",
-        "ordersPerMonth",
-        "status"
+        { field: "srNo", header: "Sr No." },
+        { field: "shopName", header: "Shop Name" },
+        { field: "users", header: "Users" },
+        { field: "planName", header: "Active Plan" },
+        { field: "shopAccessToken", header: "Shop Acces Token" },
+        { field: "shopUrl", header: "Shop Url" },
+        { field: "shopContactNo", header: "Shop Contact No" },
+        { field: "ordersPerMonth", header: "Orders Per Month" },
+        { field: "status", header: "Status" }
       ];
+      // const orderedFields = [
+      //   "srNo",
+      //   "shopName",
+      //   "users",
+      //   "planName",
+      //   "shopAccessToken",
+      //   "shopUrl",
+      //   "shopContactNo",
+      //   "ordersPerMonth",
+      //   "status"
+      // ];
 
-      const inferredColumns =
-        data.columns && data.columns.length > 0
-          ? data.columns
-          : Object.keys(sampleRow).map((key) => ({
-              field: key,
-              headerName: key.charAt(0).toUpperCase() + key.slice(1),
-              flex: 1,
-              minWidth: 120,
-              type: typeof sampleRow[key] === "number" ? "number" : "string"
-            }));
+      // const inferredColumns =
+      //   data.columns && data.columns.length > 0
+      //     ? data.columns
+      //     : Object.keys(sampleRow).map((key) => ({
+      //         field: key,
+      //         headerName: key.charAt(0).toUpperCase() + key.slice(1),
+      //         flex: 1,
+      //         minWidth: 120,
+      //         type: typeof sampleRow[key] === "number" ? "number" : "string"
+      //       }));
 
-      const mappedColumns: GridColDef[] = orderedFields
-        .map((field) => {
-          const col = inferredColumns.find((c: any) => c.field === field);
-          if (!col) return null;
+      const mappedColumns: GridColDef[] = orderedFields.map((f) => {
+        // Sr No column
+        if (f.field === "srNo") {
+          return {
+            field: f.field,
+            headerName: f.header,
+            minWidth: 80,
+            flex: 0.3,
+            sortable: false,
+            align: "center",
+            headerAlign: "center"
+          };
+        }
 
-          if (field === "srNo") {
-            return {
-              ...col,
-              headerName: "Sr No.",
-              minWidth: 40,
-              flex: 0.3,
-              sortable: false,
-              align: "center",
-              headerAlign: "center"
-            };
-          }
+        if (f.field === "planName") {
+          return {
+            field: f.field,
+            headerName: f.header,
+            minWidth: 140,
+            flex: 1,
+            renderCell: (params: GridRenderCellParams) => (
+              <Chip
+                label={params.value || "No Active Plan"}
+                color={params.value ? "primary" : "default"}
+                size="small"
+                variant="outlined"
+              />
+            )
+          };
+        }
 
-          if (field === "planName") {
-            return {
-              ...col,
-              headerName: "Active Plan",
-              minWidth: 140,
-              flex: 1,
-              renderCell: (params: GridRenderCellParams) => (
+        if (f.field === "status") {
+          return {
+            field: f.field,
+            headerName: f.header,
+            minWidth: 120,
+            flex: 1,
+            renderCell: (params: GridRenderCellParams) => {
+              let color: "default" | "success" | "error" | "warning" | "info" =
+                "default";
+              let label = params.value || "Pending";
+
+              switch (params.value) {
+                case "approved":
+                  color = "success";
+                  label = "Approved";
+                  break;
+                case "rejected":
+                  color = "error";
+                  label = "Rejected";
+                  break;
+                case "processed":
+                  color = "info";
+                  label = "Processed";
+                  break;
+                case "pending":
+                default:
+                  color = "warning";
+                  label = "Pending";
+              }
+
+              return (
                 <Chip
-                  label={params.value || "No Active Plan"}
-                  color={params.value ? "primary" : "default"}
+                  label={label}
+                  color={color}
                   size="small"
                   variant="outlined"
                 />
-              )
-            };
-          }
-
-          if (field === "status") {
-            return {
-              ...col,
-              headerName: "Status",
-              minWidth: 120,
-              flex: 1,
-              renderCell: (params: GridRenderCellParams) => {
-                let color:
-                  | "default"
-                  | "success"
-                  | "error"
-                  | "warning"
-                  | "info" = "default";
-                let label = "Pending";
-
-                if (params.value === "approved") {
-                  color = "success";
-                  label = "Approved";
-                } else if (params.value === "rejected") {
-                  color = "error";
-                  label = "Rejected";
-                } else if (params.value === "processed") {
-                  color = "info";
-                  label = "Processed";
-                } else if (params.value === "pending") {
-                  color = "warning";
-                  label = "Pending";
-                }
-
-                return (
-                  <Chip
-                    label={label}
-                    color={color}
-                    size="small"
-                    variant="outlined"
-                  />
-                );
-              }
-            };
-          }
-
-          return {
-            ...col,
-            headerName: field === "users" ? "User" : col.headerName,
-            minWidth: 120,
-            flex: 1,
-            editable: field === "shopAccessToken",
-            ...(col.type === "number" && {
-              align: "center",
-              headerAlign: "center"
-            })
+              );
+            }
           };
-        })
-        .filter(Boolean) as GridColDef[];
+        }
+
+        // Default columns
+        return {
+          field: f.field,
+          headerName: f.header === "users" ? "User" : f.header,
+          minWidth: 120,
+          flex: 1,
+          editable: f.field === "shopAccessToken",
+          ...(typeof sampleRow[f.field] === "number" && {
+            align: "center",
+            headerAlign: "center"
+          })
+        };
+      });
 
       mappedColumns.push({
         field: "actions",
