@@ -120,13 +120,17 @@ const PlanCardsView = () => {
     }
 
     try {
-      const response = await renewShopPlan(shopId, planId);
+      const { paymentLink } = await renewShopPlan(shopId, planId);
 
-      showToast.success(
-        response?.message || `Plan ${planId} renewed successfully ✅`
-      );
+      if (paymentLink) {
+        showToast.success(
+          "Payment link created for Plan ${planId} renewal. Redirecting..."
+        );
+        window.open(paymentLink, "_blank");
+      } else {
+        showToast.error("Failed to generate payment link. Please try again.");
+      }
 
-      // refresh active plan after renewal
       const updatedActive = await getActivePlanByShop(shopId);
       setActivePlan(updatedActive || null);
     } catch (err: any) {

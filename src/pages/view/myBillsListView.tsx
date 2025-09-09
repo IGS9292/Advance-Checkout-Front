@@ -182,8 +182,10 @@ export default function MyBillsListView() {
             </Box>
 
             <Typography variant="h3" color="text.secondary" fontWeight="bold">
-              ₹{filteredRows.reduce((r) => r.amount || 0, 0).toFixed(2)}
-              {/* {rows.reduce((acc, row) => acc + (row.amount || 0), 0).toFixed(2)} */}
+              ₹
+              {parseFloat(
+                rows.find((r) => r.planStatus === "active")?.amount || 0
+              ).toFixed(2)}
             </Typography>
           </Paper>
         </Grid>

@@ -26,7 +26,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     );
     const isPlansPage = location.pathname === "/admin-dashboard/plans-view";
 
-    if (!isBillingPage && !isPlansPage) {
+    if (!isBillingPage && !isPlansPage && role == "1") {
       showToast.error("No access, please buy a plan first");
       return <Navigate to="/admin-dashboard/plans-view" />;
     }
