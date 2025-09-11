@@ -16,6 +16,7 @@ export const useShopColumns = (
   handleApprove: (id: number) => void,
   handleReject: (id: number) => void,
   handleProcessedRequest: (id: number) => void
+      // plans: any[] // ⬅ accept plans
 ) => {
   const [columnsMeta, setColumnsMeta] = React.useState<GridColDef[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -57,28 +58,7 @@ export const useShopColumns = (
         { field: "ordersPerMonth", header: "Orders Per Month" },
         { field: "status", header: "Status" }
       ];
-      // const orderedFields = [
-      //   "srNo",
-      //   "shopName",
-      //   "users",
-      //   "planName",
-      //   "shopAccessToken",
-      //   "shopUrl",
-      //   "shopContactNo",
-      //   "ordersPerMonth",
-      //   "status"
-      // ];
-
-      // const inferredColumns =
-      //   data.columns && data.columns.length > 0
-      //     ? data.columns
-      //     : Object.keys(sampleRow).map((key) => ({
-      //         field: key,
-      //         headerName: key.charAt(0).toUpperCase() + key.slice(1),
-      //         flex: 1,
-      //         minWidth: 120,
-      //         type: typeof sampleRow[key] === "number" ? "number" : "string"
-      //       }));
+     
 
       const mappedColumns: GridColDef[] = orderedFields.map((f) => {
         // Sr No column
@@ -110,6 +90,8 @@ export const useShopColumns = (
             )
           };
         }
+
+        
 
         if (f.field === "status") {
           return {

@@ -84,7 +84,27 @@ export const UseMyBillsCols = (
             }
           };
         }
-
+        if (f.field === "amount") {
+          return {
+            ...f,
+            headerName: "Amount (₹)",
+            flex: 1,
+            minWidth: 120,
+            align: "center",
+            headerAlign: "center",
+            renderCell: (params: GridRenderCellParams) => {
+              // Ensure it displays as ₹<amount>
+              const value = params.value ?? 0;
+              const formattedValue =
+                typeof value === "number"
+                  ? `₹${value.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2
+                    })}`
+                  : `₹${value}`;
+              return <span>{formattedValue}</span>;
+            }
+          };
+        }
         // Default columns
         return {
           field: f.field,

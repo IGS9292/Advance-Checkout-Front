@@ -65,6 +65,7 @@ const ChatList: React.FC<Props> = ({ userId, setSelectedUser, socket }) => {
         saveUnreadCounts(counts);
       } catch (err) {
         console.error("Failed to fetch unread counts", err);
+        // console.log(err);
       }
     };
     fetchCounts();
@@ -244,7 +245,7 @@ const ChatList: React.FC<Props> = ({ userId, setSelectedUser, socket }) => {
                             color="text.secondary"
                             noWrap
                             sx={{
-                              maxWidth: "160px", 
+                              maxWidth: "160px",
                               overflow: "hidden",
                               textOverflow: "ellipsis"
                             }}

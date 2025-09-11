@@ -15,7 +15,10 @@ import {
   Menu,
   ListItemText,
   ListItemIcon,
-  Divider
+  Divider,
+  IconButton,
+  Modal,
+  Paper
 } from "@mui/material";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
@@ -38,7 +41,8 @@ import { getAllPlans } from "../../services/PlanService";
 import type { DateFilterState } from "../../shared/components/DateFilter";
 import Search from "../../shared/components/Search";
 import { showToast } from "../../helper/toastHelper";
-import { AccountTreeOutlined } from "@mui/icons-material";
+import { AccountTreeOutlined, VisibilityRounded } from "@mui/icons-material";
+import { GridCloseIcon } from "@mui/x-data-grid";
 
 type Plan = { id: number; order_range: string };
 
@@ -67,6 +71,8 @@ const ShopsListView = () => {
   const [loading, setLoading] = useState(false);
 
   const gridRef = useRef<HTMLDivElement>(null);
+  const [openViewDialog, setOpenViewDialog] = useState(false);
+  const [viewRow, setViewRow] = useState<any>(null);
 
   const {
     control,
@@ -121,6 +127,13 @@ const ShopsListView = () => {
     showToast.success("Request marked as processed");
     fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
   };
+
+  const handleView = (row: any) => {
+    setViewRow(row);
+    // console.log("rowwwwwwwwwww-----", row);
+    setOpenViewDialog(true);
+  };
+
   // upgradeShopPlan
   const {
     columnsMeta: dynamicCols,
@@ -135,6 +148,7 @@ const ShopsListView = () => {
     handleApprove,
     handleReject,
     handleProcessedRequest
+    // orderRanges
   );
 
   useEffect(() => {
@@ -142,7 +156,8 @@ const ShopsListView = () => {
     const fetchPlans = async () => {
       const data = await getAllPlans();
       const plans = Array.isArray(data) ? data : data?.plans || [];
-      setOrderRanges(plans.map((p: Plan) => p.order_range));
+      // setOrderRanges(plans.map((p: Plan) => p.order_range));
+      setOrderRanges(plans);
     };
     fetchPlans();
   }, []);
@@ -197,7 +212,10 @@ const ShopsListView = () => {
       }
       handleCloseDialog();
       fetchColumnsAndData(setOriginalRows, setFilteredRows, baseURL);
-    } catch (err) {
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message || err.message || "Something went wrong";
+      showToast.error(errorMessage);
       console.error(err);
     } finally {
       setLoading(false);
@@ -252,10 +270,45 @@ const ShopsListView = () => {
         {menuRowId &&
           (() => {
             const row = originalRows.find((r) => r.id === menuRowId);
-            if (row && row.status !== "approved") {
-              return (
-                <>
+            if (!row) return null;
+
+            const { status } = row;
+
+            switch (status) {
+              case "approved":
+                return (
                   <MenuItem
+                    onClick={() => {
+                      const row = originalRows.find((r) => r.id === menuRowId);
+                      if (row) handleView(row);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <VisibilityRounded fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>View Details</ListItemText>
+                  </MenuItem>
+                );
+
+              case "pending":
+                return [
+                  <MenuItem
+                    key="view"
+                    onClick={() => {
+                      const row = originalRows.find((r) => r.id === menuRowId);
+                      if (row) handleView(row);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <VisibilityRounded fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>View Details</ListItemText>
+                  </MenuItem>,
+                  <Divider key="divider-1" />,
+                  <MenuItem
+                    key="process"
                     onClick={() => {
                       handleProcessedRequest(menuRowId);
                       handleClose();
@@ -265,39 +318,176 @@ const ShopsListView = () => {
                       <AccountTreeOutlined fontSize="small" />
                     </ListItemIcon>
                     <ListItemText>Process Request</ListItemText>
+                  </MenuItem>,
+                  <Divider key="divider-2" />,
+                  <MenuItem
+                    key="reject"
+                    onClick={() => {
+                      handleReject(menuRowId);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <CancelOutlinedIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Reject Request</ListItemText>
                   </MenuItem>
-                  <Divider />
-                </>
-              );
+                ];
+
+              case "processed":
+                return (
+                  <>
+                    <MenuItem
+                      onClick={() => {
+                        const row = originalRows.find(
+                          (r) => r.id === menuRowId
+                        );
+                        if (row) handleView(row);
+                        handleClose();
+                      }}
+                    >
+                      <ListItemIcon>
+                        <VisibilityRounded fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>View Details</ListItemText>
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem
+                      onClick={() => {
+                        handleApprove(menuRowId);
+                        handleClose();
+                      }}
+                    >
+                      <ListItemIcon>
+                        <CheckCircleOutlineIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Approve Request</ListItemText>
+                    </MenuItem>
+                    <Divider />,
+                    <MenuItem
+                      onClick={() => {
+                        handleReject(menuRowId);
+                        handleClose();
+                      }}
+                    >
+                      <ListItemIcon>
+                        <CancelOutlinedIcon fontSize="small" />
+                      </ListItemIcon>
+                      <ListItemText>Reject Request</ListItemText>
+                    </MenuItem>
+                  </>
+                );
+
+              case "rejected":
+                return [
+                  <MenuItem
+                    key="view"
+                    onClick={() => {
+                      const row = originalRows.find((r) => r.id === menuRowId);
+                      if (row) handleView(row);
+                      handleClose();
+                    }}
+                  >
+                    <ListItemIcon>
+                      <VisibilityRounded fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>View Details</ListItemText>
+                  </MenuItem>
+                  //,  <Divider />,
+                  // <MenuItem
+                  //   key="approve"
+                  //   onClick={() => {
+                  //     handleApprove(menuRowId);
+                  //     handleClose();
+                  //   }}
+                  // >
+                  //   <ListItemIcon>
+                  //     <CheckCircleOutlineIcon fontSize="small" />
+                  //   </ListItemIcon>
+                  //   <ListItemText>Approve Request</ListItemText>
+                  // </MenuItem>,
+                ];
+
+              default:
+                return null;
             }
-            return null;
           })()}
-
-        <MenuItem
-          onClick={() => {
-            if (menuRowId) handleReject(menuRowId);
-            handleClose();
-          }}
-        >
-          <ListItemIcon>
-            <CancelOutlinedIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Deny Request</ListItemText>
-        </MenuItem>
-
-        <Divider />
-        <MenuItem
-          onClick={() => {
-            if (menuRowId) handleApprove(menuRowId);
-            handleClose();
-          }}
-        >
-          <ListItemIcon>
-            <CheckCircleOutlineIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Approve Request</ListItemText>
-        </MenuItem>
       </Menu>
+
+      {/* View Shop Details Modal */}
+      <Modal
+        open={openViewDialog}
+        onClose={() => setOpenViewDialog(false)}
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        <Paper
+          sx={{
+            p: 3,
+            width: 500,
+            maxHeight: "80vh",
+            overflowY: "auto",
+            position: "relative"
+          }}
+        >
+          {/* Close Icon */}
+          <IconButton
+            aria-label="close"
+            onClick={() => setOpenViewDialog(false)}
+            size="small"
+            sx={{ position: "absolute", top: 8, right: 8, border: "none" }}
+          >
+            <GridCloseIcon />
+          </IconButton>
+
+          {/* Title */}
+          <Typography variant="h6" gutterBottom>
+            Shop Details
+          </Typography>
+
+          {/* Shop Details */}
+          {viewRow ? (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Typography>
+                <b>Shop Name:</b> {viewRow.shopName}
+              </Typography>
+              <Typography>
+                <b>User Email:</b> {viewRow.users}
+              </Typography>
+              <Typography>
+                <b>Contact No:</b> {viewRow.shopContactNo}
+              </Typography>
+              <Typography>
+                <b>Shop URL:</b> {viewRow.shopUrl}
+              </Typography>
+              {/* <Typography>
+                <b>Plan Name:</b> {viewRow.planName}
+              </Typography> */}
+              <Typography>
+                <b>Orders/Month:</b> {viewRow.ordersPerMonth}
+              </Typography>
+              <Typography>
+                <b>Status:</b> {viewRow.status}
+              </Typography>
+              <Typography>
+                <b>Access Token:</b>{" "}
+                {viewRow.shopAccessToken || "Not generated"}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography>No details available</Typography>
+          )}
+
+          {/* Close Button */}
+          <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+            <Button
+              onClick={() => setOpenViewDialog(false)}
+              variant="contained"
+            >
+              Close
+            </Button>
+          </Box>
+        </Paper>
+      </Modal>
 
       {/* Add/Edit Shop Dialog */}
       <Dialog
@@ -405,9 +595,14 @@ const ShopsListView = () => {
                       error={!!errors.ordersPerMonth}
                       helperText={errors.ordersPerMonth?.message}
                     >
-                      {orderRanges.map((range, idx) => (
+                      {/* {orderRanges.map((range, idx) => (
                         <MenuItem key={idx} value={range}>
                           {range}
+                        </MenuItem>
+                      ))} */}
+                      {orderRanges.map((plan: any, idx: number) => (
+                        <MenuItem key={idx} value={plan.order_range}>
+                          {plan.order_range} ({plan.plan_name})
                         </MenuItem>
                       ))}
                     </TextField>
@@ -425,6 +620,7 @@ const ShopsListView = () => {
                     <TextField
                       select
                       {...field}
+                      disabled={!!editingRow}
                       // error={!!errors.ordersPerMonth}
                       // helperText={errors.ordersPerMonth?.message}
                     >

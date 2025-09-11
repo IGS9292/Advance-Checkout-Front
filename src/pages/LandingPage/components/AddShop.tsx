@@ -45,9 +45,11 @@ const AddShop: React.FC = () => {
       try {
         const data = await getAllPlans();
         const plans = Array.isArray(data) ? data : data?.plans || [];
-        const ranges = plans.map((plan: Plan) => plan.order_range);
-        console.log("order ranges->>>>", ranges);
-        setOrderRanges(ranges);
+        // const ranges = plans.map((plan: Plan) => plan.order_range);
+        // console.log("order ranges->>>>", ranges);
+        // setOrderRanges(ranges);
+        console.log("order ranges->>>>", plans);
+        setOrderRanges(plans);
       } catch (error) {
         console.error("Error fetching plans:", error);
       }
@@ -240,9 +242,15 @@ const AddShop: React.FC = () => {
                         error={!!errors.ordersPerMonth}
                         helperText={errors.ordersPerMonth?.message}
                       >
-                        {orderRanges.map((range, idx) => (
+                        {/* {orderRanges.map((range, idx) => (
                           <MenuItem key={idx} value={range}>
                             {range}
+                          </MenuItem>
+                        ))}
+                         */}
+                        {orderRanges.map((plan: any, idx: number) => (
+                          <MenuItem key={idx} value={plan.order_range}>
+                            {plan.order_range} ({plan.plan_name})
                           </MenuItem>
                         ))}
                       </TextField>

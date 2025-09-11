@@ -51,12 +51,8 @@ export const useCouponColumns = (
           // shopName: shop.shopName || "-",
           discount: discountDisplay || "-",
           usageLimit: couponDetail.usage_limit || "-",
-          startsAt: couponDetail.starts_at
-            ? new Date(couponDetail.starts_at).toISOString().split("T")[0]
-            : "-",
-          endsAt: couponDetail.ends_at
-            ? new Date(couponDetail.ends_at).toISOString().split("T")[0]
-            : "-"
+          startsAt: c.startsAt || "-",
+          endsAt: c.endsAt || "-"
         };
       });
 
